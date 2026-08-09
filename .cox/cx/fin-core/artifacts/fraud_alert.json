@@ -1,0 +1,41 @@
+{
+  "kind": "journeyMap",
+  "id": "fraud_alert",
+  "provenance": {
+    "specName": "fin-core",
+    "phase": "design",
+    "targetId": "artifacts"
+  },
+  "name": "Fraud Alert",
+  "stages": [
+    {
+      "id": "alerted",
+      "name": "Alerted",
+      "description": "Fraud system flags transaction",
+      "touchpoints": [
+        "backoffice",
+        "sms",
+        "app"
+      ]
+    },
+    {
+      "id": "verified",
+      "name": "Verified",
+      "description": "Customer verifies via phone or app",
+      "touchpoints": [
+        "phone",
+        "app",
+        "agent"
+      ]
+    },
+    {
+      "id": "resolved",
+      "name": "Resolved",
+      "description": "Fraud confirmed or cleared",
+      "touchpoints": [
+        "app",
+        "email"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "kind": "journeyMap",
+  "id": "retention",
+  "provenance": {
+    "specName": "health-core",
+    "phase": "design",
+    "targetId": "artifacts"
+  },
+  "name": "Retention",
+  "stages": [
+    {
+      "id": "at_risk",
+      "name": "At risk",
+      "description": "Member churn risk",
+      "touchpoints": [
+        "app",
+        "backoffice"
+      ]
+    },
+    {
+      "id": "engaged",
+      "name": "Engaged",
+      "description": "Proactive outreach",
+      "touchpoints": [
+        "app",
+        "sms",
+        "chat"
+      ]
+    },
+    {
+      "id": "retained",
+      "name": "Retained",
+      "description": "Member retained",
+      "touchpoints": [
+        "app",
+        "sms"
+      ]
+    }
+  ]
+}

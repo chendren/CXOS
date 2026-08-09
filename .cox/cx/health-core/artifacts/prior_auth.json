@@ -1,0 +1,50 @@
+{
+  "kind": "journeyMap",
+  "id": "prior_auth",
+  "provenance": {
+    "specName": "health-core",
+    "phase": "design",
+    "targetId": "artifacts"
+  },
+  "name": "Prior Authorization",
+  "stages": [
+    {
+      "id": "requested",
+      "name": "Requested",
+      "description": "Prior auth requested",
+      "touchpoints": [
+        "web",
+        "app",
+        "backoffice"
+      ]
+    },
+    {
+      "id": "reviewed",
+      "name": "Reviewed",
+      "description": "Clinical review",
+      "touchpoints": [
+        "backoffice",
+        "agent"
+      ]
+    },
+    {
+      "id": "approved",
+      "name": "Approved",
+      "description": "Auth approved",
+      "touchpoints": [
+        "email",
+        "app",
+        "sms"
+      ]
+    },
+    {
+      "id": "denied",
+      "name": "Denied",
+      "description": "Auth denied with reason",
+      "touchpoints": [
+        "app",
+        "chat"
+      ]
+    }
+  ]
+}

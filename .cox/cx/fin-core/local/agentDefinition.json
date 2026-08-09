@@ -1,0 +1,15 @@
+{
+  "kind": "agentDefinition",
+  "id": "agentDefinition",
+  "provenance": {
+    "specName": "fin-core",
+    "phase": "design",
+    "targetId": "local"
+  },
+  "name": "billing_dispute agent",
+  "systemPrompt": "You handle the billing_dispute journey (offline CXOS bind via strong graph).",
+  "tools": [
+    "classify",
+    "nba-lookup"
+  ]
+}

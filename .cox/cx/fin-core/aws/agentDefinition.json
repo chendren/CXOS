@@ -1,0 +1,16 @@
+{
+  "kind": "agentDefinition",
+  "id": "agentDefinition",
+  "provenance": {
+    "specName": "fin-core",
+    "phase": "design",
+    "targetId": "aws"
+  },
+  "name": "billing_dispute-bedrock-agent",
+  "systemPrompt": "AWS plan-only agent for billing_dispute. Closed ontology only. Human applies CFN template.yaml.",
+  "tools": [
+    "connect-transfer",
+    "lex-fulfill",
+    "knowledge-query"
+  ]
+}

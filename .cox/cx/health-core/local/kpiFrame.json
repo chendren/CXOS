@@ -1,0 +1,31 @@
+{
+  "kind": "kpiFrame",
+  "id": "kpiFrame",
+  "provenance": {
+    "specName": "health-core",
+    "phase": "design",
+    "targetId": "local"
+  },
+  "metrics": [
+    {
+      "name": "total_contacts",
+      "target": 100,
+      "unit": "count"
+    },
+    {
+      "name": "sla_compliance_rate",
+      "target": 89,
+      "unit": "percent"
+    },
+    {
+      "name": "avg_wait_time",
+      "target": 120,
+      "unit": "seconds"
+    },
+    {
+      "name": "deflection_rate",
+      "target": 87,
+      "unit": "percent"
+    }
+  ]
+}

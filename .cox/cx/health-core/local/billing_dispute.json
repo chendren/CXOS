@@ -1,0 +1,50 @@
+{
+  "kind": "journeyMap",
+  "id": "billing_dispute",
+  "provenance": {
+    "specName": "health-core",
+    "phase": "design",
+    "targetId": "local"
+  },
+  "name": "Appointment Scheduling",
+  "stages": [
+    {
+      "id": "requested",
+      "name": "Requested",
+      "description": "Patient requests appointment via portal or phone",
+      "touchpoints": [
+        "web",
+        "app",
+        "phone"
+      ]
+    },
+    {
+      "id": "scheduled",
+      "name": "Scheduled",
+      "description": "Appointment scheduled",
+      "touchpoints": [
+        "backoffice",
+        "sms",
+        "email"
+      ]
+    },
+    {
+      "id": "confirmed",
+      "name": "Confirmed",
+      "description": "Patient confirmed",
+      "touchpoints": [
+        "sms",
+        "app"
+      ]
+    },
+    {
+      "id": "completed",
+      "name": "Completed",
+      "description": "Visit completed",
+      "touchpoints": [
+        "retail",
+        "app"
+      ]
+    }
+  ]
+}

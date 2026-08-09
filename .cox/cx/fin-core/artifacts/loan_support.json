@@ -1,0 +1,49 @@
+{
+  "kind": "journeyMap",
+  "id": "loan_support",
+  "provenance": {
+    "specName": "fin-core",
+    "phase": "design",
+    "targetId": "artifacts"
+  },
+  "name": "Loan Support",
+  "stages": [
+    {
+      "id": "applied",
+      "name": "Applied",
+      "description": "Loan application submitted",
+      "touchpoints": [
+        "web",
+        "app"
+      ]
+    },
+    {
+      "id": "under_review",
+      "name": "Under review",
+      "description": "Credit and documents reviewed",
+      "touchpoints": [
+        "backoffice",
+        "agent"
+      ]
+    },
+    {
+      "id": "approved",
+      "name": "Approved",
+      "description": "Loan approved",
+      "touchpoints": [
+        "email",
+        "app",
+        "sms"
+      ]
+    },
+    {
+      "id": "disbursed",
+      "name": "Disbursed",
+      "description": "Funds disbursed",
+      "touchpoints": [
+        "billing_system",
+        "sms"
+      ]
+    }
+  ]
+}

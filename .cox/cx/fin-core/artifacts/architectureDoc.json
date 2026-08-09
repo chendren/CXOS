@@ -1,0 +1,11 @@
+{
+  "kind": "architectureDoc",
+  "id": "architectureDoc",
+  "provenance": {
+    "specName": "fin-core",
+    "phase": "design",
+    "targetId": "artifacts"
+  },
+  "title": "Financial CX architecture — fin-core",
+  "markdown": "# Financial CX architecture: fin-core\n\n## Journeys\n- **account_inquiry** — Account Inquiry\n- **loan_support** — Loan Support\n- **fraud_alert** — Fraud Alert\n- **onboarding** — Onboarding (KYC)\n- **retention** — Retention\n\n## Channels\nweb, app, phone, chat, backoffice, billing"
+}

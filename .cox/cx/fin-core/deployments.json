@@ -1,0 +1,91 @@
+{
+  "deployments": {
+    "artifacts": {
+      "targetId": "artifacts",
+      "specName": "fin-core",
+      "deployedAt": "2026-08-09T02:49:52.967Z",
+      "resources": [
+        {
+          "id": "account_inquiry",
+          "kind": "artifact-file",
+          "createdAt": "2026-08-09T02:49:52.967Z"
+        },
+        {
+          "id": "loan_support",
+          "kind": "artifact-file",
+          "createdAt": "2026-08-09T02:49:52.967Z"
+        },
+        {
+          "id": "fraud_alert",
+          "kind": "artifact-file",
+          "createdAt": "2026-08-09T02:49:52.967Z"
+        },
+        {
+          "id": "onboarding",
+          "kind": "artifact-file",
+          "createdAt": "2026-08-09T02:49:52.967Z"
+        },
+        {
+          "id": "retention",
+          "kind": "artifact-file",
+          "createdAt": "2026-08-09T02:49:52.967Z"
+        },
+        {
+          "id": "architectureDoc",
+          "kind": "artifact-file",
+          "createdAt": "2026-08-09T02:49:52.967Z"
+        }
+      ]
+    },
+    "local": {
+      "targetId": "local",
+      "specName": "fin-core",
+      "deployedAt": "2026-08-09T02:49:52.969Z",
+      "resources": [
+        {
+          "id": "agentDefinition",
+          "kind": "offline-local-file",
+          "createdAt": "2026-08-09T02:49:52.969Z"
+        },
+        {
+          "id": "billing_dispute",
+          "kind": "offline-local-file",
+          "createdAt": "2026-08-09T02:49:52.969Z"
+        },
+        {
+          "id": "kpiFrame",
+          "kind": "offline-local-file",
+          "createdAt": "2026-08-09T02:49:52.969Z"
+        }
+      ]
+    },
+    "aws": {
+      "targetId": "aws",
+      "specName": "fin-core",
+      "deployedAt": "2026-08-09T02:49:52.970Z",
+      "resources": [
+        {
+          "id": "architectureDoc",
+          "kind": "offline-aws-file",
+          "createdAt": "2026-08-09T02:49:52.970Z"
+        },
+        {
+          "id": "agentDefinition",
+          "kind": "offline-aws-file",
+          "createdAt": "2026-08-09T02:49:52.970Z"
+        },
+        {
+          "id": "template.yaml",
+          "kind": "cloudformation-template",
+          "createdAt": "2026-08-09T02:49:52.970Z"
+        },
+        {
+          "id": "APPLY.md",
+          "kind": "apply-instructions",
+          "createdAt": "2026-08-09T02:49:52.970Z"
+        }
+      ]
+    }
+  },
+  "updatedAt": "2026-08-09T02:49:52.970Z"
+}

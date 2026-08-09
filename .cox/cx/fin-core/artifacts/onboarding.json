@@ -1,0 +1,48 @@
+{
+  "kind": "journeyMap",
+  "id": "onboarding",
+  "provenance": {
+    "specName": "fin-core",
+    "phase": "design",
+    "targetId": "artifacts"
+  },
+  "name": "Onboarding (KYC)",
+  "stages": [
+    {
+      "id": "started",
+      "name": "Started",
+      "description": "Application started",
+      "touchpoints": [
+        "web",
+        "app"
+      ]
+    },
+    {
+      "id": "kyc",
+      "name": "KYC",
+      "description": "Identity verified",
+      "touchpoints": [
+        "backoffice",
+        "agent"
+      ]
+    },
+    {
+      "id": "approved",
+      "name": "Approved",
+      "description": "Account approved",
+      "touchpoints": [
+        "email",
+        "app"
+      ]
+    },
+    {
+      "id": "active",
+      "name": "Active",
+      "description": "Account active",
+      "touchpoints": [
+        "app",
+        "sms"
+      ]
+    }
+  ]
+}

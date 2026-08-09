@@ -1,0 +1,11 @@
+{
+  "kind": "architectureDoc",
+  "id": "architectureDoc",
+  "provenance": {
+    "specName": "health-core",
+    "phase": "design",
+    "targetId": "artifacts"
+  },
+  "title": "Healthcare CX architecture — health-core",
+  "markdown": "# Healthcare CX architecture: health-core\n\n## Journeys\n- **appointment** — Appointment Scheduling\n- **claims** — Claims\n- **prior_auth** — Prior Authorization\n- **benefits** — Benefits Inquiry\n- **retention** — Retention\n\n## Channels\nweb, app, phone, chat, backoffice, billing\n\n## Note\nHIPAA-aware: no PHI in ontology, strong graph only."
+}

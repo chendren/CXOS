@@ -1,0 +1,49 @@
+{
+  "kind": "journeyMap",
+  "id": "claims",
+  "provenance": {
+    "specName": "health-core",
+    "phase": "design",
+    "targetId": "artifacts"
+  },
+  "name": "Claims",
+  "stages": [
+    {
+      "id": "submitted",
+      "name": "Submitted",
+      "description": "Claim submitted",
+      "touchpoints": [
+        "web",
+        "app",
+        "backoffice"
+      ]
+    },
+    {
+      "id": "adjudicated",
+      "name": "Adjudicated",
+      "description": "Claim adjudicated",
+      "touchpoints": [
+        "backoffice",
+        "agent"
+      ]
+    },
+    {
+      "id": "paid",
+      "name": "Paid",
+      "description": "Claim paid",
+      "touchpoints": [
+        "billing_system",
+        "email"
+      ]
+    },
+    {
+      "id": "appealed",
+      "name": "Appealed",
+      "description": "Claim appealed if needed",
+      "touchpoints": [
+        "chat",
+        "phone"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,282 @@
+{
+  "idea": "healthcare: appointment scheduling, claims, prior authorization, benefits, retention",
+  "path": [
+    "create_spec",
+    "seed_requirements",
+    "emit",
+    "approve:requirements",
+    "emit",
+    "seed_design",
+    "merge_design",
+    "emit",
+    "approve:design",
+    "emit"
+  ],
+  "updatedAt": "2026-08-09T02:49:53.436Z",
+  "spec": {
+    "state": {
+      "name": "health-core",
+      "createdAt": "2026-08-09T02:49:53.433Z",
+      "phases": {
+        "requirements": "approved",
+        "design": "approved",
+        "tasks": "missing"
+      },
+      "tasks": [],
+      "approvals": [
+        {
+          "phase": "requirements",
+          "at": "2026-08-09T02:49:53.435Z"
+        },
+        {
+          "phase": "design",
+          "at": "2026-08-09T02:49:53.436Z"
+        }
+      ]
+    },
+    "requirements": [
+      {
+        "id": "R1.1",
+        "text": "WHEN a customer engages about \"healthcare: appointment scheduling, claims, prior authorization, benefits, retention\", THE SYSTEM SHALL resolve within closed ontology journeys with measurable KPIs"
+      },
+      {
+        "id": "R1.2",
+        "text": "WHEN handle time or SLA degrades, THE SYSTEM SHALL surface graph-grounded next-best-actions rather than free-form advice"
+      }
+    ],
+    "design": {
+      "journeyMaps": [
+        {
+          "kind": "journeyMap",
+          "id": "appointment",
+          "provenance": {
+            "specName": "health-core",
+            "phase": "design",
+            "targetId": "artifacts"
+          },
+          "name": "Appointment Scheduling",
+          "stages": [
+            {
+              "id": "requested",
+              "name": "Requested",
+              "description": "Patient requests appointment via portal or phone",
+              "touchpoints": [
+                "web",
+                "app",
+                "phone"
+              ]
+            },
+            {
+              "id": "scheduled",
+              "name": "Scheduled",
+              "description": "Appointment scheduled",
+              "touchpoints": [
+                "backoffice",
+                "sms",
+                "email"
+              ]
+            },
+            {
+              "id": "confirmed",
+              "name": "Confirmed",
+              "description": "Patient confirmed",
+              "touchpoints": [
+                "sms",
+                "app"
+              ]
+            },
+            {
+              "id": "completed",
+              "name": "Completed",
+              "description": "Visit completed",
+              "touchpoints": [
+                "retail",
+                "app"
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "journeyMap",
+          "id": "claims",
+          "provenance": {
+            "specName": "health-core",
+            "phase": "design",
+            "targetId": "artifacts"
+          },
+          "name": "Claims",
+          "stages": [
+            {
+              "id": "submitted",
+              "name": "Submitted",
+              "description": "Claim submitted",
+              "touchpoints": [
+                "web",
+                "app",
+                "backoffice"
+              ]
+            },
+            {
+              "id": "adjudicated",
+              "name": "Adjudicated",
+              "description": "Claim adjudicated",
+              "touchpoints": [
+                "backoffice",
+                "agent"
+              ]
+            },
+            {
+              "id": "paid",
+              "name": "Paid",
+              "description": "Claim paid",
+              "touchpoints": [
+                "billing_system",
+                "email"
+              ]
+            },
+            {
+              "id": "appealed",
+              "name": "Appealed",
+              "description": "Claim appealed if needed",
+              "touchpoints": [
+                "chat",
+                "phone"
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "journeyMap",
+          "id": "prior_auth",
+          "provenance": {
+            "specName": "health-core",
+            "phase": "design",
+            "targetId": "artifacts"
+          },
+          "name": "Prior Authorization",
+          "stages": [
+            {
+              "id": "requested",
+              "name": "Requested",
+              "description": "Prior auth requested",
+              "touchpoints": [
+                "web",
+                "app",
+                "backoffice"
+              ]
+            },
+            {
+              "id": "reviewed",
+              "name": "Reviewed",
+              "description": "Clinical review",
+              "touchpoints": [
+                "backoffice",
+                "agent"
+              ]
+            },
+            {
+              "id": "approved",
+              "name": "Approved",
+              "description": "Auth approved",
+              "touchpoints": [
+                "email",
+                "app",
+                "sms"
+              ]
+            },
+            {
+              "id": "denied",
+              "name": "Denied",
+              "description": "Auth denied with reason",
+              "touchpoints": [
+                "app",
+                "chat"
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "journeyMap",
+          "id": "benefits",
+          "provenance": {
+            "specName": "health-core",
+            "phase": "design",
+            "targetId": "artifacts"
+          },
+          "name": "Benefits Inquiry",
+          "stages": [
+            {
+              "id": "inquired",
+              "name": "Inquired",
+              "description": "Member inquires about benefits",
+              "touchpoints": [
+                "app",
+                "chat",
+                "phone"
+              ]
+            },
+            {
+              "id": "verified",
+              "name": "Verified",
+              "description": "Eligibility verified",
+              "touchpoints": [
+                "backoffice",
+                "agent"
+              ]
+            },
+            {
+              "id": "explained",
+              "name": "Explained",
+              "description": "Benefits explained",
+              "touchpoints": [
+                "app",
+                "email"
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "journeyMap",
+          "id": "retention",
+          "provenance": {
+            "specName": "health-core",
+            "phase": "design",
+            "targetId": "artifacts"
+          },
+          "name": "Retention",
+          "stages": [
+            {
+              "id": "at_risk",
+              "name": "At risk",
+              "description": "Member churn risk",
+              "touchpoints": [
+                "app",
+                "backoffice"
+              ]
+            },
+            {
+              "id": "engaged",
+              "name": "Engaged",
+              "description": "Proactive outreach",
+              "touchpoints": [
+                "app",
+                "sms",
+                "chat"
+              ]
+            },
+            {
+              "id": "retained",
+              "name": "Retained",
+              "description": "Member retained",
+              "touchpoints": [
+                "app",
+                "sms"
+              ]
+            }
+          ]
+        }
+      ],
+      "personas": []
+    }
+  }
+}

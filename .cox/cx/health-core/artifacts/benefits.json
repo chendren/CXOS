@@ -1,0 +1,40 @@
+{
+  "kind": "journeyMap",
+  "id": "benefits",
+  "provenance": {
+    "specName": "health-core",
+    "phase": "design",
+    "targetId": "artifacts"
+  },
+  "name": "Benefits Inquiry",
+  "stages": [
+    {
+      "id": "inquired",
+      "name": "Inquired",
+      "description": "Member inquires about benefits",
+      "touchpoints": [
+        "app",
+        "chat",
+        "phone"
+      ]
+    },
+    {
+      "id": "verified",
+      "name": "Verified",
+      "description": "Eligibility verified",
+      "touchpoints": [
+        "backoffice",
+        "agent"
+      ]
+    },
+    {
+      "id": "explained",
+      "name": "Explained",
+      "description": "Benefits explained",
+      "touchpoints": [
+        "app",
+        "email"
+      ]
+    }
+  ]
+}

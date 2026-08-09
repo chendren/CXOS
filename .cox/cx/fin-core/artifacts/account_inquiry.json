@@ -1,0 +1,42 @@
+{
+  "kind": "journeyMap",
+  "id": "account_inquiry",
+  "provenance": {
+    "specName": "fin-core",
+    "phase": "design",
+    "targetId": "artifacts"
+  },
+  "name": "Account Inquiry",
+  "stages": [
+    {
+      "id": "initiated",
+      "name": "Inquiry initiated",
+      "description": "Customer inquires via app, web, or phone",
+      "touchpoints": [
+        "app",
+        "web",
+        "phone",
+        "chat"
+      ]
+    },
+    {
+      "id": "validated",
+      "name": "Validated",
+      "description": "Identity and account validated",
+      "touchpoints": [
+        "agent",
+        "backoffice"
+      ]
+    },
+    {
+      "id": "resolved",
+      "name": "Resolved",
+      "description": "Inquiry answered",
+      "touchpoints": [
+        "app",
+        "email",
+        "sms"
+      ]
+    }
+  ]
+}

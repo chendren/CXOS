@@ -1,0 +1,40 @@
+{
+  "kind": "journeyMap",
+  "id": "retention",
+  "provenance": {
+    "specName": "fin-core",
+    "phase": "design",
+    "targetId": "artifacts"
+  },
+  "name": "Retention",
+  "stages": [
+    {
+      "id": "at_risk",
+      "name": "At risk",
+      "description": "Churn risk detected",
+      "touchpoints": [
+        "app",
+        "backoffice"
+      ]
+    },
+    {
+      "id": "offered",
+      "name": "Offered",
+      "description": "Retention offer presented",
+      "touchpoints": [
+        "app",
+        "email",
+        "chat"
+      ]
+    },
+    {
+      "id": "retained",
+      "name": "Retained",
+      "description": "Customer retained",
+      "touchpoints": [
+        "app",
+        "sms"
+      ]
+    }
+  ]
+}
