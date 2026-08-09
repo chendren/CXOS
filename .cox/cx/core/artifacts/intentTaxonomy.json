@@ -1,0 +1,68 @@
+{
+  "kind": "intentTaxonomy",
+  "id": "intentTaxonomy",
+  "provenance": {
+    "specName": "core",
+    "phase": "design",
+    "targetId": "artifacts"
+  },
+  "domains": [
+    {
+      "id": "billing",
+      "name": "Billing",
+      "intents": [
+        {
+          "id": "payment_issue",
+          "name": "Payment Issue",
+          "description": "Customer has trouble making a payment or payment failed",
+          "exemplars": [
+            "My payment didn't go through and I don't know why",
+            "I keep getting an error when trying to pay my bill online",
+            "The payment was declined but my card works everywhere else",
+            "I was double charged on my last payment",
+            "My autopay didn't process this month and now I have a late fee"
+          ]
+        },
+        {
+          "id": "billing_inquiry",
+          "name": "Billing Inquiry",
+          "description": "Customer wants to understand charges or billing details",
+          "exemplars": [
+            "Can you explain these charges on my bill?",
+            "Why is my bill higher than usual this month?",
+            "I don't recognize a $15 charge on my statement",
+            "When is my next payment due?",
+            "How do I read my billing statement?"
+          ]
+        },
+        {
+          "id": "refund_request",
+          "name": "Refund Request",
+          "description": "Customer requests a refund for charges or services",
+          "exemplars": [
+            "I want a refund for the service outage last week",
+            "I was overcharged and need my money back",
+            "I cancelled within the trial period and was still charged",
+            "I need a refund because the product didn't work as advertised",
+            "Can I get a credit for the days my service was down?",
+            "I want my money back for the 3 days everything was completely down",
+            "I deserve a refund since my internet was out for a whole week",
+            "Give me a credit for the time my service wasn't working"
+          ]
+        },
+        {
+          "id": "plan_change",
+          "name": "Plan Change",
+          "description": "Customer wants to modify their billing plan",
+          "exemplars": [
+            "I want to switch to a cheaper plan",
+            "Can I upgrade my plan without changing my billing date?",
+            "What happens to my current balance if I change plans?",
+            "I need to downgrade because I'm not using all my data",
+            "Can I change from monthly to annual billing?"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,218 @@
+{
+  "idea": "Customer experience for a national retail brand: returns and refunds, loyalty program, store pickup, online order support, and retention",
+  "path": [
+    "create_spec",
+    "seed_requirements",
+    "emit",
+    "approve:requirements",
+    "emit",
+    "seed_design",
+    "merge_design",
+    "emit",
+    "approve:design",
+    "emit"
+  ],
+  "updatedAt": "2026-08-09T02:15:34.094Z",
+  "spec": {
+    "state": {
+      "name": "core",
+      "createdAt": "2026-08-09T02:15:34.090Z",
+      "phases": {
+        "requirements": "approved",
+        "design": "approved",
+        "tasks": "missing"
+      },
+      "tasks": [],
+      "approvals": [
+        {
+          "phase": "requirements",
+          "at": "2026-08-09T02:15:34.091Z"
+        },
+        {
+          "phase": "design",
+          "at": "2026-08-09T02:15:34.094Z"
+        }
+      ]
+    },
+    "requirements": [
+      {
+        "id": "R1.1",
+        "text": "WHEN a customer engages about \"Customer experience for a national retail brand: returns and refunds, loyalty program, store pickup, online order support, and retention\", THE SYSTEM SHALL resolve within closed ontology journeys with measurable KPIs"
+      },
+      {
+        "id": "R1.2",
+        "text": "WHEN handle time or SLA degrades, THE SYSTEM SHALL surface graph-grounded next-best-actions rather than free-form advice"
+      }
+    ],
+    "design": {
+      "journeyMaps": [
+        {
+          "kind": "journeyMap",
+          "id": "billing_dispute",
+          "provenance": {
+            "specName": "core",
+            "phase": "design",
+            "targetId": "artifacts"
+          },
+          "name": "Primary CX Journey",
+          "stages": [
+            {
+              "id": "initiated",
+              "name": "Initiated",
+              "description": "Customer raises the issue",
+              "touchpoints": [
+                "chat",
+                "phone"
+              ]
+            },
+            {
+              "id": "under_review",
+              "name": "Under Review",
+              "description": "Investigation in progress",
+              "touchpoints": [
+                "agent"
+              ]
+            },
+            {
+              "id": "resolved",
+              "name": "Resolved",
+              "description": "Issue closed",
+              "touchpoints": [
+                "chat"
+              ]
+            }
+          ]
+        }
+      ],
+      "personas": [
+        {
+          "kind": "persona",
+          "id": "persona",
+          "provenance": {
+            "specName": "core",
+            "phase": "design",
+            "targetId": "artifacts"
+          },
+          "name": "Frustrated account holder",
+          "goals": [
+            "Fast resolution",
+            "Clear explanation"
+          ],
+          "painPoints": [
+            "Repeat contacts",
+            "Opaque billing"
+          ]
+        }
+      ],
+      "intentTaxonomy": {
+        "kind": "intentTaxonomy",
+        "id": "intentTaxonomy",
+        "provenance": {
+          "specName": "core",
+          "phase": "design",
+          "targetId": "artifacts"
+        },
+        "domains": [
+          {
+            "id": "billing",
+            "name": "Billing",
+            "intents": [
+              {
+                "id": "payment_issue",
+                "name": "Payment Issue",
+                "description": "Customer has trouble making a payment or payment failed",
+                "exemplars": [
+                  "My payment didn't go through and I don't know why",
+                  "I keep getting an error when trying to pay my bill online",
+                  "The payment was declined but my card works everywhere else",
+                  "I was double charged on my last payment",
+                  "My autopay didn't process this month and now I have a late fee"
+                ]
+              },
+              {
+                "id": "billing_inquiry",
+                "name": "Billing Inquiry",
+                "description": "Customer wants to understand charges or billing details",
+                "exemplars": [
+                  "Can you explain these charges on my bill?",
+                  "Why is my bill higher than usual this month?",
+                  "I don't recognize a $15 charge on my statement",
+                  "When is my next payment due?",
+                  "How do I read my billing statement?"
+                ]
+              },
+              {
+                "id": "refund_request",
+                "name": "Refund Request",
+                "description": "Customer requests a refund for charges or services",
+                "exemplars": [
+                  "I want a refund for the service outage last week",
+                  "I was overcharged and need my money back",
+                  "I cancelled within the trial period and was still charged",
+                  "I need a refund because the product didn't work as advertised",
+                  "Can I get a credit for the days my service was down?",
+                  "I want my money back for the 3 days everything was completely down",
+                  "I deserve a refund since my internet was out for a whole week",
+                  "Give me a credit for the time my service wasn't working"
+                ]
+              },
+              {
+                "id": "plan_change",
+                "name": "Plan Change",
+                "description": "Customer wants to modify their billing plan",
+                "exemplars": [
+                  "I want to switch to a cheaper plan",
+                  "Can I upgrade my plan without changing my billing date?",
+                  "What happens to my current balance if I change plans?",
+                  "I need to downgrade because I'm not using all my data",
+                  "Can I change from monthly to annual billing?"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "nbaRuleSet": {
+        "kind": "nbaRuleSet",
+        "id": "nbaRuleSet",
+        "provenance": {
+          "specName": "core",
+          "phase": "design",
+          "targetId": "artifacts"
+        },
+        "rules": [
+          {
+            "id": "CHURN_RISK_HIGH",
+            "condition": "journey eq \"churn_prevention\" AND stage eq \"cancel_requested\"",
+            "action": "retention_offer",
+            "priority": 100
+          },
+          {
+            "id": "CHURN_FINAL",
+            "condition": "journey eq \"churn_prevention\" AND stage eq \"final_attempt\"",
+            "action": "escalate_retention_specialist",
+            "priority": 95
+          },
+          {
+            "id": "VIP_PRIORITY_ROUTING",
+            "condition": "customer_tier in [\"premium\",\"enterprise\"] AND routing_priority gte 8",
+            "action": "priority_route_to_senior_agent",
+            "priority": 92
+          },
+          {
+            "id": "COMPLAINT_HANDLING",
+            "condition": "intent eq \"general.complaint\"",
+            "action": "activate_complaint_protocol",
+            "priority": 90
+          },
+          {
+            "id": "SLA_AT_RISK",
+            "condition": "sla_status in [\"at_risk\",\"breached\"]",
+            "action": "queue_rebalance_and_escalate",
+            "priority": 88
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,16 @@
+# Local runtime (do not commit - regenerate via cox)
+.cox/cx/*/daemon.pid
+.cox/cx/*/daemon.log
+.cox/cx/*/daemon.json
+.cox/cx/*/health-history.jsonl
+.cox/cx/*/audit.jsonl
+.cox/cx/.archived-*
+.DS_Store
+node_modules/
+dist/
+coverage/
+.env
+.env.local
+cx-snapshot/
+board-sync.local.json
+.tmp/

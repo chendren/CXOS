@@ -1,0 +1,18 @@
+{
+  "kind": "persona",
+  "id": "persona",
+  "provenance": {
+    "specName": "core",
+    "phase": "design",
+    "targetId": "artifacts"
+  },
+  "name": "Frustrated account holder",
+  "goals": [
+    "Fast resolution",
+    "Clear explanation"
+  ],
+  "painPoints": [
+    "Repeat contacts",
+    "Opaque billing"
+  ]
+}

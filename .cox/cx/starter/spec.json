@@ -1,0 +1,32 @@
+{
+  "idea": "starter CX program — replace idea and run build",
+  "path": [
+    "create_spec",
+    "seed_requirements",
+    "emit"
+  ],
+  "updatedAt": "2026-08-09T02:15:28.104Z",
+  "spec": {
+    "state": {
+      "name": "starter",
+      "createdAt": "2026-08-09T02:15:28.104Z",
+      "phases": {
+        "requirements": "draft",
+        "design": "missing",
+        "tasks": "missing"
+      },
+      "tasks": [],
+      "approvals": []
+    },
+    "requirements": [
+      {
+        "id": "R1.1",
+        "text": "WHEN a customer engages about \"starter CX program — replace idea and run build\", THE SYSTEM SHALL resolve within closed ontology journeys with measurable KPIs"
+      },
+      {
+        "id": "R1.2",
+        "text": "WHEN handle time or SLA degrades, THE SYSTEM SHALL surface graph-grounded next-best-actions rather than free-form advice"
+      }
+    ]
+  }
+}

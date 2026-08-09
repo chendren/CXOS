@@ -1,0 +1,37 @@
+{
+  "kind": "journeyMap",
+  "id": "billing_dispute",
+  "provenance": {
+    "specName": "core",
+    "phase": "design",
+    "targetId": "local"
+  },
+  "name": "Primary CX Journey",
+  "stages": [
+    {
+      "id": "initiated",
+      "name": "Initiated",
+      "description": "Customer raises the issue",
+      "touchpoints": [
+        "chat",
+        "phone"
+      ]
+    },
+    {
+      "id": "under_review",
+      "name": "Under Review",
+      "description": "Investigation in progress",
+      "touchpoints": [
+        "agent"
+      ]
+    },
+    {
+      "id": "resolved",
+      "name": "Resolved",
+      "description": "Issue closed",
+      "touchpoints": [
+        "chat"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "kind": "architectureDoc",
+  "id": "architectureDoc",
+  "provenance": {
+    "specName": "core",
+    "phase": "design",
+    "targetId": "artifacts"
+  },
+  "title": "CX architecture for core",
+  "markdown": "# core\n\nCustomer experience for a national retail brand: returns and refunds, loyalty program, store pickup, online order support, and retention WHEN a customer engages about \"Customer experience for a national retail brand: returns and refunds, loyalty program, store pickup, online order support, and retention\", THE SYSTEM SHALL resolve within closed ontology journeys with measurable KPIs WHEN handle time or SLA degrades, THE SYSTEM SHALL surface graph-grounded next-best-actions rather than free-form advice core\n\nClosed-world ontology 2026.08.0.\nIntents: 40; journeys: 7."
+}
