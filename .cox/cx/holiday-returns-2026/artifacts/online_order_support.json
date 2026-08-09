@@ -1,0 +1,49 @@
+{
+  "kind": "journeyMap",
+  "id": "online_order_support",
+  "provenance": {
+    "specName": "holiday-returns-2026",
+    "phase": "design",
+    "targetId": "artifacts"
+  },
+  "name": "Online Order Support",
+  "stages": [
+    {
+      "id": "placed",
+      "name": "Order placed",
+      "description": "Order placed via web or app",
+      "touchpoints": [
+        "web",
+        "app"
+      ]
+    },
+    {
+      "id": "fulfillment",
+      "name": "Fulfillment",
+      "description": "Order fulfilled from warehouse",
+      "touchpoints": [
+        "backoffice",
+        "sms"
+      ]
+    },
+    {
+      "id": "inquiry",
+      "name": "Inquiry",
+      "description": "Customer inquires about status via chat or phone",
+      "touchpoints": [
+        "chat",
+        "phone",
+        "agent"
+      ]
+    },
+    {
+      "id": "resolved",
+      "name": "Resolved",
+      "description": "Inquiry resolved",
+      "touchpoints": [
+        "app",
+        "email"
+      ]
+    }
+  ]
+}

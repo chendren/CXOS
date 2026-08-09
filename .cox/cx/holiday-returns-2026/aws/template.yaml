@@ -1,0 +1,73 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  CXOS plan-only stack for journey billing_dispute
+  (spec holiday-returns-2026). Human applies with scoped credentials.
+  Stages: initiated, validated, refund_processing, resolved
+
+Parameters:
+  Environment:
+    Type: String
+    AllowedValues: [dev, staging, prod]
+    Default: dev
+  JourneyType:
+    Type: String
+    Default: billing_dispute
+  SpecName:
+    Type: String
+    Default: holiday-returns-2026
+
+Resources:
+  CxConnectInstance:
+    Type: AWS::Connect::Instance
+    Properties:
+      IdentityManagementType: CONNECT_MANAGED
+      InboundCallsEnabled: true
+      OutboundCallsEnabled: true
+      InstanceAlias: !Sub '${SpecName}-${Environment}'
+
+  CxLexBot:
+    Type: AWS::Lex::Bot
+    Properties:
+      Name: !Sub '${SpecName}-bot'
+      RoleArn: !GetAtt CxLexBotRole.Arn
+      DataPrivacy:
+        ChildDirected: false
+      IdleSessionTTLInSeconds: 300
+      # Intents mapped from CXOS ontology for billing_dispute
+
+  CxLexBotRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lexv2.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonLexRunBotsOnly
+
+  CxBedrockAgentRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: bedrock.amazonaws.com
+            Action: sts:AssumeRole
+
+  # Bedrock Agent is defined behaviorally in agentDefinition.json;
+  # infrastructure binding is applied by the human operator.
+
+Outputs:
+  JourneyType:
+    Value: !Ref JourneyType
+  ConnectInstanceArn:
+    Value: !GetAtt CxConnectInstance.Arn
+  StackPurpose:
+    Value: plan-only-cxos
+  ApplyHint:
+    Value: 'aws cloudformation deploy --template-file template.yaml --stack-name cxos-holiday-returns-2026 --capabilities CAPABILITY_IAM'

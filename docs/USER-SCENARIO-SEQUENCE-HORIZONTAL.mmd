@@ -1,0 +1,44 @@
+flowchart LR
+    %% Horizontal end-user scenario - Maya Chen holiday returns surge
+    %% Left to right flow, not vertical sequence
+
+    A["Maya Chen<br/>CX Program Lead"] --> B["CXOS CLI<br/>cox (node dist)<br/>Qwen3 8B/32B"]
+    B --> C["Pack Registry<br/>detectPack(idea)"]
+    C --> D["Retail Pack<br/>5 journeys<br/>returns, loyalty, pickup"]
+    D --> E["Artifacts<br/>6 files<br/>+ architectureDoc"]
+    E --> F["Local<br/>offline<br/>3 artifacts"]
+    F --> G["AWS<br/>plan-only<br/>template.yaml"]
+    G --> H["Board / Fleet<br/>4 -> 5 specs"]
+    H --> I["Govern<br/>CAB / Dashboard"]
+
+    %% Detailed horizontal flow with substeps
+    B -- "pnpm cox cx doctor --offline" --> C1["load_config → force_offline<br/>ontology 223 nodes"]
+    B -- "pnpm cox cx board<br/>pnpm cox cx catalog --pack default" --> H1["specs=4 deployed=3<br/>(core, fin-core, health-core)<br/>40 intents, 9 domains"]
+    B -- "pnpm cox cx run holiday-returns-2026<br/>Holiday returns surge 3x Dec-Jan..." --> C
+    C -- "score retail 0.85 > telco 0.12 → retail" --> D
+    D -- "seedRetailDesignPack(spec, ontology)<br/>5 journeys" --> E
+    E -- "merge_design → deploy local" --> F
+    F -- "deploy aws (plan-only)" --> G
+    G -- "deployments=artifacts,local,aws<br/>all healthy" --> H
+    H -- "status all → healthy<br/>score:100" --> B
+
+    B -- "pnpm cox cx status / brief<br/>pnpm cox cx board (now 5 specs)<br/>pnpm cox cx queue / fleet-status" --> H2["specs=5 deployed=4<br/>queue 0, fleet healthy<br/>7 journeys"]
+    B -- "pnpm cox cx operate holiday-returns-2026<br/>console tick → poll_status → route:none (healthy)<br/>propose gated (no new proposals)" --> H3["prop_open=0<br/>path: load_strong → poll_status → emit"]
+    B -- "pnpm cox cx cab-export<br/>pnpm cox cx dashboard" --> I
+    I -- "CAB package ./cx-cab-holiday (8 files)<br/>aws/template.yaml, APPLY.md, BRIEF.md<br/>dashboard 4.6K<br/>board → queue → render_html" --> H4["specs=5 deployed=4<br/>holiday-returns-2026 healthy<br/>Scenario complete"]
+
+    %% Styling for horizontal readability
+    classDef user fill:#e0f2fe,stroke:#0284c7,color:#0c4a6e
+    classDef cli fill:#fef3c7,stroke:#d97706,color:#78350f
+    classDef engine fill:#f3e8ff,stroke:#7c3aed,color:#3b0764
+    classDef pack fill:#dcfce7,stroke:#16a34a,color:#14532d
+    classDef board fill:#ffe4e6,stroke:#e11d48,color:#4c0519
+    classDef govern fill:#ffedd5,stroke:#ea580c,color:#431407
+
+    class A user
+    class B cli
+    class C,D engine
+    class E,F,G pack
+    class H,H1,H2,H3,H4 board
+    class I govern
+    class C1,H1 pack

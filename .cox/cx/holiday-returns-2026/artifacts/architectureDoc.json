@@ -1,0 +1,11 @@
+{
+  "kind": "architectureDoc",
+  "id": "architectureDoc",
+  "provenance": {
+    "specName": "holiday-returns-2026",
+    "phase": "design",
+    "targetId": "artifacts"
+  },
+  "title": "Retail CX architecture — holiday-returns-2026",
+  "markdown": "# Retail CX architecture: holiday-returns-2026\n\n## Journeys\n- **returns_refunds** — Returns and Refunds\n- **loyalty_program** — Loyalty Program\n- **store_pickup** — Store Pickup (BOPIS)\n- **online_order_support** — Online Order Support\n- **retention** — Retention\n\n## Channels\nweb, app, retail, POS, chat, phone, backoffice, billing"
+}

@@ -1,0 +1,30 @@
+flowchart LR
+    A["Maya<br/>End User"] --> B["Test<br/>pnpm typecheck<br/>26 packs green"]
+    B --> C["Build<br/>pnpm build<br/>26 dists fixed 64"]
+    C --> D["Hooks Test<br/>61 passed<br/>(was 5 failed)"]
+    D --> E["CX-Local Test<br/>28 passed"]
+    E --> F["CLI<br/>node dist --cwd ~/CXOS<br/>cx board 5→5"]
+    F --> G["Pack Registry<br/>detectPack 0.85 retail"]
+    G --> H["Retail Pack<br/>5 journeys"]
+    H --> I["CXOS<br/>holiday-returns-2026<br/>6 artifacts healthy<br/>score 100"]
+    I --> J["Fleet<br/>Board 5 deployed 4"]
+    J --> K["Queue<br/>0 proposals<br/>0 tasks"]
+
+    B -- "XDG pnpm typecheck<br/>26 packs" --> C
+    C -- "XDG pnpm build<br/>fixed 64" --> D
+    D -- "pnpm --filter hooks<br/>polling mock 40ms" --> E
+    E -- "pnpm --filter cx-local<br/>mock HTTP" --> F
+    F -- "cx board<br/>specs=5" --> G
+    G -- "retail 0.85 > telco 0.12" --> H
+    H -- "seedRetailDesignPack<br/>returns, loyalty, pickup" --> I
+    I -- "deploy artifacts,local,aws<br/>plan-only CFN" --> J
+    J -- "status: healthy 100" --> K
+
+    classDef user fill:#e0f2fe,stroke:#0284c7
+    classDef test fill:#fef3c7,stroke:#d97706
+    classDef pack fill:#dcfce7,stroke:#16a34a
+    classDef cx fill:#ffe4e6,stroke:#e11d48
+    class A user
+    class B,C,D,E test
+    class F,G,H pack
+    class I,J,K cx

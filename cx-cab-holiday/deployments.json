@@ -1,0 +1,91 @@
+{
+  "deployments": {
+    "artifacts": {
+      "targetId": "artifacts",
+      "specName": "holiday-returns-2026",
+      "deployedAt": "2026-08-09T03:08:52.844Z",
+      "resources": [
+        {
+          "id": "returns_refunds",
+          "kind": "artifact-file",
+          "createdAt": "2026-08-09T03:08:52.843Z"
+        },
+        {
+          "id": "loyalty_program",
+          "kind": "artifact-file",
+          "createdAt": "2026-08-09T03:08:52.843Z"
+        },
+        {
+          "id": "store_pickup",
+          "kind": "artifact-file",
+          "createdAt": "2026-08-09T03:08:52.843Z"
+        },
+        {
+          "id": "online_order_support",
+          "kind": "artifact-file",
+          "createdAt": "2026-08-09T03:08:52.843Z"
+        },
+        {
+          "id": "retention",
+          "kind": "artifact-file",
+          "createdAt": "2026-08-09T03:08:52.844Z"
+        },
+        {
+          "id": "architectureDoc",
+          "kind": "artifact-file",
+          "createdAt": "2026-08-09T03:08:52.844Z"
+        }
+      ]
+    },
+    "local": {
+      "targetId": "local",
+      "specName": "holiday-returns-2026",
+      "deployedAt": "2026-08-09T03:08:52.845Z",
+      "resources": [
+        {
+          "id": "agentDefinition",
+          "kind": "offline-local-file",
+          "createdAt": "2026-08-09T03:08:52.845Z"
+        },
+        {
+          "id": "billing_dispute",
+          "kind": "offline-local-file",
+          "createdAt": "2026-08-09T03:08:52.845Z"
+        },
+        {
+          "id": "kpiFrame",
+          "kind": "offline-local-file",
+          "createdAt": "2026-08-09T03:08:52.845Z"
+        }
+      ]
+    },
+    "aws": {
+      "targetId": "aws",
+      "specName": "holiday-returns-2026",
+      "deployedAt": "2026-08-09T03:08:52.846Z",
+      "resources": [
+        {
+          "id": "architectureDoc",
+          "kind": "offline-aws-file",
+          "createdAt": "2026-08-09T03:08:52.846Z"
+        },
+        {
+          "id": "agentDefinition",
+          "kind": "offline-aws-file",
+          "createdAt": "2026-08-09T03:08:52.846Z"
+        },
+        {
+          "id": "template.yaml",
+          "kind": "cloudformation-template",
+          "createdAt": "2026-08-09T03:08:52.846Z"
+        },
+        {
+          "id": "APPLY.md",
+          "kind": "apply-instructions",
+          "createdAt": "2026-08-09T03:08:52.846Z"
+        }
+      ]
+    }
+  },
+  "updatedAt": "2026-08-09T03:08:52.846Z"
+}

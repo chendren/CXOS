@@ -1,0 +1,49 @@
+{
+  "kind": "journeyMap",
+  "id": "store_pickup",
+  "provenance": {
+    "specName": "holiday-returns-2026",
+    "phase": "design",
+    "targetId": "artifacts"
+  },
+  "name": "Store Pickup (BOPIS)",
+  "stages": [
+    {
+      "id": "ordered",
+      "name": "Ordered",
+      "description": "Online order placed for store pickup",
+      "touchpoints": [
+        "web",
+        "app"
+      ]
+    },
+    {
+      "id": "picking",
+      "name": "Picking",
+      "description": "Store associate picks and packs order",
+      "touchpoints": [
+        "retail",
+        "backoffice"
+      ]
+    },
+    {
+      "id": "ready",
+      "name": "Ready for pickup",
+      "description": "Customer notified order ready",
+      "touchpoints": [
+        "sms",
+        "app",
+        "email"
+      ]
+    },
+    {
+      "id": "collected",
+      "name": "Collected",
+      "description": "Customer collects order in store",
+      "touchpoints": [
+        "retail",
+        "POS"
+      ]
+    }
+  ]
+}

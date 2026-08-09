@@ -1,0 +1,48 @@
+sequenceDiagram
+    participant Maya as Maya Chen<br/>End User
+    participant CLI as cox CLI<br/>node dist/main.js<br/>Qwen3 8B/32B
+    participant Test as Test Suite<br/>pnpm test
+    participant Pack as Pack Registry<br/>detectPack 0.85
+    participant Retail as Retail Pack<br/>5 journeys
+    participant CX as CXOS<br/>~/CXOS core
+    participant Fleet as Fleet<br/>Board 5→5
+
+    Maya->>Test: XDG_CONFIG_HOME=/tmp pnpm typecheck
+    Test-->>Maya: 26 packs green<br/>all tsc --noEmit Done
+    Maya->>Test: XDG_CONFIG_HOME=/tmp pnpm build
+    Test-->>Maya: 26 dists, fixed 64 files<br/>Exit 0
+
+    Maya->>Test: pnpm --filter @cox/hooks test
+    Test-->>Maya: 5 files 61 passed (was 5 failed EMFILE)<br/>watcher 9 tests 7796ms<br/>polling mock 40ms no FD
+
+    Maya->>Test: pnpm --filter @cox/cx-local test
+    Test-->>Maya: 7 files 28 passed<br/>adapter, client, disk, kpi 18ms
+
+    Maya->>CLI: node dist/main.js --cwd ~/CXOS cx board
+    CLI->>CX: list_specs → load_each → rollup
+    CX-->>CLI: specs=5 deployed=4<br/>core retail, fin-core, health-core,<br/>holiday-returns-2026 all healthy
+    CLI-->>Maya: board 5→5
+
+    Maya->>CLI: node dist/main.js --cwd ~/CXOS<br/>cx run holiday-returns-2026<br/>"Holiday returns surge 3x..."
+    CLI->>Pack: detectPack(idea) retail 0.85 > telco 0.12
+    Pack->>Retail: seedRetailDesignPack(spec, ontology)
+    Retail->>CX: 5 journeys: returns_refunds,<br/>loyalty, store_pickup,<br/>online_order, retention
+    CX->>CX: deploy artifacts (6), local (3), aws (4 plan-only)
+    CX-->>CLI: ok=true, score:100<br/>path: create_spec → ... → emit
+    CLI-->>Maya: holiday-returns-2026 created
+
+    Maya->>CLI: node dist/main.js --cwd ~/CXOS<br/>cx status holiday-returns-2026
+    CLI->>CX: load_workspace → status_all
+    CX-->>CLI: R=a D=a T=m, journeys:5, healthy 100
+    CLI-->>Maya: status + path
+
+    Maya->>CLI: node dist/main.js --cwd ~/CXOS cx queue
+    CLI->>Fleet: buildWorkQueue
+    Fleet-->>CLI: proposals=0 tasks=0<br/>specs_with_work=0
+    CLI-->>Maya: queue empty
+
+    Maya->>CLI: node dist/main.js --cwd ~/CXOS cx board
+    CLI->>Fleet: list_specs
+    Fleet-->>Maya: specs=5 deployed=4<br/>holiday-returns-2026 healthy
+
+    Note over Maya,Fleet: REAL: 26 packs typecheck+build green, 89 tests passed (61+28),<br/>5 specs healthy, 6+6+6 artifacts, plan-only CFN, SQLite BEGIN IMMEDIATE

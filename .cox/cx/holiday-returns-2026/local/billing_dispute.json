@@ -1,0 +1,51 @@
+{
+  "kind": "journeyMap",
+  "id": "billing_dispute",
+  "provenance": {
+    "specName": "holiday-returns-2026",
+    "phase": "design",
+    "targetId": "local"
+  },
+  "name": "Returns and Refunds",
+  "stages": [
+    {
+      "id": "initiated",
+      "name": "Return initiated",
+      "description": "Customer requests return via app, web, or store",
+      "touchpoints": [
+        "app",
+        "web",
+        "retail",
+        "chat"
+      ]
+    },
+    {
+      "id": "validated",
+      "name": "Validated",
+      "description": "Order and eligibility validated against policy",
+      "touchpoints": [
+        "agent",
+        "backoffice"
+      ]
+    },
+    {
+      "id": "refund_processing",
+      "name": "Refund processing",
+      "description": "Refund issued to original payment method",
+      "touchpoints": [
+        "billing_system",
+        "sms",
+        "email"
+      ]
+    },
+    {
+      "id": "resolved",
+      "name": "Resolved",
+      "description": "Customer confirmed refund and case closed",
+      "touchpoints": [
+        "app",
+        "sms"
+      ]
+    }
+  ]
+}

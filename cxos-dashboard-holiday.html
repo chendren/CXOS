@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>CXOS Ops Dashboard</title>
+<style>
+  :root { --bg:#0b1020; --panel:#141a2e; --text:#e6ecff; --muted:#8b95b5; --accent:#5b8cff; --ok:#3dd68c; --warn:#f5a524; --off:#6b7280; --high:#f87171; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; background:var(--bg); color:var(--text); padding:24px; }
+  h1 { font-size:1.4rem; margin:0 0 4px; letter-spacing:0.02em; }
+  h2 { font-size:1.05rem; margin:28px 0 10px; color:var(--accent); }
+  .meta { color:var(--muted); font-size:0.85rem; margin-bottom:20px; }
+  .cards { display:flex; flex-wrap:wrap; gap:12px; margin-bottom:20px; }
+  .card { background:var(--panel); border:1px solid #243056; border-radius:10px; padding:14px 16px; min-width:120px; }
+  .card b { display:block; font-size:1.35rem; }
+  .card span { color:var(--muted); font-size:0.75rem; text-transform:uppercase; letter-spacing:0.06em; }
+  table { width:100%; border-collapse:collapse; background:var(--panel); border-radius:10px; overflow:hidden; font-size:0.88rem; }
+  th, td { text-align:left; padding:10px 12px; border-bottom:1px solid #243056; vertical-align:top; }
+  th { color:var(--muted); font-weight:600; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.05em; }
+  tr:last-child td { border-bottom:none; }
+  td.idea { color:var(--muted); max-width:280px; }
+  td.ok { color:var(--ok); }
+  td.off { color:var(--off); }
+  .urg-high { color:var(--high); font-weight:600; }
+  .urg-med { color:var(--warn); }
+  .urg-low { color:var(--muted); }
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size:0.82rem; color:#b8d0ff; }
+  footer { margin-top:28px; color:var(--muted); font-size:0.75rem; }
+</style>
+</head>
+<body>
+  <h1>CXOS Ops Dashboard</h1>
+  <div class="meta">Generated 2026-08-09T03:08:55.205Z · closed-world · human-gated · plan-only AWS</div>
+  <div class="cards">
+    <div class="card"><b>5</b><span>Specs</span></div>
+    <div class="card"><b>4</b><span>Deployed</span></div>
+    <div class="card"><b>0</b><span>Proposals open</span></div>
+    <div class="card"><b>0</b><span>Tasks open</span></div>
+    <div class="card"><b>0</b><span>Daemons</span></div>
+  </div>
+  <h2>Fleet board</h2>
+  <table>
+    <thead><tr><th>Spec</th><th>Phases</th><th>Deps</th><th>Props</th><th>Tasks</th><th>Daemon</th><th>Idea</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>core</strong></td>
+        <td>R=approved D=approved T=missing</td>
+        <td>artifacts, local, aws</td>
+        <td>0+0c</td>
+        <td>0</td>
+        <td class="off">off</td>
+        <td class="idea">Customer experience for a national retail brand: returns and refunds, loyalty program, store pickup,</td>
+      </tr>
+<tr>
+        <td><strong>fin-core</strong></td>
+        <td>R=approved D=approved T=missing</td>
+        <td>artifacts, local, aws</td>
+        <td>0+0c</td>
+        <td>0</td>
+        <td class="off">off</td>
+        <td class="idea">financial services: account inquiry, loan support, fraud alert, onboarding, retention</td>
+      </tr>
+<tr>
+        <td><strong>health-core</strong></td>
+        <td>R=approved D=approved T=missing</td>
+        <td>artifacts, local, aws</td>
+        <td>0+0c</td>
+        <td>0</td>
+        <td class="off">off</td>
+        <td class="idea">healthcare: appointment scheduling, claims, prior authorization, benefits, retention</td>
+      </tr>
+<tr>
+        <td><strong>holiday-returns-2026</strong></td>
+        <td>R=approved D=approved T=missing</td>
+        <td>artifacts, local, aws</td>
+        <td>0+0c</td>
+        <td>0</td>
+        <td class="off">off</td>
+        <td class="idea">Holiday returns surge for national retail: 3x return volume Dec-Jan, loyalty points on returns, stor</td>
+      </tr>
+<tr>
+        <td><strong>starter</strong></td>
+        <td>R=draft D=missing T=missing</td>
+        <td>-</td>
+        <td>0+0c</td>
+        <td>0</td>
+        <td class="off">off</td>
+        <td class="idea">starter CX program — replace idea and run build</td>
+      </tr>
+    </tbody>
+  </table>
+  
+    <h2>Open proposals (0)</h2>
+    <table><thead><tr><th>Spec</th><th>Id</th><th>Status</th><th>Urg</th><th>Age</th><th>Summary</th></tr></thead>
+    <tbody><tr><td colspan=6>(none)</td></tr></tbody></table>
+    <h2>Open tasks (0)</h2>
+    <table><thead><tr><th>Spec</th><th>Id</th><th>Status</th><th>Age</th><th>Title</th></tr></thead>
+    <tbody><tr><td colspan=5>(none)</td></tr></tbody></table>
+  <footer>CXOS dashboard - offline-safe HTML · no external assets · never auto-mutates prod</footer>
+</body>
+</html>

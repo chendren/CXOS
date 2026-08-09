@@ -1,0 +1,60 @@
+flowchart LR
+    subgraph User[ Maya Chen - End User ]
+        A["Maya<br/>CX Program Lead<br/>Retail Holiday Surge"]
+    end
+    subgraph Test[ Real Tests - No Mocks ]
+        B["pnpm typecheck<br/>26 packs green<br/>XDG_CONFIG_HOME=/tmp"]
+        C["pnpm build<br/>26 dists<br/>fixed 64 files"]
+        D["hooks test<br/>61 passed<br/>polling mock 40ms"]
+        E["cx-local test<br/>28 passed<br/>mock HTTP"]
+    end
+    subgraph CLI[ CXOS CLI - cox<br/>Qwen3 8B/32B - Ollama]
+        F["cx board<br/>5 specs 4 deployed<br/>core, fin, health"]
+        G["cx run holiday-returns<br/>3x volume + loyalty"]
+    end
+    subgraph Engine[ Coxswain Engine ]
+        H["Pack Registry<br/>detectPack 0.85 retail<br/>> telco 0.12"]
+        I["Retail Pack<br/>5 journeys<br/>returns, loyalty, pickup"]
+        J["Artifacts<br/>6 files<br/>healthy 100"]
+    end
+    subgraph Fleet[ Fleet / Govern ]
+        K["Board<br/>5 specs<br/>healthy"]
+        L["Queue<br/>0 proposals<br/>0 tasks"]
+        M["CAB / Dashboard<br/>8 files, 4.6K html"]
+    end
+
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    E --> F
+    F --> G
+    G --> H
+    H --> I
+    I --> J
+    J --> K
+    K --> L
+    L --> M
+
+    B -- "XDG pnpm typecheck<br/>26 packs" --> C
+    C -- "XDG pnpm build<br/>fixed 64" --> D
+    D -- "pnpm --filter hooks<br/>polling mock" --> E
+    F -- "list_specs → rollup" --> H
+    G -- "retail 0.85 > telco 0.12" --> I
+    I -- "seedRetailDesignPack<br/>returns, loyalty, pickup" --> J
+    J -- "deploy local/aws<br/>plan-only" --> K
+    K -- "status: healthy 100" --> L
+    L -- "operate → queue 0" --> M
+
+    classDef user fill:#e0f2fe,stroke:#0284c7,color:#0c4a6e
+    classDef test fill:#fef3c7,stroke:#d97706,color:#78350f
+    classDef cli fill:#f3e8ff,stroke:#7c3aed,color:#3b0764
+    classDef engine fill:#dcfce7,stroke:#16a34a,color:#14532d
+    classDef fleet fill:#ffe4e6,stroke:#e11d48,color:#4c0519
+    classDef govern fill:#ffedd5,stroke:#ea580c,color:#431407
+
+    class A user
+    class B,C,D,E test
+    class F,G cli
+    class H,I,J engine
+    class K,L,M fleet

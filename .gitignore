@@ -4,6 +4,8 @@
 .cox/cx/*/daemon.json
 .cox/cx/*/health-history.jsonl
 .cox/cx/*/audit.jsonl
+.cox/cx/cxops.db
+.cox/cx/cxops.db-*
 .cox/cx/.archived-*
 .DS_Store
 node_modules/
