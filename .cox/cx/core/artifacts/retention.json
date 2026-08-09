@@ -1,0 +1,50 @@
+{
+  "kind": "journeyMap",
+  "id": "retention",
+  "provenance": {
+    "specName": "core",
+    "phase": "design",
+    "targetId": "artifacts"
+  },
+  "name": "Retention",
+  "stages": [
+    {
+      "id": "at_risk",
+      "name": "At risk",
+      "description": "Churn risk detected via behavior or feedback",
+      "touchpoints": [
+        "app",
+        "backoffice"
+      ]
+    },
+    {
+      "id": "offered",
+      "name": "Offered",
+      "description": "Personalized retention offer presented",
+      "touchpoints": [
+        "app",
+        "email",
+        "chat",
+        "agent"
+      ]
+    },
+    {
+      "id": "accepted",
+      "name": "Accepted",
+      "description": "Customer accepts offer",
+      "touchpoints": [
+        "app",
+        "retail"
+      ]
+    },
+    {
+      "id": "retained",
+      "name": "Retained",
+      "description": "Customer retained, loyalty updated",
+      "touchpoints": [
+        "app",
+        "sms"
+      ]
+    }
+  ]
+}

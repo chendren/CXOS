@@ -1,0 +1,52 @@
+{
+  "kind": "journeyMap",
+  "id": "loyalty_program",
+  "provenance": {
+    "specName": "core",
+    "phase": "design",
+    "targetId": "artifacts"
+  },
+  "name": "Loyalty Program",
+  "stages": [
+    {
+      "id": "enrolled",
+      "name": "Enrolled",
+      "description": "Customer enrolls in loyalty via app or POS",
+      "touchpoints": [
+        "app",
+        "retail",
+        "POS"
+      ]
+    },
+    {
+      "id": "earning",
+      "name": "Earning",
+      "description": "Points earned on purchases",
+      "touchpoints": [
+        "POS",
+        "app",
+        "email"
+      ]
+    },
+    {
+      "id": "redeeming",
+      "name": "Redeeming",
+      "description": "Points redeemed for rewards",
+      "touchpoints": [
+        "app",
+        "retail",
+        "chat"
+      ]
+    },
+    {
+      "id": "retained",
+      "name": "Retained",
+      "description": "Customer retained with personalized offers",
+      "touchpoints": [
+        "app",
+        "email",
+        "sms"
+      ]
+    }
+  ]
+}

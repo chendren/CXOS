@@ -3,37 +3,37 @@
     "artifacts": {
       "targetId": "artifacts",
       "specName": "core",
-      "deployedAt": "2026-08-09T02:15:34.095Z",
+      "deployedAt": "2026-08-09T02:26:08.655Z",
       "resources": [
         {
-          "id": "billing_dispute",
+          "id": "returns_refunds",
           "kind": "artifact-file",
-          "createdAt": "2026-08-09T02:15:34.094Z"
+          "createdAt": "2026-08-09T02:26:08.654Z"
         },
         {
-          "id": "persona",
+          "id": "loyalty_program",
           "kind": "artifact-file",
-          "createdAt": "2026-08-09T02:15:34.094Z"
+          "createdAt": "2026-08-09T02:26:08.654Z"
         },
         {
-          "id": "intentTaxonomy",
+          "id": "store_pickup",
           "kind": "artifact-file",
-          "createdAt": "2026-08-09T02:15:34.094Z"
+          "createdAt": "2026-08-09T02:26:08.654Z"
         },
         {
-          "id": "nbaRuleSet",
+          "id": "online_order_support",
           "kind": "artifact-file",
-          "createdAt": "2026-08-09T02:15:34.094Z"
+          "createdAt": "2026-08-09T02:26:08.655Z"
         },
         {
-          "id": "kpiFrame",
+          "id": "retention",
           "kind": "artifact-file",
-          "createdAt": "2026-08-09T02:15:34.094Z"
+          "createdAt": "2026-08-09T02:26:08.655Z"
         },
         {
           "id": "architectureDoc",
           "kind": "artifact-file",
-          "createdAt": "2026-08-09T02:15:34.095Z"
+          "createdAt": "2026-08-09T02:26:08.655Z"
         }
       ]
     },
@@ -87,5 +87,5 @@
       ]
     }
   },
-  "updatedAt": "2026-08-09T02:15:34.097Z"
+  "updatedAt": "2026-08-09T02:26:08.655Z"
 }
