@@ -1,0 +1,11 @@
+{
+  "kind": "architectureDoc",
+  "id": "architectureDoc",
+  "provenance": {
+    "specName": "travel-core",
+    "phase": "design",
+    "targetId": "artifacts"
+  },
+  "title": "Travel CX architecture — travel-core",
+  "markdown": "# Travel CX architecture: travel-core\n\n## Journeys\n- **booking** — Booking\n- **disruption** — Disruption and Rebooking\n- **loyalty_program** — Loyalty Program\n- **checkin** — Check-in and Boarding\n- **retention** — Retention\n\n## Channels\nweb, app, chat, phone, agent, backoffice, gate, kiosk\n\n## Note\nStrong graph only, no live pricing or PNR data in ontology."
+}

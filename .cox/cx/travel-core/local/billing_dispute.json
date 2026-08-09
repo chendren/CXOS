@@ -1,0 +1,52 @@
+{
+  "kind": "journeyMap",
+  "id": "billing_dispute",
+  "provenance": {
+    "specName": "travel-core",
+    "phase": "design",
+    "targetId": "local"
+  },
+  "name": "Booking",
+  "stages": [
+    {
+      "id": "searching",
+      "name": "Searching",
+      "description": "Traveler searches flights or hotels via app or web",
+      "touchpoints": [
+        "app",
+        "web",
+        "chat"
+      ]
+    },
+    {
+      "id": "selected",
+      "name": "Selected",
+      "description": "Itinerary selected and priced",
+      "touchpoints": [
+        "app",
+        "web",
+        "agent"
+      ]
+    },
+    {
+      "id": "booked",
+      "name": "Booked",
+      "description": "Booking confirmed and ticketed",
+      "touchpoints": [
+        "email",
+        "app",
+        "sms"
+      ]
+    },
+    {
+      "id": "confirmed",
+      "name": "Confirmed",
+      "description": "Confirmation sent",
+      "touchpoints": [
+        "email",
+        "sms",
+        "app"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "kind": "journeyMap",
+  "id": "checkin",
+  "provenance": {
+    "specName": "travel-core",
+    "phase": "design",
+    "targetId": "artifacts"
+  },
+  "name": "Check-in and Boarding",
+  "stages": [
+    {
+      "id": "checkin_open",
+      "name": "Check-in open",
+      "description": "Check-in opens 24h before departure",
+      "touchpoints": [
+        "app",
+        "web",
+        "kiosk"
+      ]
+    },
+    {
+      "id": "checked_in",
+      "name": "Checked in",
+      "description": "Boarding pass issued",
+      "touchpoints": [
+        "app",
+        "sms",
+        "email"
+      ]
+    },
+    {
+      "id": "boarded",
+      "name": "Boarded",
+      "description": "Traveler boarded",
+      "touchpoints": [
+        "gate",
+        "app"
+      ]
+    },
+    {
+      "id": "arrived",
+      "name": "Arrived",
+      "description": "Arrival and baggage",
+      "touchpoints": [
+        "app",
+        "sms"
+      ]
+    }
+  ]
+}

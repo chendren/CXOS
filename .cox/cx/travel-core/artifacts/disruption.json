@@ -1,0 +1,52 @@
+{
+  "kind": "journeyMap",
+  "id": "disruption",
+  "provenance": {
+    "specName": "travel-core",
+    "phase": "design",
+    "targetId": "artifacts"
+  },
+  "name": "Disruption and Rebooking",
+  "stages": [
+    {
+      "id": "disrupted",
+      "name": "Disrupted",
+      "description": "Flight delayed or canceled, hotel overbooked",
+      "touchpoints": [
+        "sms",
+        "app",
+        "backoffice"
+      ]
+    },
+    {
+      "id": "informed",
+      "name": "Informed",
+      "description": "Traveler notified with options",
+      "touchpoints": [
+        "sms",
+        "app",
+        "email",
+        "agent"
+      ]
+    },
+    {
+      "id": "rebooked",
+      "name": "Rebooked",
+      "description": "Traveler rebooked or refunded",
+      "touchpoints": [
+        "app",
+        "agent",
+        "chat"
+      ]
+    },
+    {
+      "id": "resolved",
+      "name": "Resolved",
+      "description": "Disruption resolved, compensation if eligible",
+      "touchpoints": [
+        "app",
+        "email"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "kind": "journeyMap",
+  "id": "loyalty_program",
+  "provenance": {
+    "specName": "travel-core",
+    "phase": "design",
+    "targetId": "artifacts"
+  },
+  "name": "Loyalty Program",
+  "stages": [
+    {
+      "id": "enrolled",
+      "name": "Enrolled",
+      "description": "Traveler enrolled in loyalty",
+      "touchpoints": [
+        "app",
+        "web"
+      ]
+    },
+    {
+      "id": "earning",
+      "name": "Earning",
+      "description": "Points earned on travel",
+      "touchpoints": [
+        "app",
+        "email"
+      ]
+    },
+    {
+      "id": "redeeming",
+      "name": "Redeeming",
+      "description": "Points redeemed for upgrades or nights",
+      "touchpoints": [
+        "app",
+        "agent"
+      ]
+    },
+    {
+      "id": "retained",
+      "name": "Retained",
+      "description": "Elite status retained",
+      "touchpoints": [
+        "app",
+        "email",
+        "sms"
+      ]
+    }
+  ]
+}

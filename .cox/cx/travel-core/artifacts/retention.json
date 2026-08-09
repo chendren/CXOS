@@ -1,0 +1,41 @@
+{
+  "kind": "journeyMap",
+  "id": "retention",
+  "provenance": {
+    "specName": "travel-core",
+    "phase": "design",
+    "targetId": "artifacts"
+  },
+  "name": "Retention",
+  "stages": [
+    {
+      "id": "at_risk",
+      "name": "At risk",
+      "description": "Churn risk after disruption or competitor offer",
+      "touchpoints": [
+        "app",
+        "backoffice"
+      ]
+    },
+    {
+      "id": "engaged",
+      "name": "Engaged",
+      "description": "Proactive recovery offer",
+      "touchpoints": [
+        "app",
+        "email",
+        "chat",
+        "agent"
+      ]
+    },
+    {
+      "id": "retained",
+      "name": "Retained",
+      "description": "Traveler retained with voucher or status match",
+      "touchpoints": [
+        "app",
+        "sms"
+      ]
+    }
+  ]
+}
