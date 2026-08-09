@@ -16,3 +16,4 @@ coverage/
 cx-snapshot/
 board-sync.local.json
 .tmp/
+.cox/cx/*/deploy-history.jsonl

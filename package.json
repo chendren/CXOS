@@ -1,7 +1,7 @@
 {
   "name": "cxos",
   "private": true,
-  "description": "CXOS workspace — domain-agnostic Customer Experience Operating System, proxies to coxswain",
+  "description": "CXOS workspace \u2014 domain-agnostic Customer Experience Operating System, proxies to coxswain",
   "scripts": {
     "cox": "node ./scripts/cox.mjs",
     "cx:doctor": "node ./scripts/cox.mjs cx doctor",
@@ -17,5 +17,6 @@
     "cx:queue": "node ./scripts/cox.mjs cx queue",
     "lint:cfn": "cfn-lint cx-export/**/template.yaml --format parseable || true",
     "validate": "python3 -m json.tool board-sync.json > /dev/null && echo 'board-sync.json valid' && cfn-lint cx-export/**/template.yaml || echo 'cfn-lint warnings'"
-  }
+  },
+  "license": "Apache-2.0"
 }
