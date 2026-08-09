@@ -1,0 +1,79 @@
+sequenceDiagram
+    participant Maya as Maya Chen<br/>CX Program Lead
+    participant CLI as CXOS CLI<br/>cox (node dist)
+    participant Engine as Coxswain Engine<br/>Qwen3 8B/32B
+    participant Registry as Pack Registry<br/>detectPack()
+    participant Retail as Retail Pack<br/>5 journeys
+    participant Artifacts as Artifacts<br/>6 files
+    participant Local as Local<br/>offline
+    participant AWS as AWS<br/>plan-only CFN
+    participant Board as Board / Fleet<br/>4→5 specs
+    participant Govern as Govern<br/>CAB / Dashboard
+
+    Maya->>CLI: pnpm cox cx doctor --offline
+    CLI->>Engine: load_config → force_offline
+    Engine-->>CLI: runtime mode=offline, wiring artifacts=offline<br/>ontology ok 223 nodes
+    CLI-->>Maya: ✓ node >=20, ✓ config parses
+
+    Maya->>CLI: pnpm cox cx board
+    CLI->>Board: list_specs → load_each → rollup
+    Board-->>CLI: specs=4 deployed=3 (core retail, fin-core, health-core)
+    CLI-->>Maya: board + path: list_specs → ...
+
+    Maya->>CLI: pnpm cox cx catalog --pack default
+    CLI->>Engine: resolveOntologyPack(default)
+    Engine-->>CLI: 40 intents (billing, technical, account...)
+    CLI-->>Maya: catalog 9 domains, 40 intents
+
+    Maya->>CLI: pnpm cox cx run holiday-returns-2026<br/>"Holiday returns surge 3x Dec-Jan..."
+    CLI->>Registry: detectPack(idea)
+    Registry->>Retail: score retail 0.85 > telco 0.12 → retail
+    Retail->>Artifacts: seedRetailDesignPack(spec, ontology)
+    Artifacts->>Artifacts: 5 journeys: returns_refunds, loyalty_program,<br/>store_pickup, online_order_support, retention
+    Artifacts->>Local: merge_design → deploy local (3 artifacts)
+    Local->>AWS: deploy aws (4 artifacts, template.yaml plan-only)
+    AWS-->>CLI: deployments=artifacts,local,aws all healthy
+    CLI->>Board: status_all → artifacts:healthy → local:healthy → aws:healthy
+    Board-->>Maya: ok=true, summary score:100, path: create_spec → ... → emit<br/>next: console, apply, board, brief, cab-export
+
+    Maya->>CLI: pnpm cox cx status holiday-returns-2026
+    CLI->>Board: load_workspace → status_all
+    Board-->>CLI: phases R=a D=a T=m, requirements:2, journeys:5
+    CLI-->>Maya: status + path
+
+    Maya->>CLI: pnpm cox cx brief holiday-returns-2026
+    CLI->>Govern: renderExecBrief(workspace)
+    Govern-->>CLI: BRIEF.md (executive markdown, no model)
+    CLI-->>Maya: brief
+
+    Maya->>CLI: pnpm cox cx board
+    CLI->>Board: list_specs (now 5 specs)
+    Board-->>Maya: specs=5 deployed=4 (core, fin-core, health-core, holiday-returns-2026)
+
+    Maya->>CLI: pnpm cox cx queue
+    CLI->>Board: buildWorkQueue (proposals+tasks, sort urgency)
+    Board-->>Maya: proposals_open=0 tasks_open=0
+
+    Maya->>CLI: pnpm cox cx journeys --pack default
+    CLI->>Registry: listJourneys(default)
+    Registry-->>CLI: 7 journeys (billing_dispute 6 stages, etc.)
+    CLI-->>Maya: journeys
+
+    Maya->>CLI: pnpm cox cx operate holiday-returns-2026
+    CLI->>Engine: console tick → poll_status → route:none (healthy)
+    Engine->>Board: propose gated (no new proposals, healthy)
+    Board-->>CLI: prop_open=0, path: load_strong → poll_status → emit
+    CLI-->>Maya: (no new proposals) board line
+
+    Maya->>Govern: pnpm cox cx cab-export holiday-returns-2026
+    Govern->>AWS: copy_aws (template.yaml, APPLY.md) + proposals/tasks/BRIEF
+    Govern-->>CLI: CAB package ./cx-cab-holiday (8 files)
+    CLI-->>Maya: out: /Users/.../cx-cab-holiday
+
+    Maya->>Govern: pnpm cox cx dashboard ./cxos-dashboard-holiday.html
+    Govern->>Board: board → queue → render_html
+    Govern-->>CLI: wrote 4.6K dashboard
+    CLI-->>Maya: dashboard ready
+
+    Maya->>Board: pnpm cox cx board (final)
+    Board-->>Maya: specs=5 deployed=4, holiday-returns-2026 healthy<br/>Scenario complete
