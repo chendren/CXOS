@@ -149,6 +149,7 @@ pnpm cox cx board
 pnpm cox cx queue
 pnpm cox cx fleet-status
 pnpm cox cx snapshot <name>
+pnpm cox cx serve --port 8787
 pnpm cox cx dashboard ./cxos-dashboard.html
 pnpm cox cx brief <name>
 pnpm cox cx audit <name>

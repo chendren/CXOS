@@ -101,6 +101,28 @@ pnpm cox cx aws-drift <name>               # read-only live vs plan (optional AW
 
 Deep engine map: [coxswain `docs/CXOS-COMPLETE.md`](https://github.com/chendren/coxswain/blob/main/docs/CXOS-COMPLETE.md).
 
+## Graph Console (Web UI)
+
+Localhost-only Nebula Ops console (offline cathedral: no CDN, no auth).
+
+```bash
+pnpm cx:serve -- --port 8787
+# open http://127.0.0.1:8787/console/fleet
+```
+
+| Route | Role |
+|-------|------|
+| `/console/fleet` | Fleet board |
+| `/console/queue` | Work queue; **Claim** / **Dismiss** human-gated |
+| `/console/graph` | Strong-graph find / path / neighborhood |
+| `/console/intent` | Closed-world intent scoring |
+| `/console/autopilot` | Utterance → NBA proposal (apply optional) |
+| `/console/health` | Health + graph stats |
+| `/api/health` | JSON healthz |
+| `/legacy` | Static HTML dashboard |
+
+Queue Claim uses the same engine path as `cox cx claim` (apply → task + claimed). Dismiss never mutates adapters or AWS.
+
 ## Hard rules
 
 1. No silent production mutation. Console, watch, and daemon propose only.
