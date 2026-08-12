@@ -64,7 +64,7 @@ Always run from **this directory**. Keep the idea string free of telco keywords 
 cd ~/CXOS
 export COXSWAIN_ROOT=~/coxswain
 
-pnpm cox cx doctor --offline
+pnpm cox cx doctor --mode offline
 pnpm cox cx run core \
   "Customer experience for a national retail brand: returns and refunds, loyalty program, store pickup, online order support, and retention" \
   --target all
@@ -132,9 +132,11 @@ You do not need to commit secrets. Model keys (if used) live in the environment 
 ## Common commands
 
 All commands are engine commands; prefix with `pnpm cox` from this directory.
+Short aliases also exist as `pnpm cx:*` (see [docs/FLEET-COMMANDS.md](./docs/FLEET-COMMANDS.md)).
 
 ```bash
-pnpm cox cx doctor --offline
+pnpm cox cx doctor --mode offline
+pnpm cox cx quickstart
 pnpm cox cx init
 pnpm cox cx list
 pnpm cox cx run <name> "<idea>" --target all
@@ -142,8 +144,11 @@ pnpm cox cx status <name>
 pnpm cox cx operate <name>
 pnpm cox cx proposals <name>
 pnpm cox cx claim <name> <proposalId>
+pnpm cox cx incident <name>
 pnpm cox cx board
 pnpm cox cx queue
+pnpm cox cx fleet-status
+pnpm cox cx snapshot <name>
 pnpm cox cx dashboard ./cxos-dashboard.html
 pnpm cox cx brief <name>
 pnpm cox cx audit <name>
@@ -151,6 +156,7 @@ pnpm cox cx cab-export <name>
 pnpm cox cx export-aws <name>
 ```
 
+Operator cheatsheet: [docs/FLEET-COMMANDS.md](./docs/FLEET-COMMANDS.md)  
 Deep command map: [coxswain docs/CXOS-COMPLETE.md](https://github.com/chendren/coxswain/blob/main/docs/CXOS-COMPLETE.md)
 
 ---

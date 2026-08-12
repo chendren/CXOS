@@ -1,7 +1,9 @@
 {
   "name": "cxos",
   "private": true,
-  "description": "CXOS workspace \u2014 domain-agnostic Customer Experience Operating System, proxies to coxswain",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "CXOS workspace - domain-agnostic Customer Experience Operating System, proxies to coxswain",
   "scripts": {
     "cox": "node ./scripts/cox.mjs",
     "cx:doctor": "node ./scripts/cox.mjs cx doctor",
@@ -15,8 +17,29 @@
     "cx:cab-export": "node ./scripts/cox.mjs cx cab-export",
     "cx:dashboard": "node ./scripts/cox.mjs cx dashboard",
     "cx:queue": "node ./scripts/cox.mjs cx queue",
+    "cx:quickstart": "node ./scripts/cox.mjs cx quickstart",
+    "cx:operate": "node ./scripts/cox.mjs cx operate",
+    "cx:claim": "node ./scripts/cox.mjs cx claim",
+    "cx:proposals": "node ./scripts/cox.mjs cx proposals",
+    "cx:tasks": "node ./scripts/cox.mjs cx tasks",
+    "cx:list": "node ./scripts/cox.mjs cx list",
+    "cx:catalog": "node ./scripts/cox.mjs cx catalog",
+    "cx:journeys": "node ./scripts/cox.mjs cx journeys",
+    "cx:fleet": "node ./scripts/cox.mjs cx fleet-status",
+    "cx:snapshot": "node ./scripts/cox.mjs cx snapshot",
+    "cx:incident": "node ./scripts/cox.mjs cx incident",
+    "cx:seed-operate": "node ./scripts/cox.mjs cx seed-operate",
+    "cx:health-history": "node ./scripts/cox.mjs cx health-history",
+    "cx:autopilot": "node ./scripts/cox.mjs cx autopilot",
+    "cx:aws-drift": "node ./scripts/cox.mjs cx aws-drift",
+    "cx:audit": "node ./scripts/cox.mjs cx audit",
+    "cx:simulate": "node ./scripts/cox.mjs cx simulate",
+    "cx:report": "node ./scripts/cox.mjs cx report",
     "lint:cfn": "cfn-lint cx-export/**/template.yaml --format parseable || true",
     "validate": "python3 -m json.tool board-sync.json > /dev/null && echo 'board-sync.json valid' && cfn-lint cx-export/**/template.yaml || echo 'cfn-lint warnings'"
   },
-  "license": "Apache-2.0"
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=20"
+  }
 }
