@@ -123,6 +123,8 @@ pnpm cx:serve -- --port 8787
 
 Queue Claim uses the same engine path as `cox cx claim` (apply → task + claimed). Dismiss never mutates adapters or AWS.
 
+Offline E2E (engine monorepo): `pnpm cx:console:smoke` runs doctor → seed-operate → HTTP claim.
+
 ## Hard rules
 
 1. No silent production mutation. Console, watch, and daemon propose only.
