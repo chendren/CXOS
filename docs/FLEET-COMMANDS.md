@@ -101,6 +101,18 @@ pnpm cox cx aws-drift <name>               # read-only live vs plan (optional AW
 
 Deep engine map: [coxswain `docs/CXOS-COMPLETE.md`](https://github.com/chendren/coxswain/blob/main/docs/CXOS-COMPLETE.md).
 
+## World app (domain expert)
+
+Say how you work. Open an app that uses your words.
+
+```bash
+pnpm cox cx world northwind "Retail returns, loyalty, store pickup, retention"
+pnpm cox cx app northwind --port 8787
+# open http://127.0.0.1:8787/app?spec=northwind
+```
+
+Today: one box ("What is happening?") then **I'll take this**. Operator console remains at `/console/fleet`.
+
 ## Graph Console (Web UI)
 
 Localhost-only Nebula Ops console (offline cathedral: no CDN, no auth).
