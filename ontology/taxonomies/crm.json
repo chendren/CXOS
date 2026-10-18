@@ -1,0 +1,310 @@
+{
+  "kind": "cxTaxonomy",
+  "id": "crm",
+  "acronym": "CRM",
+  "name": "Customer Relationship Management",
+  "category": "customer_data",
+  "version": "2026.10.0",
+  "description": "System of record for customer identity, account structure, service cases, and activity history; the context provider that makes every other system personal and consistent.",
+  "roleInCenter": "Single source of truth for who the customer is, what they own, and what happened before this contact.",
+  "glossary": [
+    {
+      "id": "account",
+      "term": "Account",
+      "definition": "Top-level business entity owning products, billing, and entitlements",
+      "tags": [
+        "entity"
+      ]
+    },
+    {
+      "id": "contact_record",
+      "term": "Contact Record",
+      "definition": "Person associated with one or more accounts, with phone/email identities",
+      "tags": [
+        "entity"
+      ],
+      "aliases": [
+        "customer"
+      ]
+    },
+    {
+      "id": "case",
+      "term": "Case / Ticket",
+      "definition": "Unit of work tracking a customer issue from open to resolved disposition",
+      "aliases": [
+        "ticket",
+        "service request"
+      ],
+      "tags": [
+        "entity"
+      ]
+    },
+    {
+      "id": "account_hierarchy",
+      "term": "Account Hierarchy",
+      "definition": "Parent-child relationships for households or organizations with sub-accounts",
+      "tags": [
+        "entity"
+      ]
+    },
+    {
+      "id": "screen_pop",
+      "term": "Screen Pop",
+      "definition": "Routing-triggered automatic display of customer context at the moment an agent answers",
+      "tags": [
+        "integration"
+      ],
+      "seeAlso": [
+        "acd"
+      ]
+    },
+    {
+      "id": "activity_log",
+      "term": "Activity Log",
+      "definition": "Chronological record of interactions and touches attached to account or case",
+      "tags": [
+        "history"
+      ]
+    },
+    {
+      "id": "consent_state",
+      "term": "Consent State",
+      "definition": "Record of what contact and recording uses the customer has agreed to, per jurisdiction",
+      "tags": [
+        "compliance"
+      ]
+    },
+    {
+      "id": "master_contact_identity",
+      "term": "Master Contact Identity",
+      "definition": "Golden record after matching/merge across duplicates and channels",
+      "aliases": [
+        "golden record",
+        "MDM match"
+      ],
+      "tags": [
+        "data_quality"
+      ]
+    },
+    {
+      "id": "wrap_code",
+      "term": "Wrap Code",
+      "definition": "Coded contact outcome written back at wrap-up; feeds reporting and QA disposition accuracy",
+      "tags": [
+        "data"
+      ],
+      "seeAlso": [
+        "qa",
+        "acd"
+      ]
+    },
+    {
+      "id": "context_banner",
+      "term": "Context Banner",
+      "definition": "Headline customer state (tenure, open cases, last contact, risk flags) shown to agents in one glance",
+      "tags": [
+        "ux"
+      ]
+    }
+  ],
+  "facets": [
+    {
+      "id": "crm_record_hierarchy",
+      "name": "Record Hierarchy",
+      "root": {
+        "id": "records",
+        "name": "CRM Records",
+        "children": [
+          {
+            "id": "account",
+            "name": "Account",
+            "children": [
+              {
+                "id": "contact",
+                "name": "Contact (person)"
+              },
+              {
+                "id": "asset",
+                "name": "Product / Asset",
+                "description": "What the customer owns"
+              },
+              {
+                "id": "entitlement",
+                "name": "Entitlement / SLA Plan",
+                "description": "Support tier and response promises"
+              }
+            ]
+          },
+          {
+            "id": "case",
+            "name": "Case",
+            "children": [
+              {
+                "id": "activity",
+                "name": "Activity / Interaction"
+              },
+              {
+                "id": "task",
+                "name": "Follow-Up Task"
+              },
+              {
+                "id": "attachment",
+                "name": "Document / Attachment"
+              }
+            ]
+          },
+          {
+            "id": "opportunity",
+            "name": "Opportunity",
+            "description": "Sales pipeline record used by outbound and retention offers"
+          }
+        ]
+      }
+    },
+    {
+      "id": "crm_integration_patterns",
+      "name": "Integration Patterns",
+      "root": {
+        "id": "patterns",
+        "name": "CRM Integration Timing",
+        "children": [
+          {
+            "id": "pre_contact",
+            "name": "Pre-Contact",
+            "description": "Identity match and context prep before agent connect (data dip, screen pop)"
+          },
+          {
+            "id": "mid_contact",
+            "name": "During Contact",
+            "description": "Live reads and writes while handling; latency matters most"
+          },
+          {
+            "id": "post_contact",
+            "name": "Post Contact (Wrap)",
+            "description": "Disposition, wrap codes, case updates during ACW",
+            "seeAlso": [
+              "wfm"
+            ]
+          },
+          {
+            "id": "background_sync",
+            "name": "Background Sync",
+            "description": "Batch identity resolution, dedupe, and cross-system reconciliation"
+          }
+        ]
+      }
+    },
+    {
+      "id": "crm_consent_states",
+      "name": "Consent States",
+      "root": {
+        "id": "consent",
+        "name": "Consent (per use case)",
+        "children": [
+          {
+            "id": "marketing_opt_in",
+            "name": "Marketing Opt-In"
+          },
+          {
+            "id": "service_contact_allowed",
+            "name": "Service Contact Allowed"
+          },
+          {
+            "id": "recording_consent",
+            "name": "Recording / QA Consent"
+          },
+          {
+            "id": "do_not_contact",
+            "name": "Do Not Contact"
+          }
+        ]
+      }
+    }
+  ],
+  "metrics": [
+    {
+      "id": "screen_pop_adoption_percent",
+      "name": "Screen Pop Adoption",
+      "unit": "percent",
+      "direction": "higher_is_better",
+      "definition": "Share of answered contacts where context displayed automatically before first response"
+    },
+    {
+      "id": "repeat_contact_context_quality",
+      "name": "Context Carry-Over Rate",
+      "unit": "percent",
+      "direction": "higher_is_better",
+      "definition": "Share of repeat contacts where history was readable without customer re-explaining",
+      "mapsToKpi": "fcr_rate"
+    },
+    {
+      "id": "avg_wrap_time_seconds",
+      "name": "Average Wrap-Up Time",
+      "unit": "seconds",
+      "direction": "lower_is_better",
+      "definition": "Mean after-contact work completing CRM logging and case updates",
+      "mapsToKpi": "aht_seconds"
+    },
+    {
+      "id": "duplicate_contact_rate",
+      "name": "Duplicate Contact Record Rate",
+      "unit": "percent",
+      "direction": "lower_is_better",
+      "definition": "Share of records flagged as duplicate or merge candidates"
+    }
+  ],
+  "failureModes": [
+    {
+      "id": "context_blindness",
+      "name": "Context Blindness",
+      "signal": "Customers re-explain; VOC repeat-contact drivers dominated by history gap",
+      "mitigation": "Screen pop plus context banner scan mandatory in QA rubric"
+    },
+    {
+      "id": "swivel_chair_logging",
+      "name": "Swivel-Chair Logging",
+      "signal": "Wrap codes inconsistent; ACW ballooning in CRM tools with poor UX",
+      "mitigation": "Streamlined wrap flow, disposition presets from case type"
+    },
+    {
+      "id": "identity_fragmentation",
+      "name": "Identity Fragmentation",
+      "signal": "Duplicate accounts proliferating; fragmented history on new channels",
+      "mitigation": "Background matching job; channel keys normalized to master identity"
+    },
+    {
+      "id": "consent_zoning_error",
+      "name": "Consent Zoning Error",
+      "signal": "QA auto-fails around recording or outreach despite recorded consent elsewhere",
+      "mitigation": "Consent state must be surfaced in context banner with jurisdiction rules"
+    }
+  ],
+  "integrations": [
+    {
+      "with": "ivr",
+      "exchanges": [
+        "ANI-to-account match for data dips",
+        "Verification state transfer"
+      ]
+    },
+    {
+      "with": "acd",
+      "exchanges": [
+        "Screen pop on answer",
+        "Wrap and disposition write-back"
+      ]
+    },
+    {
+      "with": "km",
+      "exchanges": [
+        "Case attributes retrieve contextual KM content"
+      ]
+    },
+    {
+      "with": "outbound",
+      "exchanges": [
+        "Campaign suppression list from consent states"
+      ]
+    }
+  ]
+}

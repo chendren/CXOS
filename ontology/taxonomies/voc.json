@@ -1,0 +1,79 @@
+{
+  "kind": "cxTaxonomy",
+  "id": "voc",
+  "acronym": "VOC",
+  "name": "Voice of the Customer",
+  "category": "feedback",
+  "version": "2026.10.0",
+  "description": "Customer-perception measurement system: survey instruments, unsolicited listening posts, driver analysis linking perception to operational causes, and close-the-loop workflows that act on individual negative experiences.",
+  "roleInCenter": "Outcome judge: the only system measuring whether the rest of the center felt good to the customer.",
+  "glossary": [
+    { "id": "listening_post", "term": "Listening Post", "definition": "Any structured channel capturing customer perception, solicited or not", "tags": ["core"] },
+    { "id": "nps", "term": "NPS", "definition": "Net Promoter Score: promoters minus detractors from 0-10 recommendation question", "tags": ["instrument"] },
+    { "id": "csat", "term": "CSAT", "definition": "Customer satisfaction rating on the interaction just completed", "tags": ["instrument"], "aliases": ["transactional satisfaction"] },
+    { "id": "ces", "term": "CES", "definition": "Customer effort score; best predictor for loyalty in service contexts", "aliases": ["customer effort"], "tags": ["instrument"] },
+    { "id": "verbatim", "term": "Verbatim", "definition": "Free-text response; richest driver material when text-mined", "tags": ["analysis"], "seeAlso": ["speech_analytics"] },
+    { "id": "survey_fatigue", "term": "Survey Fatigue", "definition": "Response quality and rate degrading when over-surveyed by channel or journey", "tags": ["risk"] },
+    { "id": "driver_analysis", "term": "Driver Analysis", "definition": "Statistical link from operational metrics and root causes to perception outcomes", "tags": ["analysis"] },
+    { "id": "close_the_loop", "term": "Close the Loop", "definition": "Workflow contacting unhappy respondents to resolve their issue and capture recovery learning", "tags": ["process"], "seeAlso": ["outbound"] }
+  ],
+  "facets": [
+    {
+      "id": "voc_listening_posts",
+      "name": "Listening Posts",
+      "root": {
+        "id": "posts",
+        "name": "VOC Listening Posts",
+        "children": [
+          { "id": "relationship_survey", "name": "Relationship Survey", "description": "Periodic brand-level health survey, not contact-tied" },
+          { "id": "transactional_survey", "name": "Transactional Post-Contact Survey", "description": "Triggered by a specific interaction", "children": [
+            { "id": "post_call_ivr", "name": "Post-Call IVR Survey", "seeAlso": ["ivr"] },
+            { "id": "post_chat_digital", "name": "Post-Chat / In-App Prompt" },
+            { "id": "post_email", "name": "Post-Resolution Email Survey" }
+          ] },
+          { "id": "unsolicited", "name": "Unsolicited Listening Posts", "children": [
+            { "id": "social_media", "name": "Social / Review Sites" },
+            { "id": "call_content_mining", "name": "Interaction Content Mining", "seeAlso": ["speech_analytics"] },
+            { "id": "contact_reason_analysis", "name": "Contact-Reason Analysis" }
+          ] },
+          { "id": "employee_roundtrip", "name": "Employee Insight Roundtrip", "description": "Frontline hypotheses about customer pain validated against VOC data" }
+        ]
+      }
+    },
+    {
+      "id": "voc_instruments",
+      "name": "Survey Instruments",
+      "root": {
+        "id": "instruments",
+        "name": "Instrument Types",
+        "children": [
+          { "id": "nps_instrument", "name": "NPS (0-10 + why)" },
+          { "id": "csat_instrument", "name": "CSAT (1-5 satisfaction + reason)" },
+          { "id": "ces_instrument", "name": "CES (effort + friction question)" },
+          { "id": "custom_kaizen", "name": "Custom Journey Instrument", "description": "Questions tied to a specific journey stage in the engine journey map" }
+        ]
+      }
+    }
+  ],
+  "metrics": [
+    { "id": "csat_instrument_score", "name": "Transactional CSAT", "unit": "points", "direction": "higher_is_better", "definition": "Mean post-contact satisfaction score", "mapsToKpi": "csat" },
+    { "id": "nps_instrument_score", "name": "Net Promoter Score", "unit": "points", "direction": "higher_is_better", "definition": "Promoters minus detractors as share of respondents" },
+    { "id": "ces_instrument_score", "name": "Customer Effort Score", "unit": "points", "direction": "lower_is_better", "definition": "Mean effort rating; effort drives disloyalty more than delight" },
+    { "id": "survey_response_rate", "name": "Survey Response Rate", "unit": "percent", "direction": "neutral", "definition": "Completed surveys per offered survey; sudden shifts signal fatigue or sampling change" },
+    { "id": "close_loop_rate", "name": "Close-the-Loop Rate", "unit": "percent", "direction": "higher_is_better", "definition": "Share of high-severity negative respondents contacted within SLA" },
+    { "id": "repeat_driver_share", "name": "Repeat-Driver Share", "unit": "percent", "direction": "lower_is_better", "definition": "Share of negative verbatims repeating the same top driver period over period", "mapsToKpi": "fcr_rate" }
+  ],
+  "failureModes": [
+    { "id": "csat_theater", "name": "CSAT Theater", "signal": "Survey scores up while retention and churn signals flat or worse", "mitigation": "Track NPS/CES alongside; disallow survey gating in agent scripts" },
+    { "id": "survey_gaming", "name": "Survey Gaming", "signal": "Score clustering at maximum with response times under 5 seconds on one team", "mitigation": "Fraud filters on response velocity; QA cross-check verbatims for agent prompting" },
+    { "id": "driver_gaps", "name": "Unactioned Drivers", "signal": "Same top-3 driver verbatims every quarter with no linked backlog items", "mitigation": "Driver themes must open KM/QA/routing backlog items with owners" },
+    { "id": "sampling_bias", "name": "Sampling Bias", "signal": "Respondents skew to extreme experiences; mid-experience voice missing", "mitigation": "Quota sampling across journey stages and sentiment strata" }
+  ],
+  "integrations": [
+    { "with": "speech_analytics", "exchanges": ["Interaction mining as unsolicited listening posts", "Verbatim topic models shared for driver analysis"] },
+    { "with": "crm", "exchanges": ["Survey trigger keyed to case and contact", "Respondent profile for close-the-loop workflow"] },
+    { "with": "qa", "exchanges": ["Evaluation outcomes correlated with transactional surveys", "Low-score contacts feed targeted QA sampling"] },
+    { "with": "outbound", "exchanges": ["Close-the-loop callbacks as compliant service outreach"] },
+    { "with": "km", "exchanges": ["Driver themes missing answers open content backlog"] }
+  ]
+}

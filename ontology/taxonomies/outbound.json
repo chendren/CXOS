@@ -1,0 +1,88 @@
+{
+  "kind": "cxTaxonomy",
+  "id": "outbound",
+  "acronym": "OB",
+  "name": "Outbound Dialer & Campaigns",
+  "category": "outreach",
+  "version": "2026.10.0",
+  "description": "Center-initiated contact system: campaign list management, dialing modes paced to compliance ceilings, agent-assigned outcomes, and WFM-affecting schedule calendars.",
+  "roleInCenter": "Outbound engine: reaches customers deliberately, inside regulatory windows, with auditable outcomes.",
+  "glossary": [
+    { "id": "campaign", "term": "Campaign", "definition": "Managed outreach effort with target list, offer or message, and success criteria", "tags": ["core"] },
+    { "id": "dialing_mode", "term": "Dialing Mode", "definition": "Pacing strategy that determines call placement rate and agent readiness model", "tags": ["core"] },
+    { "id": "predictive_pacing", "term": "Predictive Pacing", "definition": "Algorithm dials ahead of agent availability based on answer-rate prediction", "tags": ["mode"] },
+    { "id": "abandoned_ceiling", "term": "Abandon Ceiling", "definition": "Regulatory maximum share of answered-by-customer calls with no agent connected", "tags": ["compliance"], "aliases": ["3% rule"] },
+    { "id": "list_filter", "term": "List & Filter Management", "definition": "Segmentation, DNC suppression, best-time filters, and penetration caps per record", "tags": ["ops"] },
+    { "id": "dnc", "term": "Do-Not-Call", "definition": "Suppression regime: internal DNC plus registry checks before dial", "tags": ["compliance"], "seeAlso": ["crm"] },
+    { "id": "calling_window", "term": "Calling Window", "definition": "Permitted contact hours by jurisdiction and consent type", "aliases": ["quiet hours"], "tags": ["compliance"] },
+    { "id": "right_party_contact", "term": "Right-Party Contact", "definition": "Attempt reached the intended person; denominator for conversion metrics", "aliases": ["RPC"], "tags": ["measurement"] },
+    { "id": "penetration_rate", "term": "Penetration Rate", "definition": "Share of list records with a definitive outcome (contact, refusal, bad number)", "tags": ["measurement"] },
+    { "id": "campaign_calendar", "term": "Campaign Calendar", "definition": "Planned outbound volume events WFM must forecast for", "tags": ["planning"], "seeAlso": ["wfm"] }
+  ],
+  "facets": [
+    {
+      "id": "ob_dialing_modes",
+      "name": "Dialing Modes",
+      "root": {
+        "id": "modes",
+        "name": "Dialing Modes",
+        "children": [
+          { "id": "manual", "name": "Manual Preview", "description": "Agent reviews record and clicks to dial" },
+          { "id": "progressive", "name": "Progressive", "description": "System dials one call per agent as they become available" },
+          { "id": "predictive", "name": "Predictive", "description": "Paces ahead of availability; must respect abandoned ceiling" },
+          { "id": "voice_broadcast", "name": "Voice Broadcast / Message Drop", "description": "No live agent; answer plays prerecorded message", "seeAlso": ["ivr"] }
+        ]
+      }
+    },
+    {
+      "id": "ob_campaign_types",
+      "name": "Campaign Types",
+      "root": {
+        "id": "campaigns",
+        "name": "Campaign Types",
+        "children": [
+          { "id": "collections", "name": "Collections & Recovery" },
+          { "id": "telesales", "name": "Telesales / Acquisition" },
+          { "id": "retention_outreach", "name": "Retention Outreach", "description": "At-risk proactive save attempts", "seeAlso": ["crm"] },
+          { "id": "appointment_reminder", "name": "Appointment & Renewal Reminders" },
+          { "id": "service_notification", "name": "Service Notification", "description": "Outage, delivery, fraud alerts with opt-out handling" },
+          { "id": "market_research", "name": "Market Research" }
+        ]
+      }
+    },
+    {
+      "id": "ob_regulatory_controls",
+      "name": "Regulatory Controls",
+      "root": {
+        "id": "controls",
+        "name": "Compliance Controls",
+        "children": [
+          { "id": "dnc_suppression", "name": "DNC Suppression & Consent Basis", "description": "Reason recorded for each contact attempt" },
+          { "id": "window_enforcement", "name": "Calling Window Enforcement" },
+          { "id": "abandon_ceiling_monitor", "name": "Abandon Ceiling Monitor", "description": "Auto-throttle when rolling ceiling approached" },
+          { "id": "disclosure_scripting", "name": "Mandatory Disclosures & Recording Notices" },
+          { "id": "opt_out_handler", "name": "Opt-Out Handler", "description": "Immediate suppression and CRM consent write-back", "seeAlso": ["crm"] }
+        ]
+      }
+    }
+  ],
+  "metrics": [
+    { "id": "rpc_rate", "name": "Right-Party Contact Rate", "unit": "percent", "direction": "higher_is_better", "definition": "Attempts reaching intended party over dial attempts" },
+    { "id": "outbound_conversion_percent", "name": "Campaign Conversion", "unit": "percent", "direction": "higher_is_better", "definition": "Successful outcomes per right-party contact (sale, promise, saved customer)", "mapsToKpi": "avg_contact_value" },
+    { "id": "ob_abandon_ceiling_share", "name": "Outbound Abandoned Share", "unit": "percent", "direction": "lower_is_better", "definition": "Customer-answered calls with no connected agent over ceiling baseline", "mapsToKpi": "sla_compliance_rate" },
+    { "id": "cost_per_contact", "name": "Cost per Contact", "unit": "currency", "direction": "lower_is_better", "definition": "Fully loaded campaign cost over completed right-party contacts", "mapsToKpi": "high_priority_contacts" },
+    { "id": "attempts_count", "name": "Attempted Volume", "unit": "count", "direction": "neutral", "definition": "Total dial attempts in period; feeds inbound-after-outbound repeat wave forecasting", "mapsToKpi": "total_contacts" }
+  ],
+  "failureModes": [
+    { "id": "pacing_overrun", "name": "Pacing Overrun", "signal": "Abandon ceiling approached in specific intervals; regulator exposure grows", "mitigation": "Auto-throttle and per-mode ceiling alarms in dialer config" },
+    { "id": "consent_basis_gap", "name": "Consent Basis Gap", "signal": "Audit finds contacts without recallable consent or business relationship", "mitigation": "No dial without consent tag; CRM consent state is the gate" },
+    { "id": "outbound_echo", "name": "Outbound Echo Wave", "signal": "Inbound volume spikes 24-72h after campaign waves; WFM understaffed", "mitigation": "Campaign calendar informs forecast; response-wave factor applied" },
+    { "id": "list_decay", "name": "List Decay", "signal": "Bad-number and wrong-party rates climbing as list ages", "mitigation": "Penetration caps; auto-suspend records after N bad outcomes" }
+  ],
+  "integrations": [
+    { "with": "crm", "exchanges": ["Consent and suppression states gate dialing", "Attempt and outcome write-back to record"] },
+    { "with": "wfm", "exchanges": ["Campaign calendar as forecast event feed", "Campaign skill requirements in schedules"] },
+    { "with": "ivr", "exchanges": ["Voice broadcast content and opt-out self-service paths"] },
+    { "with": "qa", "exchanges": ["Outbound-specific compliance disclosures in evaluation rubric"] }
+  ]
+}

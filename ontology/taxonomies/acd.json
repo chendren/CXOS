@@ -1,0 +1,101 @@
+{
+  "kind": "cxTaxonomy",
+  "id": "acd",
+  "acronym": "ACD",
+  "name": "Automatic Call Distributor",
+  "category": "routing",
+  "version": "2026.10.0",
+  "description": "Omnichannel routing engine that queues inbound contacts, selects the best available resource by skills and priority, and tracks service-level attainment for every queue.",
+  "roleInCenter": "Traffic control: connects each waiting contact to the right resource at the right priority within SLA budgets.",
+  "glossary": [
+    { "id": "queue", "term": "Queue", "definition": "Ordered waiting pool for contacts needing a named skill set", "tags": ["core"] },
+    { "id": "skill", "term": "Skill", "definition": "An agent capability tag used to match contacts to qualified resources", "tags": ["core"] },
+    { "id": "skill_group", "term": "Skill Group", "definition": "Bundle of skills or team used as a routing/expansion unit", "aliases": ["group"] },
+    { "id": "routing_strategy", "term": "Routing Strategy", "definition": "The ordered rule set deciding which available agent receives the next contact", "tags": ["core"], "aliases": ["vector"] },
+    { "id": "service_level", "term": "Service Level", "definition": "Percent of contacts answered within a time threshold (e.g. 80/20)", "tags": ["sla"], "aliases": ["SL", "80/20"] },
+    { "id": "abandon", "term": "Abandoned Call", "definition": "Caller hangs up before an agent connects; measured after a short-abandon filter", "tags": ["outcome"] },
+    { "id": "short_call_filter", "term": "Short-Abandon Threshold", "definition": "Hang-ups under N seconds counted as accidental dials, not true abandons", "tags": ["measurement"] },
+    { "id": "overflow", "term": "Overflow Rule", "definition": "Re-route waiting contacts to an alternate queue/group when triggers fire (wait, volume)", "tags": ["continuity"] },
+    { "id": "warm_transfer", "term": "Warm Transfer", "definition": "Agent-to-agent handover with live context conversation before the customer is joined", "tags": ["transfer"], "aliases": ["consult transfer"], "seeAlso": ["ivr"] },
+    { "id": "cold_transfer", "term": "Cold Transfer", "definition": "Caller is moved to another queue with no agent-to-agent context", "aliases": ["blind transfer"], "tags": ["transfer"] },
+    { "id": "expected_wait_time", "term": "Expected Wait Time", "definition": "Real-time estimate of queue hold time announced or used by callback offers", "aliases": ["EWT"] },
+    { "id": "aux_state", "term": "Auxiliary State", "definition": "Agent non-availability code (break, training, project) that removes them from routing", "tags": ["agent"], "seeAlso": ["wfm"] }
+  ],
+  "facets": [
+    {
+      "id": "acd_routing_strategies",
+      "name": "Routing Strategies",
+      "root": {
+        "id": "strategies",
+        "name": "Routing Strategies",
+        "children": [
+          { "id": "skills_based", "name": "Skills-Based Routing", "description": "Best-fit agent with all required skills" },
+          { "id": "longest_idle", "name": "Longest Idle", "description": "Available agent who has waited longest since last contact" },
+          { "id": "round_robin", "name": "Round Robin", "description": "Even distribution across a team" },
+          { "id": "priority_based", "name": "Priority-Based", "description": "VIP/urgent contacts jump queue position" },
+          { "id": "business_hours", "name": "Business Hours Routing", "description": "After-hours path: IVR message, voicemail, or answering service" },
+          { "id": "language_routing", "name": "Language Routing", "description": "Language skill gates before skill match" },
+          { "id": "negative_skill", "name": "Negative Skill", "description": "Exclude agents (do-not-route) for conflict, compliance, or burnout reasons" },
+          { "id": "preferred_agent", "name": "Preferred / Last-Agent Routing", "description": "Attempt continuity with prior handling agent before general queue" },
+          {
+            "id": "omnichannel_blend",
+            "name": "Omnichannel Blend",
+            "children": [
+              { "id": "voice_priority_blend", "name": "Voice-Preemptive Blend", "description": "Voice interrupts chat/email handling" },
+              { "id": "fair_share_blend", "name": "Fair-Share Blend", "description": "Equal aging across media types" }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "acd_contact_dispositions",
+      "name": "Queue Dispositions",
+      "root": {
+        "id": "dispositions",
+        "name": "Contact Dispositions at Queue",
+        "children": [
+          { "id": "answered", "name": "Answered" },
+          { "id": "abandoned", "name": "Abandoned (True)", "description": "Hang-up beyond short-call threshold" },
+          { "id": "short_abandoned", "name": "Short Abandoned", "description": "Hang-up inside short-call threshold; excluded from SL math" },
+          { "id": "callback_converted", "name": "Converted to Callback", "description": "Caller accepted queue-preservation callback", "seeAlso": ["ivr"] },
+          { "id": "overflowed", "name": "Overflowed Out", "description": "Routed to alternate group or external site" },
+          { "id": "deflected", "name": "Deflected Out of Queue", "description": "Rerouted to self-service, SMS link, or async channel before answer" }
+        ]
+      }
+    },
+    {
+      "id": "acd_transfer_types",
+      "name": "Transfer Types",
+      "root": {
+        "id": "transfers",
+        "name": "Agent-Initiated Transfers",
+        "children": [
+          { "id": "warm", "name": "Warm / Consult" },
+          { "id": "cold", "name": "Cold / Blind" },
+          { "id": "conference", "name": "Conference", "description": "Original agent stays on the line for supervisor or expert support" }
+        ]
+      }
+    }
+  ],
+  "metrics": [
+    { "id": "service_level_percent", "name": "Service Level Attainment", "unit": "percent", "direction": "higher_is_better", "definition": "Contacts answered within the queue threshold over measured contacts", "mapsToKpi": "sla_compliance_rate" },
+    { "id": "abandonment_rate", "name": "Abandonment Rate", "unit": "percent", "direction": "lower_is_better", "definition": "True abandons divided by offered contacts" },
+    { "id": "avg_speed_of_answer_seconds", "name": "Average Speed of Answer", "unit": "seconds", "direction": "lower_is_better", "definition": "Mean wait time for answered contacts", "mapsToKpi": "avg_wait_time" },
+    { "id": "longest_wait_seconds", "name": "Longest Current/Periodic Wait", "unit": "seconds", "direction": "lower_is_better", "definition": "Tail latency for queue waits; SL only captures the threshold boundary" },
+    { "id": "first_contact_resolution_share", "name": "Queue-View FCR Share", "unit": "percent", "direction": "higher_is_better", "definition": "Share of queue contacts with no repeat contact on same intent in window", "mapsToKpi": "fcr_rate" },
+    { "id": "handled_volume_count", "name": "Handled Volume", "unit": "count", "direction": "neutral", "definition": "Contacts answered by resources in period", "mapsToKpi": "total_contacts" }
+  ],
+  "failureModes": [
+    { "id": "skill_starvation", "name": "Skill Starvation", "signal": "One niche queue builds while generalists idle; abandonment concentrated on sparse skills", "mitigation": "Overflow matrix to cross-trained groups; WFM cross-skill planning" },
+    { "id": "misconfigured_priority", "name": "Priority Inversion", "signal": "VIP queue slippage while ordinary traffic answers; priority flag overuse", "mitigation": "Priority budget: restrict flagged volume, review monthly" },
+    { "id": "queue_runway_miss", "name": "Unannounced Long Waits", "signal": "Abandons spike after 90s without EWT announcement", "mitigation": "Expected-wait announcement plus callback offer at threshold" },
+    { "id": "cold_transfer_chain", "name": "Ping-Pong Transfers", "signal": "3+ transfers per contact on a path; repeat contacts on same intent", "mitigation": "Preferred-agent routing and consult-before-transfer protocol" }
+  ],
+  "integrations": [
+    { "with": "ivr", "exchanges": ["Skill-selected transfer with context banner", "Callback queue positions"] },
+    { "with": "wfm", "exchanges": ["Interval queue stats feed forecasting and intraday alerts", "Aux state definitions shared"] },
+    { "with": "crm", "exchanges": ["Screen pop on answered contact", "Disposition and wrap codes written back"] },
+    { "with": "qa", "exchanges": ["Recordings routed for evaluation sampling"] }
+  ]
+}

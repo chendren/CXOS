@@ -1,0 +1,105 @@
+{
+  "kind": "cxOntology",
+  "id": "cx-ontology",
+  "version": "2026.10.0",
+  "name": "CX Ontology",
+  "license": "Apache-2.0",
+  "description": "Closed-world CX ontology for the CXOS workspace: system-level, domain-specific taxonomies for the contact center stack (IVR, ACD, WFM, QA, CRM, KM, Speech Analytics, Outbound, VOC), aligned with the Coxswain engine ontology so model proposals stay inside a deterministic vocabulary.",
+  "engineAlignment": {
+    "engine": "coxswain",
+    "ontologyCatalog": "packages/cx-core/src/ontology/catalogs/default.json",
+    "engineVersion": "2026.08.0",
+    "kpiIds": [
+      "total_contacts",
+      "sla_compliance_rate",
+      "avg_wait_time",
+      "deflection_rate",
+      "avg_contact_value",
+      "high_priority_contacts",
+      "fcr_rate",
+      "aht_seconds",
+      "csat"
+    ],
+    "actionTypes": ["escalation", "routing", "protocol", "deflection", "retention", "proactive", "recovery", "sales", "onboarding", "engagement"],
+    "channels": ["chat", "email", "phone", "phone_transcript", "social_media", "in_app", "sms"],
+    "sentiments": ["angry", "frustrated", "confused", "neutral", "satisfied", "demanding"],
+    "urgencies": ["critical", "high", "medium", "low"],
+    "confidenceBands": {
+      "high": { "min": 0.7, "strategy": "act_immediately" },
+      "medium": { "min": 0.4, "strategy": "act_with_verification" },
+      "low": { "min": 0.0, "strategy": "gather_more_info" }
+    }
+  },
+  "categories": {
+    "self_service": "Automated systems that resolve or advance contacts without a live agent",
+    "routing": "Systems that assign, queue, and connect contacts to the right resource",
+    "workforce": "Systems that forecast, staff, and manage agent time",
+    "quality": "Systems that evaluate and improve interaction quality",
+    "customer_data": "Systems of record for customer context",
+    "knowledge": "Systems that supply answers to agents and customers",
+    "analytics": "Systems that extract meaning from interaction content",
+    "outreach": "Systems that initiate contact toward customers",
+    "feedback": "Systems that capture customer perception"
+  },
+  "core": {
+    "interactionLifecycle": [
+      { "id": "arrival", "name": "Arrival", "description": "Contact enters on a channel; identity captured via ANI, login, or form" },
+      { "id": "identity", "name": "Identify & Authenticate", "description": "System matches customer to CRM record and applies authentication strength rules" },
+      { "id": "self_service", "name": "Self-Service", "description": "IVR/automated channels attempt containment before queueing" },
+      { "id": "queue", "name": "Queue", "description": "Contact waits under ACD service-level rules; callback or overflow may apply" },
+      { "id": "routing", "name": "Routing", "description": "ACD selects resource by skills, priority, and availability" },
+      { "id": "handling", "name": "Handling", "description": "Agent (or bot) resolves using CRM context and KM answers; QA may sample later" },
+      { "id": "wrap_up", "name": "Wrap-Up", "description": "After-contact work: disposition, CRM logging, follow-up tasks" },
+      { "id": "resolution", "name": "Resolution", "description": "Customer need closed; FCR determined by downstream contact behavior" },
+      { "id": "feedback", "name": "Feedback", "description": "VOC survey or listening post captures perception; results feed drivers analysis" }
+    ],
+    "channelFacets": [
+      {
+        "id": "direction",
+        "name": "Direction",
+        "values": {
+          "inbound": "Customer-initiated contact (IVR, chat, email)",
+          "outbound": "Center-initiated contact (collections, reminders, notifications)"
+        }
+      },
+      {
+        "id": "synchronicity",
+        "name": "Synchronicity",
+        "values": {
+          "synchronous": "Real-time conversations: phone, chat, video, callback",
+          "asynchronous": "Store-and-forward: email, sms, social_media, in_app"
+        }
+      },
+      {
+        "id": "automation_level",
+        "name": "Automation Level",
+        "values": {
+          "automated": "Resolved by machine: IVR, bot, notification broadcast",
+          "assisted": "Human-held with system support: agent + KM/CRM",
+          "unattended": "No live resource at delivery time: voicemail drops, automated sms"
+        }
+      }
+    ],
+    "crossCuttingConcerns": [
+      "compliance_pci",
+      "compliance_hipaa",
+      "compliance_tcpa",
+      "consent_recording",
+      "pii_redaction",
+      "accessibility",
+      "business_continuity",
+      "language_access"
+    ]
+  },
+  "taxonomies": [
+    { "id": "ivr", "acronym": "IVR", "name": "Interactive Voice Response", "category": "self_service", "path": "taxonomies/ivr.json", "summary": "Voice self-service: menus, DTMF/ASR, transactions, containment" },
+    { "id": "acd", "acronym": "ACD", "name": "Automatic Call Distributor", "category": "routing", "path": "taxonomies/acd.json", "summary": "Queueing, skills-based routing, service level, transfers, overflow" },
+    { "id": "wfm", "acronym": "WFM", "name": "Workforce Management", "category": "workforce", "path": "taxonomies/wfm.json", "summary": "Forecasting, scheduling, shrinkage, intraday adherence, occupancy" },
+    { "id": "qa", "acronym": "QA", "name": "Quality Assurance", "category": "quality", "path": "taxonomies/qa.json", "summary": "Transaction evaluation, scorecards, calibration, auto-fail compliance items" },
+    { "id": "crm", "acronym": "CRM", "name": "Customer Relationship Management", "category": "customer_data", "path": "taxonomies/crm.json", "summary": "Customer context: record hierarchy, screen pops, consent states, data quality" },
+    { "id": "km", "acronym": "KM", "name": "Knowledge Management", "category": "knowledge", "path": "taxonomies/km.json", "summary": "Curated answers: article lifecycle, agent assist, customer-facing help" },
+    { "id": "speech_analytics", "acronym": "SA", "name": "Speech & Text Analytics", "category": "analytics", "path": "taxonomies/speech-analytics.json", "summary": "Transcription, topics, sentiment, emotion, auto-disposition, compliance spotting" },
+    { "id": "outbound", "acronym": "OB", "name": "Outbound Dialer & Campaigns", "category": "outreach", "path": "taxonomies/outbound.json", "summary": "Dialing modes, campaign types, list management, regulatory controls" },
+    { "id": "voc", "acronym": "VOC", "name": "Voice of the Customer", "category": "feedback", "path": "taxonomies/voc.json", "summary": "Surveys, listening posts, NPS/CSAT/CES instruments, close-the-loop" }
+  ]
+}

@@ -1,0 +1,132 @@
+{
+  "kind": "cxTaxonomy",
+  "id": "ivr",
+  "acronym": "IVR",
+  "name": "Interactive Voice Response",
+  "category": "self_service",
+  "version": "2026.10.0",
+  "description": "Voice self-service system that greets inbound callers, identifies them, and attempts to complete requests without an agent through menus, speech recognition, and data integrations.",
+  "roleInCenter": "First-line containment: resolve simple intents automatically and hand off richer context when an agent is needed.",
+  "glossary": [
+    { "id": "call_flow", "term": "Call Flow", "definition": "The directed graph of prompts, menus, and logic a caller traverses", "tags": ["design"], "aliases": ["call script", "routing tree"] },
+    { "id": "dtmf", "term": "DTMF", "definition": "Dual-tone multi-frequency input: keypad presses selected during or instead of speech", "tags": ["input"] },
+    { "id": "asr", "term": "ASR", "definition": "Automatic speech recognition converting caller speech to text for NLU matching", "tags": ["input", "ai"], "aliases": ["speech recognition"] },
+    { "id": "tts", "term": "TTS", "definition": "Text-to-speech rendering of prompts; alternative is studio-recorded talent", "tags": ["output"] },
+    { "id": "grammar", "term": "Grammar", "definition": "The bounded vocabulary ASR listens for at a given prompt node", "tags": ["input", "design"] },
+    { "id": "data_dip", "term": "Data Dip", "definition": "Mid-call lookup into a backend (CRM, OMS, billing) to personalize or branch the flow", "tags": ["integration"], "aliases": ["screen pop data pull"] },
+    { "id": "containment", "term": "Containment", "definition": "Caller completes their need inside IVR without transfer to a live resource", "tags": ["outcome"] },
+    { "id": "zero_out", "term": "Zero-Out", "definition": "Caller presses 0 (or says agent) to force transfer to a queue, bypassing self-service", "tags": ["behavior", "failure"] },
+    { "id": "barge_in", "term": "Barge-In", "definition": "Caller may speak over a prompt, interrupting playback to speed navigation", "tags": ["ux"] },
+    { "id": "ani", "term": "ANI", "definition": "Automatic number identification: calling-party phone number used for identity match", "tags": ["identity"], "aliases": ["caller id"] },
+    { "id": "no_match", "term": "No-Match", "definition": "ASR heard something outside the grammar; triggers reprompt or error path", "tags": ["failure"], "seeAlso": ["acd"] },
+    { "id": "callback_offer", "term": "Callback Offer", "definition": "IVR offers to hold the caller's place in queue and call them back instead of waiting", "tags": ["queue"], "seeAlso": ["acd"] }
+  ],
+  "facets": [
+    {
+      "id": "ivr_service_types",
+      "name": "Self-Service Types",
+      "root": {
+        "id": "service_types",
+        "name": "IVR Service Types",
+        "children": [
+          {
+            "id": "informational",
+            "name": "Informational",
+            "description": "Read back data or status",
+            "children": [
+              { "id": "account_balance", "name": "Account Balance" },
+              { "id": "order_status", "name": "Order Status" },
+              { "id": "hours_locations", "name": "Hours & Locations" }
+            ]
+          },
+          {
+            "id": "transactional",
+            "name": "Transactional",
+            "description": "Write operations completed in-flow",
+            "children": [
+              { "id": "payment_capture", "name": "Payment / IVR Pay" },
+              { "id": "appointment_change", "name": "Appointment Change" },
+              { "id": "address_update", "name": "Address Update" }
+            ]
+          },
+          {
+            "id": "navigational",
+            "name": "Navigational",
+            "description": "Route the caller to the correct department or skill",
+            "children": [
+              { "id": "menu_routing", "name": "Menu-Based Routing" },
+              { "id": "open_phrase_routing", "name": "Open-Phrase Routing", "description": "Free speech maps directly to intent/queue" }
+            ]
+          },
+          {
+            "id": "diagnostic",
+            "name": "Diagnostic",
+            "description": "Guided troubleshooting trees",
+            "children": [
+              { "id": "service_reboot", "name": "Service Reboot Walkthrough" },
+              { "id": "outage_check", "name": "Outage Check" }
+            ]
+          },
+          { "id": "callback_scheduling", "name": "Callback Scheduling", "description": "Reserve a place in queue for later contact" }
+        ]
+      }
+    },
+    {
+      "id": "ivr_failure_paths",
+      "name": "Failure & Exit Paths",
+      "root": {
+        "id": "call_outcomes",
+        "name": "IVR Call Outcomes",
+        "children": [
+          { "id": "contained", "name": "Contained", "description": "Self-service success, no transfer" },
+          { "id": "transferred", "name": "Transferred", "description": "Routed to a live queue with context" },
+          {
+            "id": "abandoned_in_ivr",
+            "name": "Abandoned in IVR",
+            "children": [
+              { "id": "abandoned_no_input", "name": "Abandoned: No Input Timeout" },
+              { "id": "abandoned_no_match", "name": "Abandoned: No-Match Exhaustion", "description": "Repeated recognition failures drive hang-up" },
+              { "id": "abandoned_immediate", "name": "Abandoned: Immediate Hang-Up", "description": "Hang-up before first meaningful prompt" }
+            ]
+          },
+          { "id": "zeroed_out", "name": "Zeroed Out", "description": "Caller forced agent transfer" }
+        ]
+      }
+    },
+    {
+      "id": "ivr_prompt_delivery",
+      "name": "Prompt Delivery",
+      "root": {
+        "id": "delivery_modes",
+        "name": "Prompt Delivery Modes",
+        "children": [
+          { "id": "recorded_talent", "name": "Studio-Recorded Voice" },
+          { "id": "tts_static", "name": "TTS Voice (Static Content)" },
+          { "id": "tts_dynamic", "name": "TTS Voice (Dynamic Content)", "description": "Data-dipped values spoken by TTS, e.g. balance amount" },
+          { "id": "multilingual_variant", "name": "Multilingual Variant", "description": "Localized flow versions with own talent/grammars" }
+        ]
+      }
+    }
+  ],
+  "metrics": [
+    { "id": "ivr_containment_rate", "name": "IVR Containment Rate", "unit": "percent", "direction": "higher_is_better", "definition": "Share of IVR calls that finish without live-agent transfer", "mapsToKpi": "deflection_rate" },
+    { "id": "ivr_completion_rate", "name": "Flow Completion Rate", "unit": "percent", "direction": "higher_is_better", "definition": "Share of callers entering a self-service flow who reach its success end" },
+    { "id": "ivr_zero_out_rate", "name": "Zero-Out Rate", "unit": "percent", "direction": "lower_is_better", "definition": "Share of calls where the caller requests an agent explicitly" },
+    { "id": "avg_ivr_time_seconds", "name": "Average IVR Time", "unit": "seconds", "direction": "lower_is_better", "definition": "Mean time in IVR before transfer, containment, or abandon", "mapsToKpi": "aht_seconds" },
+    { "id": "no_match_rate", "name": "No-Match Rate", "unit": "percent", "direction": "lower_is_better", "definition": "Share of speech turns that fail grammar matching and trigger reprompt" },
+    { "id": "callback_acceptance_rate", "name": "Callback Acceptance Rate", "unit": "percent", "direction": "higher_is_better", "definition": "Share of eligible long-wait callers who accept a callback instead of holding", "mapsToKpi": "avg_wait_time" }
+  ],
+  "failureModes": [
+    { "id": "menu_maze", "name": "Menu Maze", "signal": "Containment drops with menu depth; zero-outs spike at level 3+", "mitigation": "Flatten to 3 levels, open-phrase routing at entry" },
+    { "id": "prompt_ambiguity", "name": "Ambiguous Prompts", "signal": "No-match and repeated-keypress clusters on specific nodes", "mitigation": "Rewrite prompt to distinctive vocabulary; A/B test grammars" },
+    { "id": "blind_transfer", "name": "Blind Transfer", "signal": "Repeated calls and low FCR on transferred segments", "mitigation": "Attach call context and data-dip results to transfer; consider warm transfer for complex intents" },
+    { "id": "stale_flow_content", "name": "Stale Flow Content", "signal": "Complaints and repeat contacts about wrong hours, prices, policy in IVR", "mitigation": "Flow content linked to KM single source of truth with review cycle" },
+    { "id": "identity_mismatch", "name": "ANI Fraud / Wrong-Party", "signal": "Auth failures spike on one flow; verify claims from VOC verbatims", "mitigation": "Stronger authentication strength rules step-up before transactions" }
+  ],
+  "integrations": [
+    { "with": "crm", "exchanges": ["ANI-to-account data dip for personalization", "verification state and account context on transfer"] },
+    { "with": "acd", "exchanges": ["Transfer with selected skill queue and priority", "Callback placement into queue"] },
+    { "with": "km", "exchanges": ["Dynamic content retrieval for informational prompts"] },
+    { "with": "speech_analytics", "exchanges": ["IVR turn transcripts for intent and abandon analysis"] }
+  ]
+}

@@ -1,0 +1,86 @@
+{
+  "kind": "cxTaxonomy",
+  "id": "speech_analytics",
+  "acronym": "SA",
+  "name": "Speech & Text Analytics",
+  "category": "analytics",
+  "version": "2026.10.0",
+  "description": "Transcription and classification layer that turns every recorded interaction into analyzable structure: topics, sentiment, emotion, compliance events, and machine-proposed dispositions across voice and text channels.",
+  "roleInCenter": "Listening layer: converts raw interaction media into labeled, queryable events for QA automation, driver analysis, and risk spotting.",
+  "glossary": [
+    { "id": "transcription", "term": "Transcription", "definition": "Speech-to-text rendering of call audio, the base layer for all other analytes", "aliases": ["STT"], "tags": ["core"] },
+    { "id": "diarization", "term": "Speaker Diarization", "definition": "Separation of who spoke when: agent, customer, or third party", "tags": ["structure"] },
+    { "id": "keyword_spotting", "term": "Keyword Spotting", "definition": "Detection of mandated or forbidden phrases in transcripts and audio", "tags": ["compliance"] },
+    { "id": "topic_model", "term": "Topic / Category Model", "definition": "Controlled taxonomy of conversation themes used to classify every interaction", "tags": ["classification"] },
+    { "id": "sentiment_analysis", "term": "Sentiment Analysis", "definition": "Polarity scoring of customer expression; distinct from acoustic emotion detection", "tags": ["affect"], "seeAlso": ["voc"] },
+    { "id": "emotion_detection", "term": "Emotion Detection", "definition": "Acoustic-model classification of anger, frustration, laughter beyond word-level sentiment", "tags": ["affect"] },
+    { "id": "talk_ratio", "term": "Talk Ratio & Dead Air", "definition": "Conversational structure metrics: agent-vs-customer airtime and silence spans", "tags": ["structure"] },
+    { "id": "auto_disposition", "term": "Auto-Disposition", "definition": "Model-proposed outcome label attached to interactions; feeds wrap audit and QA", "tags": ["classification"], "seeAlso": ["qa"] },
+    { "id": "redaction", "term": "Automated Redaction", "definition": "Muting or masking PCI/HIPAA segments in audio and transcripts before analysis", "tags": ["compliance"] },
+    { "id": "alert_precision", "term": "Alert Precision", "definition": "Share of flagged interactions that reviewers confirm as true findings", "tags": ["measurement"] }
+  ],
+  "facets": [
+    {
+      "id": "sa_analyte_classes",
+      "name": "Analyte Classes",
+      "root": {
+        "id": "analytes",
+        "name": "What Gets Measured",
+        "children": [
+          { "id": "lexical", "name": "Lexical", "description": "Words: keywords, entities, topics", "children": [
+            { "id": "topics", "name": "Topics / Contact Drivers" },
+            { "id": "compliance_phrases", "name": "Compliance Phrase Detection" }
+          ] },
+          { "id": "acoustic", "name": "Acoustic", "children": [
+            { "id": "silence_bands", "name": "Silence & Dead Air" },
+            { "id": "energy_agitation", "name": "Energy / Agitation Signals" },
+            { "id": "overtalk", "name": "Overtalk & Interruptions" }
+          ] },
+          { "id": "semantic_affect", "name": "Semantic Affect", "children": [
+            { "id": "sentiment", "name": "Sentiment" },
+            { "id": "emotion", "name": "Emotion Classes" }
+          ] },
+          { "id": "conversational_structure", "name": "Conversational Structure", "children": [
+            { "id": "hold_patterns", "name": "Hold Patterns" },
+            { "id": "talk_ratio", "name": "Talk Ratio" }
+          ] }
+        ]
+      }
+    },
+    {
+      "id": "sa_use_cases",
+      "name": "Primary Use Cases",
+      "root": {
+        "id": "use_cases",
+        "name": "Speech & Text Analytics Use Cases",
+        "children": [
+          { "id": "auto_qa_engine", "name": "Auto-QA / Full-Coverage Scoring", "seeAlso": ["qa"] },
+          { "id": "compliance_monitoring", "name": "Compliance Monitoring", "description": "Disclosure presence, forbidden-phrase detection, regulated process drift" },
+          { "id": "contact_driver_discovery", "name": "Contact-Driver Discovery", "description": "Volume themes feeding CX improvement backlog" },
+          { "id": "churn_intent_signals", "name": "Churn & Risk Signals", "description": "Cancellation language, competitor mentions, escalation threats", "seeAlso": ["crm"] },
+          { "id": "script_adherence", "name": "Script Adherence" },
+          { "id": "disposition_audit", "name": "Disposition Audit", "description": "Verify wrap codes against actual conversation outcome", "seeAlso": ["qa"] }
+        ]
+      }
+    }
+  ],
+  "metrics": [
+    { "id": "transcription_accuracy_percent", "name": "Transcription Accuracy", "unit": "percent", "direction": "higher_is_better", "definition": "Word error rate inverted; gates all downstream analytes" },
+    { "id": "topic_coverage_percent", "name": "Topic Classification Coverage", "unit": "percent", "direction": "higher_is_better", "definition": "Share of interactions confidently assigned a primary topic" },
+    { "id": "flag_precision_percent", "name": "Alert Precision", "unit": "percent", "direction": "higher_is_better", "definition": "Reviewer-confirmed findings over total flagged" },
+    { "id": "auto_disposition_accuracy", "name": "Auto-Disposition Agreement", "unit": "percent", "direction": "higher_is_better", "definition": "Model label agreement with QA-verified human disposition", "mapsToKpi": "fcr_rate" },
+    { "id": "negative_sentiment_share", "name": "Negative Sentiment Share", "unit": "percent", "direction": "lower_is_better", "definition": "Interactions scored negative-negative trend; leading indicator for csat", "mapsToKpi": "csat" }
+  ],
+  "failureModes": [
+    { "id": "transcript_fidelity_drift", "name": "Transcript Fidelity Drift", "signal": "Acoustic-heavy accents or crosstalk degrade WER silently; topic confidence falls", "mitigation": "Sample human WER audit per channel; recalibration with domain lexicon" },
+    { "id": "alert_fatigue", "name": "Alert Fatigue", "signal": "Reviewers clear alerts in bulk; precision unmeasured", "mitigation": "Alert precision scorecard; thresholds tuned to reviewer feedback loop" },
+    { "id": "sentiment_theater", "name": "Sentiment Theater", "signal": "Agent sentiment scores improve while customer measures worsen", "mitigation": "Score customer side only for CX; ban agent-sentiment from QA scores by default" },
+    { "id": "redaction_gaps", "name": "Redaction Gaps", "signal": "QA finds unredacted PCI in evaluation samples", "mitigation": "Redaction verification as auto-QA artifact before analyst access" }
+  ],
+  "integrations": [
+    { "with": "qa", "exchanges": ["Auto-QA scoring and targeted sampling", "Auto-disposition verification samples"] },
+    { "with": "acd", "exchanges": ["Interaction records with queue and agent metadata"] },
+    { "with": "voc", "exchanges": ["Unsolicited verbatims mined as VOC listening post"] },
+    { "with": "km", "exchanges": ["Driver topics without good answers become content backlog"] }
+  ]
+}

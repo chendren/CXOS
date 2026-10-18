@@ -1,0 +1,94 @@
+{
+  "kind": "cxTaxonomy",
+  "id": "km",
+  "acronym": "KM",
+  "name": "Knowledge Management",
+  "category": "knowledge",
+  "version": "2026.10.0",
+  "description": "Curated answer system with governed article lifecycles that serves customers directly and assists agents mid-conversation, feeding IVR prompt content and preventing divergence between what customers read and what agents say.",
+  "roleInCenter": "Single source of truth for every answer the organization gives, wherever it is spoken or displayed.",
+  "glossary": [
+    { "id": "knowledge_article", "term": "Knowledge Article", "definition": "Governed content unit with owner, review cycle, and lifecycle state", "tags": ["core"] },
+    { "id": "ssot", "term": "Single Source of Truth", "definition": "Policy that each fact has one canonical article others link to, not copy from", "aliases": ["SSOT"], "tags": ["governance"] },
+    { "id": "article_age", "term": "Article Age", "definition": "Days since last review; over threshold flags staleness risk", "tags": ["governance"] },
+    { "id": "agent_assist", "term": "Agent Assist", "definition": "Real-time suggestion of article content into agent desktop matched to conversation context", "aliases": ["real-time guidance"], "tags": ["delivery"] },
+    { "id": "macro", "term": "Macro / Canned Response", "definition": "Pre-approved reusable response snippet linked to KM for auditability", "tags": ["delivery"] },
+    { "id": "helpful_vote", "term": "Helpfulness Feedback", "definition": "Customer thumbs up/down on public help content; per-article satisfaction input", "tags": ["feedback"], "seeAlso": ["voc"] },
+    { "id": "content_reuse", "term": "Model-Aware Reuse", "definition": "Articles exposing clean structured content (steps, eligibility, amounts) so bots and AI channels quote the same truth", "tags": ["ai"] },
+    { "id": "flagged_content", "term": "Flagged Content", "definition": "Article marked stale or wrong by agent or customer; enters urgent review queue", "tags": ["governance"] },
+    { "id": "style_guide", "term": "Content Style Guide", "definition": "Plain-language, reading-level, and inclusive-language standards articles must pass", "tags": ["governance"] },
+    { "id": "curation_backlog", "term": "Curation Backlog", "definition": "Queue of articles from QA root-causes, VOC drivers, or flags awaiting update", "tags": ["process"], "seeAlso": ["qa"] }
+  ],
+  "facets": [
+    {
+      "id": "km_visibility",
+      "name": "Audience Visibility",
+      "root": {
+        "id": "audiences",
+        "name": "Content Audiences",
+        "children": [
+          { "id": "customer_facing", "name": "Customer-Facing", "children": [
+            { "id": "public_help", "name": "Public Help Center" },
+            { "id": "authenticated_help", "name": "Authenticated In-App / Portal Help" }
+          ] },
+          { "id": "agent_facing", "name": "Agent-Facing", "children": [
+            { "id": "internal_kb", "name": "Internal Knowledge Base" },
+            { "id": "desk_macros_kb", "name": "Macro / Response Library" }
+          ] },
+          { "id": "machine_facing", "name": "Machine-Facing", "description": "Structured content consumed by bots, IVR TTS, and agent assist models", "seeAlso": ["ivr"] }
+        ]
+      }
+    },
+    {
+      "id": "km_content_types",
+      "name": "Content Types",
+      "root": {
+        "id": "content",
+        "name": "Article Content Types",
+        "children": [
+          { "id": "how_to", "name": "How-To Procedure", "description": "Step-by-step task instructions" },
+          { "id": "policy_explainer", "name": "Policy Explainer", "description": "Rules and eligibility in plain language" },
+          { "id": "faq", "name": "FAQ", "description": "Question-and-answer pairs for quick deflection" },
+          { "id": "troubleshooting_tree", "name": "Troubleshooting Tree", "description": "Diagnostic decision content", "seeAlso": ["ivr"] },
+          { "id": "billing_explainer", "name": "Billing / Charge Explainer" },
+          { "id": "announcement", "name": "Time-Bound Announcement", "description": " Outage or promo content with explicit expiry" }
+        ]
+      }
+    },
+    {
+      "id": "km_lifecycle_states",
+      "name": "Article Lifecycle States",
+      "root": {
+        "id": "lifecycle",
+        "name": "Article Lifecycle",
+        "children": [
+          { "id": "draft", "name": "Draft" },
+          { "id": "in_review", "name": "In Review" },
+          { "id": "approved", "name": "Approved (not yet live)" },
+          { "id": "published", "name": "Published" },
+          { "id": "flagged", "name": "Flagged (under urgent review)" },
+          { "id": "archived", "name": "Archived (superseded)" }
+        ]
+      }
+    }
+  ],
+  "metrics": [
+    { "id": "article_helpfulness_percent", "name": "Article Helpfulness", "unit": "percent", "direction": "higher_is_better", "definition": "Helpful votes over total votes per article and aggregate", "mapsToKpi": "csat" },
+    { "id": "self_service_resolution_share", "name": "KM-Backed Self-Service Resolution", "unit": "percent", "direction": "higher_is_better", "definition": "Sessions that ended with help content read and no subsequent contact", "mapsToKpi": "deflection_rate" },
+    { "id": "agent_assist_acceptance_rate", "name": "Agent Assist Acceptance", "unit": "percent", "direction": "higher_is_better", "definition": "Share of suggested snippets used without edit in handling" },
+    { "id": "stale_article_share", "name": "Stale Article Share", "unit": "percent", "direction": "lower_is_better", "definition": "Published articles past review-age threshold" },
+    { "id": "content_outage_rate", "name": "Content Outage Rate", "unit": "count", "direction": "lower_is_better", "definition": "Flagged articles per period; quality incidents in content supply" }
+  ],
+  "failureModes": [
+    { "id": "poisoned_knowledge", "name": "Poisoned Knowledge", "signal": "QA root-cause knowledge_gap clusters on specific articles; IVR and agents disagree", "mitigation": "Flag-to-fix SLA; article version status surfaced to agents with last-reviewed date" },
+    { "id": "silent_divergence", "name": "Silent Divergence", "signal": "Customer help and internal KB answer the same question differently", "mitigation": "SSOT enforcement: one canonical article, other surfaces reference it" },
+    { "id": "search_dead_end", "name": "Search Dead Ends", "signal": "Agent search-to-click rate low; questions routed to tier 2 for findable answers", "mitigation": "Search analytics; curation backlog prioritized by failed-query volume" },
+    { "id": "unindexed_new_products", "name": "Launch Content Gap", "signal": "Contact drivers spike on recently launched products with no articles", "mitigation": "Content readiness gate in product launch checklist" }
+  ],
+  "integrations": [
+    { "with": "crm", "exchanges": ["Case attributes drive contextual article retrieval"] },
+    { "with": "ivr", "exchanges": ["Dynamic informational prompt content drawn from machine-facing articles"] },
+    { "with": "qa", "exchanges": ["Knowledge-gap root causes open curation tickets; article quality feeds QA coaching"] },
+    { "with": "voc", "exchanges": ["Driver themes with missing answers become content backlog items"] }
+  ]
+}
