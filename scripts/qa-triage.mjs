@@ -25,9 +25,12 @@
  *   npm run qa-triage -- --file live-contacts.jsonl --watch \
  *       --out .tmp/qa-triage/history.jsonl --json                 # tail -f triage
  *
- * --watch requires a .jsonl file: appended contacts are triaged as they arrive
- * (poll every --interval ms, default 2000). With --out, every triage result row is
- * appended to the given JSONL file — the history feeds npm run qa-report.
+ * --watch tails a .jsonl file: appended contacts are triaged as they arrive
+ * (poll every --interval ms, default 2000). Truncation/rotation resets tracking to
+ * the file start (already-seen contacts may re-triage — prefer in-place appends).
+ * The input file may not exist yet in watch mode; it is awaited. With --out, every
+ * triage result row is appended to the given JSONL file — the history feeds
+ * npm run qa-report. An append failure is reported and flips the exit code to 1.
  *
  * The decider server is spawned on 127.0.0.1:8111 (or STRANDS_DECIDER_PORT / --port);
  * if one is already healthy on that port it is reused and left running.
@@ -59,11 +62,11 @@ const watch = rawArgs.includes("--watch");
 const outPath = argOf("--out") ? resolve(argOf("--out")) : undefined;
 const interval = Number(argOf("--interval") ?? 2000);
 
-if (!file || !existsSync(resolve(file))) {
+if (!file) {
   console.error(
     `Usage: npm run qa-triage -- --file <contacts.json|.jsonl> [--json] [--watch] [--out history.jsonl] [--port 8111]\n` +
       `  --file accepts a JSON array or JSONL (one contact object per line)\n` +
-      `  --watch tails a .jsonl file, triaging appended contacts as they arrive`,
+      `  --watch tails a .jsonl file (which may not exist yet) as contacts are appended`,
   );
   process.exit(2);
 }
@@ -71,33 +74,50 @@ if (watch && !file.endsWith(".jsonl")) {
   console.error("--watch requires a .jsonl file (append-mode input).");
   process.exit(2);
 }
-
-/* ---------- contacts loading ---------- */
-
 const contactsPath = resolve(file);
+if (!watch && !existsSync(contactsPath)) {
+  console.error(`contacts file not found: ${contactsPath}`);
+  process.exit(2);
+}
 
-/** Parse JSONL buffer tail into contact objects; returns {rows, completeBytes}. */
-const parseJsonlChunk = (chunk) => {
-  const lines = chunk.split("\n");
-  const completeLines = chunk.endsWith("\n") ? lines.slice(0, -1) : lines.slice(0, -1);
-  const completeBytes = completeLines.reduce((acc, l) => acc + l.length + 1, 0);
+/* ---------- contacts parsing ---------- */
+
+const failures = [];
+
+/** Parse every non-empty line of text into contact objects; malformed lines are warned and skipped. */
+const parseContactLines = (text, src) => {
   const rows = [];
-  for (const line of completeLines) {
+  for (const line of text.split("\n")) {
     const trimmed = line.trim();
     if (!trimmed) continue;
     try {
       rows.push(JSON.parse(trimmed));
     } catch {
-      console.error(`WARN  skipping malformed contact line: ${trimmed.slice(0, 80)}`);
+      console.error(`WARN  skipping malformed contact line in ${src}: ${trimmed.slice(0, 80)}`);
     }
   }
-  return { rows, completeBytes };
+  return rows;
+};
+
+/**
+ * Watch-safe chunk parse: only newline-terminated lines, with BYTE-exact accounting.
+ * All offset math stays in Buffer space (bytes); only complete line runs are decoded
+ * to UTF-8 strings, so multi-byte characters can never split a slice boundary.
+ */
+const parseCompleteLinesFromBuffer = (buf) => {
+  const lastNl = buf.lastIndexOf(0x0a);
+  if (lastNl < 0) return { rows: [], completeBytes: 0 };
+  const rows = parseContactLines(buf.subarray(0, lastNl + 1).toString("utf8"), "watch chunk");
+  return { rows, completeBytes: lastNl + 1 };
 };
 
 const loadBatch = () => {
   if (file.endsWith(".jsonl")) {
-    const { rows } = parseJsonlChunk(readFileSync(contactsPath, "utf8"));
-    return rows;
+    const text = readFileSync(contactsPath, "utf8");
+    if (text.length > 0 && !text.endsWith("\n")) {
+      console.error("WARN  contacts JSONL lacks a trailing newline; the final line is still parsed");
+    }
+    return parseContactLines(text, contactsPath);
   }
   const arr = JSON.parse(readFileSync(contactsPath, "utf8"));
   if (!Array.isArray(arr) || arr.length === 0) {
@@ -107,22 +127,24 @@ const loadBatch = () => {
   return arr;
 };
 
+/* ---------- history output ---------- */
+
 if (outPath) {
   mkdirSync(dirname(outPath), { recursive: true });
 }
+let outAppendsOk = 0;
 const appendOut = (row) => {
   if (!outPath) return;
   try {
     const { consoleLine, ...persist } = row; // display artifact stays out of the history
     appendFileSync(outPath, JSON.stringify(persist) + "\n");
+    outAppendsOk += 1;
   } catch (e) {
-    console.error(`WARN  could not append to ${outPath}: ${String(e instanceof Error ? e.message : e)}`);
+    // A failed history write must not be masked by an exit 0 or a false success line.
+    const msg = `history append failed: ${String(e instanceof Error ? e.message : e)}`;
+    console.error(`WARN  ${msg}`);
+    failures.push({ contact_id: row.contact_id, error: msg });
   }
-};
-
-const printRow = (row) => {
-  if (asJson) console.log(JSON.stringify(row));
-  else console.log(row.consoleLine);
 };
 
 /* ---------- server lifecycle ---------- */
@@ -246,8 +268,6 @@ const triagePolicy = (answers) => {
 
 /* ---------- run: one contact -> row ---------- */
 
-const failures = [];
-
 const triageContact = async (contact) => {
   let answers;
   try {
@@ -278,11 +298,16 @@ const triageContact = async (contact) => {
   return row;
 };
 
+const printRow = (row) => {
+  if (asJson) console.log(JSON.stringify(row));
+  else console.log(row.consoleLine);
+};
+
 const printSummary = (rowsSoFar) => {
   const human = rowsSoFar.filter((r) => r.qa_path === "targeted_human_qa").length;
   const review = rowsSoFar.filter((r) => r.qa_path === "needs_review").length;
   console.log(`\nSummary: ${human} targeted human QA, ${review} needs review, ${rowsSoFar.length - human - review} auto-QA only.`);
-  if (outPath) console.error(`History: results appended to ${outPath}`);
+  if (outPath && outAppendsOk > 0) console.error(`History: results appended to ${outPath} (${outAppendsOk} row(s))`);
 };
 
 /* ---------- batch mode ---------- */
@@ -308,7 +333,7 @@ if (!watch) {
   if (!asJson) printSummary(results);
   shutdown();
   if (failures.length > 0) {
-    console.error(`\nCOMPLETE WITH ERRORS — ${failures.length}/${contacts.length} contact(s) failed:`);
+    console.error(`\nCOMPLETE WITH ERRORS — ${failures.length}/${contacts.length} contact/failure record(s):`);
     for (const f of failures) console.error(`  ${f.contact_id}: ${f.error}`);
     process.exit(1);
   }
@@ -325,8 +350,7 @@ if (!asJson) {
 const allRows = [];
 let offset = 0;
 if (existsSync(contactsPath)) {
-  const initial = readFileSync(contactsPath, "utf8");
-  const { rows, completeBytes } = parseJsonlChunk(initial);
+  const { rows, completeBytes } = parseCompleteLinesFromBuffer(readFileSync(contactsPath));
   for (const contact of rows) {
     const row = await triageContact(contact);
     if (row) {
@@ -357,17 +381,23 @@ while (true) {
     continue;
   }
   fileGoneWarned = false;
-  if (size <= offset) continue;
-  let chunk;
-  try {
-    chunk = readFileSync(contactsPath, "utf8").slice(offset);
-  } catch (e) {
-    // File truncated or replaced; reset to the current end and warn.
-    console.error(`WARN  could not read from offset ${offset} (${String(e instanceof Error ? e.message : e)}); resetting`);
-    offset = size;
+  if (size < offset) {
+    // Truncated or rotated: reset to the file start so new content is never
+    // silently skipped. Already-seen contacts may re-triage — prefer in-place appends.
+    console.error(`WARN  ${contactsPath} shrank (${size} < offset ${offset}); truncation/rotation assumed — resetting to file start`);
+    offset = 0;
+  } else if (size === offset) {
     continue;
   }
-  const { rows, completeBytes } = parseJsonlChunk(chunk);
+  let chunk;
+  try {
+    chunk = readFileSync(contactsPath);
+  } catch (e) {
+    // Race with a writer replacing the file; retry on the next poll.
+    console.error(`WARN  could not read ${contactsPath}: ${String(e instanceof Error ? e.message : e)}`);
+    continue;
+  }
+  const { rows, completeBytes } = parseCompleteLinesFromBuffer(chunk.subarray(offset));
   for (const contact of rows) {
     const row = await triageContact(contact);
     if (row) {
