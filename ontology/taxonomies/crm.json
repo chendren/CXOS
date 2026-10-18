@@ -306,5 +306,142 @@
         "Campaign suppression list from consent states"
       ]
     }
-  ]
+  ],
+  "scoringModel": {
+    "id": "crm_identity_golden_record_scorecard",
+    "name": "CRM Identity & Golden Record Integrity Scorecard",
+    "scaleType": "weighted_rubric",
+    "maxPoints": 100,
+    "autoFailItems": [
+      "cross_account_pii_leakage_on_screen_pop",
+      "unconsented_recording_or_outreach_execution",
+      "orphaned_case_writeback_loss"
+    ],
+    "note": "Evaluates deterministic and probabilistic identity resolution, Golden Record conflict entropy, sub-second screen-pop hydration, and jurisdiction-aware consent fidelity.",
+    "dimensions": [
+      {
+        "id": "identity_resolution_precision",
+        "name": "Identity Resolution & Golden Record Precision",
+        "weightPercent": 30,
+        "description": "Accuracy of cross-channel entity matching, deduplication, and master contact identity linking prior to agent connection",
+        "sampleCriteria": [
+          "Inbound ANI, email, or session token resolves to unique Golden Record with >0.95 posterior probability",
+          "Duplicate contact record rate stays below 1.5 percent across active accounts",
+          "Account hierarchy and entitlement tiers hydrate accurately without manual lookup"
+        ]
+      },
+      {
+        "id": "screen_pop_hydration_latency",
+        "name": "Screen-Pop Hydration & Context Carry-Over",
+        "weightPercent": 25,
+        "description": "Sub-second delivery of unified context banner, open cases, and prior interaction history at the moment of ACD answer",
+        "sampleCriteria": [
+          "Screen pop renders complete context banner within 400 milliseconds of call answer",
+          "Prior 90-day omnichannel interaction timeline visible in single pane without swivel-chair lookup",
+          "Customer is never asked to repeat case number or verified identity attributes"
+        ]
+      },
+      {
+        "id": "attribute_freshness_conflict_entropy",
+        "name": "Entity Attribute Freshness & Conflict Suppression",
+        "weightPercent": 20,
+        "description": "Low conflict entropy across multi-source profile attributes and timely decay refresh for contact methods and entitlements",
+        "sampleCriteria": [
+          "Golden Record conflict entropy across billing, phone, and address fields equals zero after MDM survivorship rules",
+          "Stale attributes older than freshness half-life trigger proactive verification prompts",
+          "Mid-call profile updates propagate synchronously across linked sub-accounts"
+        ]
+      },
+      {
+        "id": "consent_state_jurisdiction_governance",
+        "name": "Consent State & Jurisdiction Governance",
+        "weightPercent": 15,
+        "description": "Real-time enforcement of recording, service contact, and marketing opt-in consent flags matched to customer jurisdiction",
+        "sampleCriteria": [
+          "Jurisdiction-specific recording consent state is enforced before media forking begins",
+          "Do-not-contact and suppression flags synchronize to outbound engines within 60 seconds",
+          "Every consent mutation writes an immutable cryptographic audit log entry"
+        ]
+      },
+      {
+        "id": "post_contact_wrap_integrity",
+        "name": "Post-Contact Wrap & Case Write-Back Integrity",
+        "weightPercent": 10,
+        "description": "Structured disposition coding, automated interaction logging, and low-ACW case closure accuracy",
+        "sampleCriteria": [
+          "Wrap code and case disposition match QA-verified resolution outcome",
+          "Automated summary and transcript link attach to case activity log before ACW close",
+          "Mean wrap-up duration stays below 30 seconds through preset case workflows"
+        ]
+      }
+    ]
+  },
+  "continuousDynamics": {
+    "stateSpaceDimension": 8,
+    "manifoldCoordinates": [
+      "identity_resolution_posterior",
+      "attribute_freshness_weight",
+      "golden_record_conflict_entropy",
+      "screen_pop_hydration_latency",
+      "consent_compliance_indicator",
+      "duplicate_fragmentation_rate",
+      "case_context_completeness",
+      "wrap_writeback_lag"
+    ],
+    "stateVariables": [
+      {
+        "id": "identity_resolution_posterior",
+        "symbol": "P_id(t)",
+        "domain": "[0, 1]",
+        "unit": "probability",
+        "description": "Continuous Bayesian posterior probability that an inbound session maps to canonical Golden Record entity m"
+      },
+      {
+        "id": "attribute_freshness_weight",
+        "symbol": "phi_attr(Delta_t)",
+        "domain": "(0, 1]",
+        "unit": "freshness_weight",
+        "description": "Exponentially decaying reliability weight exp(-lambda_attr * Delta_t) of an entity attribute last verified Delta_t seconds ago"
+      },
+      {
+        "id": "golden_record_conflict_entropy",
+        "symbol": "H_mdm(t)",
+        "domain": "[0, inf)",
+        "unit": "nats",
+        "description": "Shannon conflict entropy across competing source-system values for Golden Record attributes prior to survivorship reconciliation"
+      },
+      {
+        "id": "screen_pop_hydration_latency",
+        "symbol": "L_pop(t)",
+        "domain": "[0, inf)",
+        "unit": "seconds",
+        "description": "Continuous hydration latency from ACD routing ring event to complete rendering of the CRM context banner"
+      }
+    ],
+    "differentialEquations": [
+      {
+        "id": "attribute_freshness_decay_ode",
+        "name": "Entity Attribute Freshness Exponential Decay",
+        "formula": "phi_attr(Delta_t) = exp(-lambda_attr cdot Delta_t), with dphi_attr(t) cdot dt^-1 = -lambda_attr cdot phi_attr(t) + (1 - phi_attr(t)) cdot delta(t - t_verify)",
+        "interpretation": "Attribute reliability decays continuously at rate lambda_attr over elapsed time Delta_t and resets to unity upon live verification at t_verify"
+      },
+      {
+        "id": "bayesian_identity_resolution_flow",
+        "name": "Continuous Fellegi-Sunter Identity Resolution Posterior Flow",
+        "formula": "d_logit_P_id(t) = sum_k phi_attr(Delta_t_k) cdot LLR_k(x_k(t)) dt - gamma_frag cdot H_mdm(t) dt",
+        "interpretation": "Log-odds of Golden Record identity accumulate freshness-weighted log-likelihood ratios LLR_k from observed keys x_k while MDM conflict entropy penalizes certainty"
+      },
+      {
+        "id": "golden_record_conflict_entropy_ode",
+        "name": "Golden Record Conflict Entropy & Hydration Dynamics",
+        "formula": "dH_mdm(t) cdot dt^-1 = nu_ingest cdot I_divergent(t) - mu_sync cdot H_mdm(t), with L_pop(t) = L_base + alpha_ent cdot H_mdm(t)",
+        "interpretation": "Unsynchronized multi-channel writes inject conflict entropy at rate nu_ingest while MDM reconciliation decays it at rate mu_sync, directly bounding screen-pop latency L_pop"
+      }
+    ],
+    "scaleInvariants": [
+      "Commutative monoid merge invariance: CRDT and Fellegi-Sunter log-likelihood updates produce identical Golden Record states regardless of channel ingestion order",
+      "O(1) pre-contact hydration latency via blocking-key inverted indices and materialized context banners across 100M+ customer profiles",
+      "Dimensionless freshness scaling: normalizing elapsed time by attribute half-life lambda_attr^-1 collapses heterogeneous field decay curves onto exp(-tau)"
+    ]
+  }
 }

@@ -79,10 +79,144 @@
     { "id": "outbound_echo", "name": "Outbound Echo Wave", "signal": "Inbound volume spikes 24-72h after campaign waves; WFM understaffed", "mitigation": "Campaign calendar informs forecast; response-wave factor applied" },
     { "id": "list_decay", "name": "List Decay", "signal": "Bad-number and wrong-party rates climbing as list ages", "mitigation": "Penetration caps; auto-suspend records after N bad outcomes" }
   ],
+  "scoringModel": {
+    "id": "outbound_pacing_governance_scorecard",
+    "name": "Outbound Pacing & Regulatory Governance Scorecard",
+    "scaleType": "weighted_rubric",
+    "maxPoints": 100,
+    "autoFailItems": [
+      "dnc_suppression_bypass",
+      "calling_window_violation",
+      "tcpa_abandon_ceiling_breach",
+      "missing_mandatory_recording_disclosure"
+    ],
+    "note": "Evaluates outbound campaign execution across regulatory compliance, predictive pacing stability, right-party contact hygiene, and cross-channel suppression integrity.",
+    "dimensions": [
+      {
+        "id": "regulatory_consent_compliance",
+        "name": "Regulatory & Consent Compliance",
+        "weightPercent": 30,
+        "description": "Strict enforcement of DNC registries, verified consent basis, jurisdictional calling windows, and mandatory opening disclosures",
+        "sampleCriteria": [
+          "Pre-dial DNC and consent token verified against CRM state",
+          "Attempt placed strictly inside recipient local permitted calling window",
+          "Mandatory recording and identity disclosures delivered verbatim"
+        ]
+      },
+      {
+        "id": "predictive_pacing_control",
+        "name": "Predictive Pacing & Abandon Ceiling Control",
+        "weightPercent": 25,
+        "description": "Real-time dialer pacing accuracy keeping customer-answered abandoned share safely below the 3 percent regulatory ceiling while maintaining agent utilization",
+        "sampleCriteria": [
+          "Rolling interval abandonment rate maintained below 3 percent threshold",
+          "Auto-throttle triggered immediately when answer-rate variance spikes",
+          "Zero dead-air connect delays exceeding 2 seconds from customer hello"
+        ]
+      },
+      {
+        "id": "rpc_conversion_execution",
+        "name": "Right-Party Contact & Outcome Execution",
+        "weightPercent": 25,
+        "description": "Accurate right-party verification, value-aligned offer or recovery presentation, and definitive disposition logging",
+        "sampleCriteria": [
+          "Right-party identity confirmed prior to account-specific discussion",
+          "Campaign offer or resolution path tailored to customer segment",
+          "Accurate outcome disposition and promise-to-pay or opt-out logged in CRM"
+        ]
+      },
+      {
+        "id": "list_saturation_suppression_hygiene",
+        "name": "List Saturation & Cross-Channel Suppression",
+        "weightPercent": 20,
+        "description": "Penetration cap discipline, active incident suppression, and WFM inbound echo-wave coordination",
+        "sampleCriteria": [
+          "Daily and weekly dial attempt caps respected per customer record",
+          "Commercial outreach suppressed during active service escalations",
+          "Campaign wave volume synchronized with WFM inbound echo forecast"
+        ]
+      }
+    ]
+  },
   "integrations": [
     { "with": "crm", "exchanges": ["Consent and suppression states gate dialing", "Attempt and outcome write-back to record"] },
     { "with": "wfm", "exchanges": ["Campaign calendar as forecast event feed", "Campaign skill requirements in schedules"] },
     { "with": "ivr", "exchanges": ["Voice broadcast content and opt-out self-service paths"] },
     { "with": "qa", "exchanges": ["Outbound-specific compliance disclosures in evaluation rubric"] }
-  ]
+  ],
+  "continuousDynamics": {
+    "stateSpaceDimension": 8,
+    "manifoldCoordinates": [
+      "predictive_pacing_multiplier",
+      "rolling_abandon_rate",
+      "rpc_propensity_hazard",
+      "list_saturation_index",
+      "cross_channel_suppression_field",
+      "calling_window_conductance",
+      "agent_idle_readiness_density",
+      "outbound_echo_wave_potential"
+    ],
+    "stateVariables": [
+      {
+        "id": "predictive_dial_pacing_rate",
+        "symbol": "lambda_dial(t)",
+        "domain": "R_+",
+        "unit": "dials_per_second",
+        "description": "Continuous stochastic predictive dialer placement rate dynamically modulated by agent readiness density and real-time answer propensity"
+      },
+      {
+        "id": "rolling_abandonment_state",
+        "symbol": "A_abn(t)",
+        "domain": "[0, 1]",
+        "unit": "abandon_ratio",
+        "description": "Filtered customer-answered abandonment ratio constrained strictly below the 0.03 TCPA regulatory ceiling via barrier control"
+      },
+      {
+        "id": "rpc_propensity_hazard",
+        "symbol": "h_rpc(x, t)",
+        "domain": "[0, 1]",
+        "unit": "hazard_rate",
+        "description": "Time-of-day and channel-conditioned instantaneous hazard rate of achieving a Right-Party Contact for record profile x at local time t"
+      },
+      {
+        "id": "list_saturation_decay_state",
+        "symbol": "S_list(t)",
+        "domain": "[0, 1]",
+        "unit": "viable_fraction",
+        "description": "Remaining viable contactable fraction of the campaign list decaying under cumulative dial penetration, opt-outs, and bad-number discovery"
+      },
+      {
+        "id": "cross_channel_suppression_field",
+        "symbol": "Psi_supp(t)",
+        "domain": "[0, 1]",
+        "unit": "damping_factor",
+        "description": "Cross-channel suppression damping field integrating recent digital touches, open support incidents, and DNC revocations to mute dial eligibility"
+      }
+    ],
+    "differentialEquations": [
+      {
+        "id": "tcpa_barrier_pacing_sde",
+        "name": "TCPA-Constrained Predictive Pacing Control SDE",
+        "formula": "d_lambda_dial(t) = kappa_pace * ( N_idle(t) * inv(p_ans(t)) - lambda_dial(t) ) * dt - gamma_tcpa * (0.03 - A_abn(t))^(-2) * dt + sigma_pace * dW_t",
+        "interpretation": "Drives dial rate lambda_dial(t) toward expected agent capacity N_idle(t) * inv(p_ans(t)) while a reciprocal control barrier (0.03 - A_abn(t))^(-2) enforces hard asymptotic throttling before the 3 percent abandonment ceiling is breached"
+      },
+      {
+        "id": "rpc_hazard_list_saturation_ode",
+        "name": "List Saturation Decay & RPC Propensity Evolution",
+        "formula": "dS_list(t) * inv(dt) = -lambda_dial(t) * ( h_rpc(x, t) + mu_bad(t) + mu_optout(t) ) * S_list(t) * (1 - Psi_supp(t))",
+        "interpretation": "Models the continuous depletion of viable list inventory S_list(t) as records convert via right-party contact hazard h_rpc(x, t) or exit via wrong-party and opt-out rates, scaled by active suppression (1 - Psi_supp(t))"
+      },
+      {
+        "id": "cross_channel_suppression_damping_pde",
+        "name": "Cross-Channel Suppression Damping Field Equation",
+        "formula": "dPsi_supp(t) * inv(dt) = -alpha_cool * Psi_supp(t) + beta_touch * (1 - Psi_supp(t)) * ( I_inbound(t) + I_digital(t) ) + M_dnc * I_revoke(t)",
+        "interpretation": "Integrates inbound service contacts I_inbound(t), digital nudges I_digital(t), and permanent consent revocations I_revoke(t) into a damping field Psi_supp(t) that prevents over-contacting and regulatory violations"
+      }
+    ],
+    "scaleInvariants": [
+      "Zero-breach TCPA barrier invariant: P(A_abn(t) >= 0.03) -> 0 across arbitrary answer-rate non-stationarity via control barrier damping",
+      "Idempotent DNC and consent revocation gate: any opt-out event forces (1 - Psi_supp(t)) = 0 within sub-second propagation across all dialer nodes",
+      "Outbound-to-inbound echo conservation: integral of campaign attempts lambda_dial(t) dt maps linearly via response-wave convolution kernel to WFM inbound forecast demand"
+    ]
+  }
 }

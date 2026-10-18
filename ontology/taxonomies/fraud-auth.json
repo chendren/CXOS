@@ -208,6 +208,65 @@
       "mitigation": "Enable acoustic liveness and synthetic artifact detection alongside multi-signal carrier attestation"
     }
   ],
+  "scoringModel": {
+    "id": "fraud_auth_zero_trust_scorecard",
+    "name": "Zero-Trust Biometric & Fraud Defense Scorecard",
+    "scaleType": "weighted_rubric",
+    "maxPoints": 100,
+    "autoFailItems": [
+      "unauthenticated_high_risk_account_mutation",
+      "static_kba_override_on_flagged_ato",
+      "synthetic_deepfake_liveness_bypass",
+      "sms_otp_sent_after_recent_sim_swap"
+    ],
+    "note": "Evaluates identity verification and fraud interception across passive zero-friction biometrics, network and SIM attestation, deepfake liveness defense, and risk-adaptive step-up MFA governance.",
+    "dimensions": [
+      {
+        "id": "passive_biometric_network_assurance",
+        "name": "Passive Voice Biometrics & Network Attestation",
+        "weightPercent": 30,
+        "description": "Pre-answer STIR and SHAKEN carrier forensics fused with background voiceprint verification to authenticate genuine callers with zero interrogation friction",
+        "sampleCriteria": [
+          "STIR and SHAKEN attestation and VoIP aggregator risk scored prior to answer",
+          "Enrolled callers verified passively within 5 seconds of natural speech",
+          "Green fast-track status suppresses redundant manual security questions on desktop"
+        ]
+      },
+      {
+        "id": "deepfake_liveness_watchlist_defense",
+        "name": "Deepfake Liveness & Fraud Watchlist Interception",
+        "weightPercent": 25,
+        "description": "Real-time spectral liveness verification against generative TTS clones and acoustic screening against known bad-actor voiceprints",
+        "sampleCriteria": [
+          "Incoming audio screened for synthetic vocoder artifacts and replay signatures",
+          "Active calls cross-matched in real time against known fraudster voiceprint gallery",
+          "Confirmed watchlist or synthetic hits silently diverted to fraud specialist queue"
+        ]
+      },
+      {
+        "id": "step_up_mfa_ato_protection",
+        "name": "Risk-Adaptive Step-Up MFA & ATO Protection",
+        "weightPercent": 25,
+        "description": "Cryptographic out-of-band step-up challenges and hard desktop UI locks protecting high-risk profile, credential, and fund transfers",
+        "sampleCriteria": [
+          "Sensitive CRM mutations hard-locked until mobile push or FIDO passkey succeeds",
+          "Carrier SIM-swap and port-out age verified before permitting any OTP factor",
+          "Zero reliance on static demographic KBA for medium- or high-risk transactions"
+        ]
+      },
+      {
+        "id": "false_reject_friction_minimization",
+        "name": "False-Reject Recovery & Friction Calibration",
+        "weightPercent": 20,
+        "description": "SNR-aware biometric thresholding and seamless fallback to authenticated app tokens so noisy mobile environments do not penalize genuine customers",
+        "sampleCriteria": [
+          "Genuine Caller False Rejection Rate (FRR) maintained below 2 percent target",
+          "Low-SNR mobile calls gracefully fall back to in-app push without agent friction",
+          "Operating FAR and FRR thresholds continuously tuned to transaction risk tier"
+        ]
+      }
+    ]
+  },
   "integrations": [
     {
       "with": "ccaas",
@@ -237,5 +296,82 @@
         "Step-up MFA trigger button and hard UI lock on sensitive CRM fields until verification completes"
       ]
     }
-  ]
+  ],
+  "continuousDynamics": {
+    "stateSpaceDimension": 10,
+    "manifoldCoordinates": [
+      "bayesian_fraud_log_odds",
+      "passive_voiceprint_llr",
+      "synthetic_liveness_spectral_margin",
+      "ani_stir_shaken_trust_prior",
+      "sim_tenure_integrity_score",
+      "behavioral_cadence_anomaly_index",
+      "watchlist_cosine_proximity",
+      "dynamic_far_frr_threshold",
+      "step_up_assurance_level",
+      "transaction_exposure_at_risk"
+    ],
+    "stateVariables": [
+      {
+        "id": "bayesian_fraud_log_odds",
+        "symbol": "l_fraud(t)",
+        "domain": "R^1",
+        "unit": "log_odds_nats",
+        "description": "Continuous Bayesian log-odds trajectory log( P(Fraud | y_0:t) * inv(1 - P(Fraud | y_0:t)) ) updated in real time across telephony, acoustic biometric, and behavioral telemetry"
+      },
+      {
+        "id": "passive_biometric_log_likelihood_ratio",
+        "symbol": "LLR_bio(t)",
+        "domain": "R^1",
+        "unit": "llr_score",
+        "description": "Streaming acoustic log-likelihood ratio comparing incoming caller speech frames against the enrolled customer voiceprint model versus universal background and watchlist models"
+      },
+      {
+        "id": "synthetic_liveness_score",
+        "symbol": "S_live(t)",
+        "domain": "[0, 1]",
+        "unit": "liveness_probability",
+        "description": "Continuous spectral phase-continuity and vocal-tract liveness posterior distinguishing organic human speech from generative TTS voice clones and replay attacks"
+      },
+      {
+        "id": "behavioral_cadence_anomaly_state",
+        "symbol": "A_behav(t)",
+        "domain": "R_+",
+        "unit": "mahalanobis_distance",
+        "description": "Continuous anomaly score over IVR keypad cadence, conversational hesitation, and social-engineering pretexting script patterns"
+      },
+      {
+        "id": "operating_decision_threshold",
+        "symbol": "theta_gate(t)",
+        "domain": "R^1",
+        "unit": "log_odds_threshold",
+        "description": "Risk-adaptive authentication decision boundary trading off False Acceptance Rate (FAR) exposure against genuine-customer False Rejection Rate (FRR) handle-time cost"
+      }
+    ],
+    "differentialEquations": [
+      {
+        "id": "continuous_bayesian_fraud_log_odds_sde",
+        "name": "Continuous Bayesian Fraud Log-Odds Filtering SDE",
+        "formula": "dl_fraud(t) = ( w_watch * LLR_watch(t) - w_bio * S_live(t) * LLR_bio(t) + w_deepfake * (1 - S_live(t)) + w_behav * A_behav(t) ) * dt - kappa_mfa * dI_stepup(t) + sigma_obs * dW_t",
+        "interpretation": "Continuously integrates watchlist similarity LLR_watch(t), liveness-weighted voiceprint match S_live(t) * LLR_bio(t), deepfake artifacts (1 - S_live(t)), and behavioral anomalies A_behav(t) from initial carrier prior l_fraud(0), while verified cryptographic step-up MFA dI_stepup(t) applies a downward risk reset"
+      },
+      {
+        "id": "snr_weighted_voiceprint_accumulation_ode",
+        "name": "SNR-Weighted Passive Voice Biometric Evidence Accumulation",
+        "formula": "dLLR_bio(t) * inv(dt) = phi_snr(SNR_db(t)) * VAD_speech(t) * ( log p(x_acoust(t) | M_enrolled) - log p(x_acoust(t) | M_ubm) )",
+        "interpretation": "Accumulates frame-level acoustic evidence only during active speech intervals VAD_speech(t) weighted by signal-to-noise reliability phi_snr(SNR_db(t)), preventing noisy mobile connections from triggering false rejections"
+      },
+      {
+        "id": "bayes_optimal_far_frr_threshold_law",
+        "name": "Risk-Adaptive FAR and FRR Operating Threshold Control Law",
+        "formula": "theta_gate(t) = log( (C_frr_aht + C_csat_drop) * inv( C_ato_loss(V_tx(t)) ) )",
+        "interpretation": "Dynamically positions the step-up and block threshold theta_gate(t) according to the ratio of false-reject customer friction cost (C_frr_aht + C_csat_drop) to the dollar exposure at risk C_ato_loss(V_tx(t)) of the requested transaction"
+      }
+    ],
+    "scaleInvariants": [
+      "Zero-trust mutation invariant: no high-risk CRM or payment tool execution is reachable while l_fraud(t) > theta_gate(t) without cryptographic step-up verification",
+      "Sub-3-second passive verification convergence: for SNR > 15 dB, enrolled genuine callers cross the green fast-track boundary l_fraud(t) < theta_green within 3 seconds of natural speech",
+      "Neyman-Pearson operating optimality: dynamic threshold theta_gate(t) minimizes expected fraud loss plus AHT friction across all contact volume scales"
+    ]
+  }
 }

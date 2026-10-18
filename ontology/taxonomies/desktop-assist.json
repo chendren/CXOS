@@ -202,6 +202,64 @@
       "mitigation": "Pre-hydrate CRM profile and bot handoff brief during ACD ring state with cached fallback views"
     }
   ],
+  "scoringModel": {
+    "id": "desktop_copilot_precision_scorecard",
+    "name": "Co-Pilot Precision & Cognitive Load Reduction Scorecard",
+    "scaleType": "weighted_rubric",
+    "maxPoints": 100,
+    "autoFailItems": [
+      "unverified_commitment_written_to_crm_summary",
+      "missed_mandatory_compliance_disclosure_gate",
+      "pii_exposed_in_copilot_prompt_context"
+    ],
+    "note": "Evaluates unified agent workspace and AI co-pilot performance across real-time whisper relevance, swivel-chair cognitive load reduction, live compliance guidance, and ACW auto-summarization fidelity.",
+    "dimensions": [
+      {
+        "id": "realtime_whisper_precision_latency",
+        "name": "Real-Time Whisper Precision & Latency",
+        "weightPercent": 30,
+        "description": "Sub-2-second delivery of highly relevant, grounded KM answer cards and next-best-response drafts without notification spam",
+        "sampleCriteria": [
+          "Knowledge whisper card surfaces within 2 seconds of detected customer intent",
+          "Active co-pilot cards capped at 2 on screen to prevent cognitive overload",
+          "Surfaced answer snippet is grounded in current approved KM article"
+        ]
+      },
+      {
+        "id": "cognitive_load_swivel_chair_reduction",
+        "name": "Cognitive Load & Swivel-Chair Reduction",
+        "weightPercent": 25,
+        "description": "Pre-answer context hydration and unified transaction wizards that eliminate multi-app toggling and redundant customer interrogation",
+        "sampleCriteria": [
+          "Customer 360 and prior CAI or IVR handoff brief fully hydrated before call answer",
+          "One-click composite workflow wizard executes cross-system updates without copy-paste",
+          "Application context switches per interaction held below ergonomic target"
+        ]
+      },
+      {
+        "id": "acw_summarization_disposition_fidelity",
+        "name": "ACW Auto-Summarization & Disposition Fidelity",
+        "weightPercent": 25,
+        "description": "Accurate problem-action-outcome interaction summaries, extracted commitment verification chips, and automated wrap-code prediction",
+        "sampleCriteria": [
+          "Generated summary captures problem, action taken, and resolution with zero factual drift",
+          "Extracted monetary amounts and dates confirmed via agent review chips before commit",
+          "Auto-predicted primary and secondary disposition codes match QA truth"
+        ]
+      },
+      {
+        "id": "live_compliance_empathy_guardrails",
+        "name": "Live Compliance Checklist & Empathy Cues",
+        "weightPercent": 20,
+        "description": "Real-time tracking of mandatory regulatory disclosures and non-intrusive acoustic pacing and de-escalation cues",
+        "sampleCriteria": [
+          "Live compliance checklist verifies required disclosures before wrap-up unlocks",
+          "Empathy and speech-pacing cue surfaces accurately when caller stress rises",
+          "PCI sensitive field focus automatically triggers recording and transcript masking"
+        ]
+      }
+    ]
+  },
   "integrations": [
     {
       "with": "km",
@@ -231,5 +289,82 @@
         "Agent-resolved Q&A pairs fed back to expand virtual agent RAG coverage"
       ]
     }
-  ]
+  ],
+  "continuousDynamics": {
+    "stateSpaceDimension": 10,
+    "manifoldCoordinates": [
+      "agent_cognitive_load_state",
+      "app_context_switch_frequency",
+      "copilot_whisper_relevance_margin",
+      "whisper_arrival_latency_lag",
+      "summary_compression_fidelity",
+      "acw_wrap_completion_hazard",
+      "screen_pop_hydration_completeness",
+      "compliance_checklist_coverage",
+      "empathy_pacing_alignment",
+      "nba_card_adoption_elasticity"
+    ],
+    "stateVariables": [
+      {
+        "id": "agent_cognitive_load_state",
+        "symbol": "L_cog(t)",
+        "domain": "[0, 1]",
+        "unit": "cognitive_load_index",
+        "description": "Continuous agent working-memory and cognitive load state driven by application context-switch frequency, customer emotional intensity, and unassisted knowledge search"
+      },
+      {
+        "id": "copilot_whisper_relevance_score",
+        "symbol": "R_whisp(t)",
+        "domain": "[0, 1]",
+        "unit": "relevance_probability",
+        "description": "Real-time semantic precision and utility score of surfaced co-pilot knowledge cards conditioned on the live conversation state and agent screen focus"
+      },
+      {
+        "id": "streaming_summary_compression_fidelity",
+        "symbol": "F_sum(t)",
+        "domain": "[0, 1]",
+        "unit": "mutual_information_ratio",
+        "description": "Information-theoretic compression fidelity quantifying the fraction of decision-critical interaction facts and commitments preserved in the streaming ACW summary"
+      },
+      {
+        "id": "acw_wrap_up_hazard_rate",
+        "symbol": "h_acw(t)",
+        "domain": "R_+",
+        "unit": "completion_rate",
+        "description": "Instantaneous post-contact wrap-up completion hazard rate governing how rapidly after-call work terminates once call audio ends"
+      },
+      {
+        "id": "swivel_chair_switch_intensity",
+        "symbol": "nu_switch(t)",
+        "domain": "R_+",
+        "unit": "switches_per_minute",
+        "description": "Instantaneous rate of window focus transitions and manual clipboard operations across disparate desktop applications"
+      }
+    ],
+    "differentialEquations": [
+      {
+        "id": "agent_cognitive_load_evolution_ode",
+        "name": "Agent Cognitive Load & Context-Switch Damping ODE",
+        "formula": "dL_cog(t) * inv(dt) = -alpha_relax * (L_cog(t) - L_0) + beta_swivel * nu_switch(t) + beta_noise * I_spam_card(t) - gamma_assist * R_whisp(t) * I_card_used(t)",
+        "interpretation": "Models working-memory load L_cog(t) rising under swivel-chair switching nu_switch(t) and noisy low-relevance card pops I_spam_card(t), while high-precision adopted whisper cards R_whisp(t) actively offload memory retrieval and reduce cognitive strain"
+      },
+      {
+        "id": "streaming_summary_information_bottleneck_ode",
+        "name": "Streaming Summarization Information-Bottleneck Fidelity Flow",
+        "formula": "dF_sum(t) * inv(dt) = kappa_ext * (1 - F_sum(t)) * I_salient(du_t; Y_crm) - delta_drift * max(0, L_transcript(t) - L_window)",
+        "interpretation": "Tracks how streaming entity and commitment extraction accumulates salient CRM mutual information I_salient(du_t; Y_crm) toward F_sum(t) -> 1 during the live call, eliminating end-of-call summarization wait time"
+      },
+      {
+        "id": "acw_wrap_up_hazard_acceleration_law",
+        "name": "After-Contact Work (ACW) Wrap-Up Hazard Acceleration Law",
+        "formula": "h_acw(t) = h_base * exp( eta_sum * F_sum(t_end) + eta_disp * P_auto_disp(t_end) - zeta_cog * L_cog(t_end) )",
+        "interpretation": "Demonstrates that high streaming summary fidelity F_sum(t_end) and confident auto-disposition prediction P_auto_disp(t_end) at call disconnect exponentially accelerate wrap-up completion hazard h_acw(t), compressing ACW duration by 50% to 70%"
+      }
+    ],
+    "scaleInvariants": [
+      "Card-spam cognitive bound: gating whisper emission on R_whisp(t) >= theta_rel and active card count <= 2 guarantees net negative cognitive load contribution from the co-pilot",
+      "Pre-answer hydration invariant: 100% of prior CAI slots and CRM 360 context hydrate within the ACD ring window (< 400ms), driving initial swivel-chair rate nu_switch(0) -> 0",
+      "Zero-hallucination CRM commit invariant: mandatory entity-confirmation chips ensure 100% of numeric and date commitments in auto-summaries are verified prior to persistence"
+    ]
+  }
 }

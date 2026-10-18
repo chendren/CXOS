@@ -18,32 +18,19 @@
  *      continuous steering vector u*(t) in [0, 1]^6 + optional Tier-2 Strands 2B System-One
  *      boundary calibration on maximum-entropy frontier states.
  *
+ * Supports multi-core parallel execution via node:worker_threads (--workers <W>).
  * Zero external dependencies. Zero regular expressions.
  */
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import os from "node:os";
 import { performance } from "node:perf_hooks";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { Worker, isMainThread, parentPort, workerData } from "node:worker_threads";
 
 const currentFile = fileURLToPath(import.meta.url);
 const scriptsDir = dirname(currentFile);
 const workspaceRoot = resolve(scriptsDir, "..");
-
-const rawArgs = process.argv.slice(2);
-const argOf = (flag) => {
-  const idx = rawArgs.indexOf(flag);
-  return idx >= 0 ? rawArgs[idx + 1] : undefined;
-};
-
-const scaleJourneys = Math.max(100, Number(argOf("--scale") ?? 10000));
-const seedInput = Number(argOf("--seed") ?? 20261017);
-const withDecider = rawArgs.includes("--with-decider");
-const deciderSamplesCount = Math.max(1, Number(argOf("--decider-samples") ?? 12));
-const deciderPort = Number(argOf("--port") ?? process.env.STRANDS_DECIDER_PORT ?? 8111);
-const asJson = rawArgs.includes("--json");
-const outFile = resolve(
-  argOf("--out") ?? join(workspaceRoot, ".tmp", "continuous-scale", "manifold-summary.json"),
-);
 
 const specPath = join(workspaceRoot, "ontology", "continuous-scale-spec.json");
 if (!existsSync(specPath)) {
@@ -57,28 +44,7 @@ const NUM_AGENTS = spec.a2aContinuousAgents.length;
 const NUM_BLUEPRINTS = spec.goldenAttractorTubes.length;
 const NUM_ACTIONS = 6;
 const NUM_CTX_FIELDS = 6;
-
-/* ---------- Deterministic xorshift128+ PRNG (zero-allocation state) ---------- */
-
-const rngState = new Uint32Array(4);
-rngState[0] = (seedInput >>> 0) ^ 0x9e3779b9;
-rngState[1] = ((seedInput * 1664525 + 1013904223) >>> 0) ^ 0x7f4a7c15;
-rngState[2] = ((seedInput * 22695477 + 1) >>> 0) ^ 0xbf58476d;
-rngState[3] = ((seedInput * 1103515245 + 12345) >>> 0) ^ 0x1ce4e5b9;
-if ((rngState[0] | rngState[1] | rngState[2] | rngState[3]) === 0) rngState[0] = 1;
-
-const nextU32 = () => {
-  let t = rngState[3];
-  const s = rngState[0];
-  rngState[3] = rngState[2];
-  rngState[2] = rngState[1];
-  rngState[1] = s;
-  t ^= t << 11;
-  t ^= t >>> 8;
-  return (rngState[0] = (t ^ s ^ (s >>> 19)) >>> 0);
-};
-
-const nextFloat = () => nextU32() * 2.3283064365386963e-10;
+const GRID_BINS = 10;
 
 // Precomputed 4096-entry Gaussian lookup table for sub-nanosecond sampling
 const GAUSS_MASK = 4095;
@@ -88,7 +54,6 @@ for (let i = 0; i < 4096; i++) {
   const u2 = ((i * 2654435761) >>> 0) * 2.3283064365386963e-10;
   gaussTable[i] = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(6.283185307179586 * u2);
 }
-const nextGaussian = () => gaussTable[nextU32() & GAUSS_MASK];
 
 const clamp01 = (v) => (v < 0.0 ? 0.0 : v > 1.0 ? 1.0 : v);
 const sigmoid = (x) => 1.0 / (1.0 + Math.exp(-x));
@@ -212,24 +177,635 @@ const modalityLossMatrix = new Float64Array([
   0.08, 0.09, 0.1, 0.07, 0.16, 0.05, 0.008, // from video_cobrowse
 ]);
 
-/* ---------- Vectorized Continuous Stream & Assimilation Loop ---------- */
+const BETA_TEMP = spec.continuousFormulations.a2aContinuousField.hyperparameters.inverseTemperatureBeta;
+const GAMMA_LOAD = spec.continuousFormulations.a2aContinuousField.hyperparameters.loadPenaltyGamma;
+const ETA_LAT = spec.continuousFormulations.a2aContinuousField.hyperparameters.latencyPenaltyEta;
+const KAPPA_AUTH = spec.continuousFormulations.a2aContinuousField.hyperparameters.authoritySlopeKappa;
+const LOG_NUM_AGENTS = Math.log(NUM_AGENTS);
+
+/**
+ * Runs a partition of journeys [startIdx, endIdx) with deterministic seed.
+ */
+function runPartition({
+  startIdx,
+  endIdx,
+  totalScale,
+  workerSeed,
+  deciderSamplesCount,
+  reservoirCap,
+  maxManifoldSamples,
+}) {
+  const count = endIdx - startIdx;
+  const rngState = new Uint32Array(4);
+  rngState[0] = (workerSeed >>> 0) ^ 0x9e3779b9;
+  rngState[1] = ((workerSeed * 1664525 + 1013904223) >>> 0) ^ 0x7f4a7c15;
+  rngState[2] = ((workerSeed * 22695477 + 1) >>> 0) ^ 0xbf58476d;
+  rngState[3] = ((workerSeed * 1103515245 + 12345) >>> 0) ^ 0x1ce4e5b9;
+  if ((rngState[0] | rngState[1] | rngState[2] | rngState[3]) === 0) rngState[0] = 1;
+
+  const nextU32 = () => {
+    let t = rngState[3];
+    const s = rngState[0];
+    rngState[3] = rngState[2];
+    rngState[2] = rngState[1];
+    rngState[1] = s;
+    t ^= t << 11;
+    t ^= t >>> 8;
+    return (rngState[0] = (t ^ s ^ (s >>> 19)) >>> 0);
+  };
+
+  const nextFloat = () => nextU32() * 2.3283064365386963e-10;
+  const nextGaussian = () => gaussTable[nextU32() & GAUSS_MASK];
+
+  // Scratch buffers reused per journey for zero GC pressure in the tight loop
+  const zState = new Float64Array(DIM);
+  const zPrev = new Float64Array(DIM);
+  const yObs = new Float64Array(DIM);
+  const muPlan = new Float64Array(DIM);
+  const sigPlan = new Float64Array(DIM);
+  const stepVecPrev = new Float64Array(DIM);
+  const ctxTensor = new Float64Array(NUM_CTX_FIELDS);
+  const a2aProbs = new Float64Array(NUM_AGENTS);
+  const a2aLogits = new Float64Array(NUM_AGENTS);
+  const controlVec = new Float64Array(NUM_ACTIONS);
+
+  // Aggregators across this partition
+  let totalEventsProcessed = 0;
+  let sumDrift = 0.0;
+  let sumWasserstein = 0.0;
+  let sumLyapunov = 0.0;
+  let sumContextFidelity = 0.0;
+  let sumContextEntropy = 0.0;
+  let sumA2AEntropy = 0.0;
+  let sumSpectralLoopEnergy = 0.0;
+  let sumTauProgress = 0.0;
+
+  let countConvergent = 0;
+  let countOrbital = 0;
+  let countDivergent = 0;
+  let countSipStripped = 0;
+  let countHighSpectralLoop = 0;
+
+  const sumLatentAxes = new Float64Array(DIM);
+  const controlWeightSums = new Float64Array(NUM_ACTIONS);
+  const controlDominantCounts = new Uint32Array(NUM_ACTIONS);
+  const agentSoftMass = new Float64Array(NUM_AGENTS);
+  const agentTop1Counts = new Uint32Array(NUM_AGENTS);
+  const a2aFlowMatrix = new Float64Array(NUM_AGENTS * NUM_AGENTS);
+
+  const blueprintCounts = new Uint32Array(NUM_BLUEPRINTS);
+  const blueprintDriftSums = new Float64Array(NUM_BLUEPRINTS);
+  const blueprintFidelitySums = new Float64Array(NUM_BLUEPRINTS);
+  const blueprintLyapSums = new Float64Array(NUM_BLUEPRINTS);
+  const blueprintTauSums = new Float64Array(NUM_BLUEPRINTS);
+  const blueprintElapsedSecSums = new Float64Array(NUM_BLUEPRINTS);
+  const blueprintSipStrippedCounts = new Uint32Array(NUM_BLUEPRINTS);
+  const blueprintConvergentCounts = new Uint32Array(NUM_BLUEPRINTS);
+  const blueprintDivergentCounts = new Uint32Array(NUM_BLUEPRINTS);
+  const blueprintAxisSums = new Float64Array(NUM_BLUEPRINTS * DIM);
+  const blueprintAxisSqSums = new Float64Array(NUM_BLUEPRINTS * DIM);
+  const blueprintControlSums = new Float64Array(NUM_BLUEPRINTS * NUM_ACTIONS);
+
+  const phaseSpaceTauDriftGrid = new Uint32Array(GRID_BINS * GRID_BINS);
+  const phaseSpaceFidelityLoopGrid = new Uint32Array(GRID_BINS * GRID_BINS);
+
+  const resLen = Math.min(count, reservoirCap);
+  const resStride = Math.max(1, Math.floor(count / resLen));
+  const resDrifts = new Float64Array(resLen);
+  const resFidelities = new Float64Array(resLen);
+  const resLyapunovs = new Float64Array(resLen);
+  const resA2AEntropies = new Float64Array(resLen);
+  let resIdx = 0;
+
+  const sampleStride = Math.max(1, Math.floor(totalScale / maxManifoldSamples));
+  const manifoldSamples = [];
+  const frontierCandidates = [];
+
+  for (let j = startIdx; j < endIdx; j++) {
+    const bpIdx = j % NUM_BLUEPRINTS;
+    blueprintCounts[bpIdx]++;
+
+    const regimeRoll = nextFloat();
+    const numSteps = 4 + (nextU32() % 11);
+    totalEventsProcessed += numSteps;
+
+    for (let k = 0; k < NUM_CTX_FIELDS; k++) {
+      ctxTensor[k] = 0.94 + 0.06 * nextFloat();
+    }
+
+    let tau = 0.02 + 0.06 * nextFloat();
+    let elapsedSec = 0.0;
+    let prevModality = nextU32() & 1;
+    let prevAgent = 0;
+
+    evaluateAttractorTube(bpIdx, tau, muPlan, sigPlan);
+
+    let initialDriftSq = 0.0;
+    for (let d = 0; d < DIM; d++) {
+      const noise = nextGaussian() * sigPlan[d] * 0.85;
+      const z0 = clamp01(muPlan[d] + noise);
+      zState[d] = z0;
+      zPrev[d] = z0;
+      stepVecPrev[d] = 0.0;
+      const diff = (z0 - muPlan[d]) / sigPlan[d];
+      initialDriftSq += diff * diff;
+    }
+    const initialDrift = Math.sqrt(initialDriftSq / DIM);
+
+    let spectralOscEnergy = 0.0;
+    let sipStrippedOccurred = false;
+
+    for (let step = 1; step <= numSteps; step++) {
+      const dt = 4.0 + nextFloat() * (regimeRoll > 0.78 ? 48.0 : 18.0);
+      elapsedSec += dt;
+
+      let currModality = prevModality;
+      let sipHeaderStripped = false;
+      if (nextFloat() < (regimeRoll > 0.68 ? 0.36 : 0.10)) {
+        currModality = (prevModality + 1 + (nextU32() % (MODALITIES.length - 1))) % MODALITIES.length;
+        if ((currModality === 4 || currModality === 5) && nextFloat() < (regimeRoll > 0.78 ? 0.45 : 0.06)) {
+          sipHeaderStripped = true;
+          sipStrippedOccurred = true;
+        }
+      }
+
+      const modLoss = modalityLossMatrix[prevModality * MODALITIES.length + currModality];
+      const carrierPenalty = sipHeaderStripped ? 0.44 : 0.0;
+      const lossRetention = (1.0 - modLoss) * (1.0 - carrierPenalty);
+      let mutualInfoRetention = 0.0;
+      for (let k = 0; k < NUM_CTX_FIELDS; k++) {
+        const timeDecay = 1.0 / (1.0 + ctxDecayLambdas[k] * dt);
+        ctxTensor[k] = clamp01(ctxTensor[k] * timeDecay * lossRetention);
+        mutualInfoRetention += ctxWeights[k] * ctxTensor[k];
+      }
+
+      const targetHorizonTau = 0.22 + 0.78 * ((j * 7919 + step * 131) % 1000) * 0.001;
+      let dTau = (targetHorizonTau / numSteps) * (0.68 + 0.52 * mutualInfoRetention);
+      if (regimeRoll > 0.84) {
+        dTau *= 0.25 + 0.22 * nextFloat();
+      } else if (regimeRoll < 0.62) {
+        dTau *= 1.05;
+      }
+      tau = clamp01(tau + dTau);
+
+      evaluateAttractorTube(bpIdx, tau, muPlan, sigPlan);
+
+      const slaRatio = elapsedSec / bpSlaBudget[bpIdx];
+      const contextLossPenalty = 1.0 - mutualInfoRetention;
+
+      const noiseScale =
+        regimeRoll < 0.62
+          ? 0.28 * (1.0 - 0.55 * tau)
+          : regimeRoll < 0.80
+            ? 0.68
+            : 1.45;
+
+      for (let d = 0; d < DIM; d++) {
+        const perturb = nextGaussian() * sigPlan[d] * noiseScale;
+        yObs[d] = clamp01(muPlan[d] + perturb);
+      }
+
+      if (regimeRoll >= 0.62) {
+        const xLat = 3.2 * (slaRatio - 0.85);
+        const latencyPressureObs = clamp01(0.5 + 0.5 * (xLat / (1.0 + Math.abs(xLat))));
+        yObs[0] = clamp01(muPlan[0] * (0.55 + 0.45 * mutualInfoRetention) - 0.22 * contextLossPenalty);
+        yObs[2] = clamp01(muPlan[2] - 0.42 * contextLossPenalty - 0.28 * Math.max(0.0, slaRatio - 1.0));
+        yObs[3] = clamp01(muPlan[3] + 0.45 * contextLossPenalty + 0.30 * Math.max(0.0, slaRatio - 0.9));
+        yObs[5] = clamp01(muPlan[5] + 0.38 * contextLossPenalty + (regimeRoll > 0.82 ? 0.28 : 0.0));
+        yObs[11] = clamp01(ctxTensor[1]);
+        yObs[12] = modalitySynchronicity[currModality];
+        yObs[13] = latencyPressureObs;
+        yObs[14] = clamp01(muPlan[14] + 0.58 * contextLossPenalty + (sipHeaderStripped ? 0.28 : 0.0));
+        yObs[15] = clamp01(dTau * numSteps * 0.82);
+      }
+
+      const kalmanGain = 0.64;
+      const oneMinusK = 0.36;
+      let stepNormSq = 0.0;
+      let prevStepNormSq = 0.0;
+      let dotStep = 0.0;
+
+      for (let d = 0; d < DIM; d++) {
+        const oldZ = zState[d];
+        const newZ = oneMinusK * oldZ + kalmanGain * yObs[d];
+        const dv = newZ - oldZ;
+        const effectiveDv = regimeRoll > 0.84 && (step & 1) === 0 ? -stepVecPrev[d] * 0.9 : dv;
+        const prevDv = stepVecPrev[d];
+        dotStep += effectiveDv * prevDv;
+        stepNormSq += effectiveDv * effectiveDv;
+        prevStepNormSq += prevDv * prevDv;
+        stepVecPrev[d] = effectiveDv;
+        zState[d] = newZ;
+      }
+
+      if (step >= 2 && stepNormSq > 1e-8 && prevStepNormSq > 1e-8) {
+        const cosTurn = dotStep / Math.sqrt(stepNormSq * prevStepNormSq);
+        const reversalEnergy = cosTurn < 0.0 ? clamp01(-cosTurn) : 0.04 * (1.0 - cosTurn);
+        const decay = 1.0 / (1.0 + 0.004 * dt);
+        spectralOscEnergy = clamp01(0.65 * spectralOscEnergy * decay + 0.35 * reversalEnergy);
+      }
+
+      prevModality = currModality;
+    }
+
+    if (sipStrippedOccurred) {
+      countSipStripped++;
+      blueprintSipStrippedCounts[bpIdx]++;
+    }
+    if (spectralOscEnergy >= 0.52) countHighSpectralLoop++;
+
+    let mahaSq = 0.0;
+    let wassSq = 0.0;
+    let zNormSq = 0.0;
+    const bpAxisBase = bpIdx * DIM;
+    for (let d = 0; d < DIM; d++) {
+      const zVal = zState[d];
+      sumLatentAxes[d] += zVal;
+      blueprintAxisSums[bpAxisBase + d] += zVal;
+      blueprintAxisSqSums[bpAxisBase + d] += zVal * zVal;
+      zNormSq += zVal * zVal;
+      const diff = zVal - muPlan[d];
+      const sig = sigPlan[d];
+      mahaSq += (diff * diff) / (sig * sig);
+      const empSig = sig * (0.85 + 0.35 * spectralOscEnergy);
+      const sigDiff = empSig - sig;
+      wassSq += diff * diff + sigDiff * sigDiff;
+    }
+    const zNorm = Math.sqrt(zNormSq) + 1e-9;
+    const driftScore = Math.sqrt(mahaSq / DIM);
+    const wassersteinCost = Math.sqrt(wassSq / DIM);
+
+    const lyapunovExp =
+      (1.0 / Math.max(elapsedSec, 10.0)) * Math.log((driftScore + 0.05) / (initialDrift + 0.05));
+
+    if (lyapunovExp < -0.0015) {
+      countConvergent++;
+      blueprintConvergentCounts[bpIdx]++;
+    } else if (lyapunovExp <= 0.0015) {
+      countOrbital++;
+    } else {
+      countDivergent++;
+      blueprintDivergentCounts[bpIdx]++;
+    }
+
+    let finalContextFidelity = 0.0;
+    let shannonCtx = 0.0;
+    for (let k = 0; k < NUM_CTX_FIELDS; k++) {
+      const pk = clamp01(ctxTensor[k]);
+      finalContextFidelity += ctxWeights[k] * pk;
+      if (pk > 1e-6 && pk < 1.0 - 1e-6) {
+        shannonCtx -= pk * Math.log(pk) + (1.0 - pk) * Math.log(1.0 - pk);
+      }
+    }
+    shannonCtx /= NUM_CTX_FIELDS * 0.6931471805599453;
+
+    const maxRiskExposure =
+      0.45 * zState[7] + 0.35 * Math.max(zState[9], zState[10]) + 0.2 * spectralOscEnergy;
+    let maxLogit = -1e9;
+
+    for (let a = 0; a < NUM_AGENTS; a++) {
+      const base = a * DIM;
+      let dot = 0.0;
+      for (let d = 0; d < DIM; d++) {
+        dot += zState[d] * agentCapMatrix[base + d];
+      }
+      const cosSim = dot / (zNorm * agentCapNorms[a]);
+      const authGate = sigmoid(KAPPA_AUTH * (agentAuthRadius[a] - maxRiskExposure));
+      let domainAffinity = 0.0;
+      if (a === 0)
+        domainAffinity = 0.26 * zState[6] * finalContextFidelity * (1.0 - Math.max(0.0, tau - 0.88));
+      else if (a === 1) domainAffinity = 0.28 * zState[9];
+      else if (a === 2) domainAffinity = 0.28 * zState[8];
+      else if (a === 3) domainAffinity = 0.30 * zState[10];
+      else if (a === 4) domainAffinity = 0.28 * zState[4] * zState[5];
+      else if (a === 5) domainAffinity = 0.32 * (1.0 - finalContextFidelity);
+      else if (a === 6) domainAffinity = 0.28 * zState[13] * zState[6];
+      else if (a === 7) domainAffinity = bpIdx === 4 ? 0.26 : 0.09 * zState[6];
+      else if (a === 8) domainAffinity = 0.18 * zState[7] * zState[9];
+      else if (a === 9) domainAffinity = tau > 0.91 && driftScore < 0.45 ? 0.26 : -0.08;
+      else if (a === 10) domainAffinity = 0.24 * Math.max(0.0, driftScore - 0.85);
+      else if (a === 11) domainAffinity = 0.30 * spectralOscEnergy + 0.22 * Math.max(0.0, driftScore - 1.25);
+
+      const instLoad = clamp01(agentBaseLoad[a] + 0.04 * ((j + a) & 3) * 0.25);
+      const utility =
+        cosSim * authGate + domainAffinity - GAMMA_LOAD * instLoad - ETA_LAT * agentLatencyHazard[a];
+      const logit = BETA_TEMP * utility;
+      a2aLogits[a] = logit;
+      if (logit > maxLogit) maxLogit = logit;
+    }
+
+    let sumExp = 0.0;
+    for (let a = 0; a < NUM_AGENTS; a++) {
+      const w = Math.exp(a2aLogits[a] - maxLogit);
+      a2aProbs[a] = w;
+      sumExp += w;
+    }
+
+    let a2aEntropy = 0.0;
+    let topAgent = 0;
+    let secondAgent = 0;
+    let topProb = -1.0;
+    let secondProb = -1.0;
+
+    for (let a = 0; a < NUM_AGENTS; a++) {
+      const p = a2aProbs[a] / sumExp;
+      a2aProbs[a] = p;
+      agentSoftMass[a] += p;
+      if (p > 1e-9) {
+        a2aEntropy -= p * Math.log(p);
+      }
+      if (p > topProb) {
+        secondProb = topProb;
+        secondAgent = topAgent;
+        topProb = p;
+        topAgent = a;
+      } else if (p > secondProb) {
+        secondProb = p;
+        secondAgent = a;
+      }
+    }
+    a2aEntropy /= LOG_NUM_AGENTS;
+    agentTop1Counts[topAgent]++;
+    a2aFlowMatrix[prevAgent * NUM_AGENTS + topAgent] += topProb;
+    a2aFlowMatrix[topAgent * NUM_AGENTS + secondAgent] += secondProb;
+
+    const rawU0 =
+      3.4 * zState[6] * finalContextFidelity * (1.0 - spectralOscEnergy) -
+      1.5 * Math.max(0.0, driftScore - 0.55) +
+      (tau < 0.88 && driftScore < 0.55 ? 0.85 : 0.0);
+    const rawU1 =
+      4.2 * (1.0 - finalContextFidelity) + 1.3 * zState[14] + (sipStrippedOccurred ? 1.85 : -0.25);
+    const rawU2 =
+      2.9 * Math.max(zState[8], zState[9], zState[10], zState[5] * zState[4]) +
+      (topAgent >= 1 && topAgent <= 8 ? 0.85 : -0.2);
+    const rawU3 =
+      3.1 * zState[13] * zState[6] + (zState[12] > 0.80 && zState[13] > 0.35 ? 1.65 : -0.2);
+    const rawU4 =
+      2.6 * Math.max(0.0, driftScore - 1.15) +
+      2.8 * spectralOscEnergy +
+      2.2 * Math.max(0.0, lyapunovExp * 95.0) +
+      1.4 * zState[7] * (1.0 - zState[6]) -
+      0.55;
+    const rawU5 =
+      2.2 * tau * (1.0 - zState[1]) * zState[15] + (tau > 0.91 && driftScore < 0.45 ? 1.65 : -0.85);
+
+    const rawActions = [rawU0, rawU1, rawU2, rawU3, rawU4, rawU5];
+    let maxActLogit = -1e9;
+    for (let c = 0; c < NUM_ACTIONS; c++) {
+      if (rawActions[c] > maxActLogit) maxActLogit = rawActions[c];
+    }
+    let sumActExp = 0.0;
+    for (let c = 0; c < NUM_ACTIONS; c++) {
+      const e = Math.exp(rawActions[c] - maxActLogit);
+      controlVec[c] = e;
+      sumActExp += e;
+    }
+    let topAction = 0;
+    let topActionWeight = -1.0;
+    const bpCtrlBase = bpIdx * NUM_ACTIONS;
+    for (let c = 0; c < NUM_ACTIONS; c++) {
+      const w = controlVec[c] / sumActExp;
+      controlVec[c] = w;
+      controlWeightSums[c] += w;
+      blueprintControlSums[bpCtrlBase + c] += w;
+      if (w > topActionWeight) {
+        topActionWeight = w;
+        topAction = c;
+      }
+    }
+    controlDominantCounts[topAction]++;
+
+    sumDrift += driftScore;
+    sumWasserstein += wassersteinCost;
+    sumLyapunov += lyapunovExp;
+    sumContextFidelity += finalContextFidelity;
+    sumContextEntropy += shannonCtx;
+    sumA2AEntropy += a2aEntropy;
+    sumSpectralLoopEnergy += spectralOscEnergy;
+    sumTauProgress += tau;
+
+    blueprintDriftSums[bpIdx] += driftScore;
+    blueprintFidelitySums[bpIdx] += finalContextFidelity;
+    blueprintLyapSums[bpIdx] += lyapunovExp;
+    blueprintTauSums[bpIdx] += tau;
+    blueprintElapsedSecSums[bpIdx] += elapsedSec;
+
+    const localIdx = j - startIdx;
+    if (localIdx % resStride === 0 && resIdx < resLen) {
+      resDrifts[resIdx] = driftScore;
+      resFidelities[resIdx] = finalContextFidelity;
+      resLyapunovs[resIdx] = lyapunovExp;
+      resA2AEntropies[resIdx] = a2aEntropy;
+      resIdx++;
+    }
+
+    const tauBin = Math.min(GRID_BINS - 1, Math.max(0, Math.floor(tau * GRID_BINS)));
+    const driftBin = Math.min(GRID_BINS - 1, Math.max(0, Math.floor((driftScore / 2.5) * GRID_BINS)));
+    phaseSpaceTauDriftGrid[tauBin * GRID_BINS + driftBin]++;
+
+    const fidBin = Math.min(GRID_BINS - 1, Math.max(0, Math.floor(finalContextFidelity * GRID_BINS)));
+    const loopBin = Math.min(GRID_BINS - 1, Math.max(0, Math.floor(spectralOscEnergy * GRID_BINS)));
+    phaseSpaceFidelityLoopGrid[fidBin * GRID_BINS + loopBin]++;
+
+    if (j % sampleStride === 0 && manifoldSamples.length < maxManifoldSamples) {
+      manifoldSamples.push({
+        journeyId: "JRN-" + String(j + 1).padStart(7, "0"),
+        blueprintId: spec.goldenAttractorTubes[bpIdx].blueprintId,
+        tau: Number(tau.toFixed(4)),
+        driftMahalanobis: Number(driftScore.toFixed(4)),
+        wassersteinCost: Number(wassersteinCost.toFixed(4)),
+        lyapunovExponent: Number(lyapunovExp.toFixed(5)),
+        contextFidelity: Number(finalContextFidelity.toFixed(4)),
+        spectralLoopEnergy: Number(spectralOscEnergy.toFixed(4)),
+        a2aEntropy: Number(a2aEntropy.toFixed(4)),
+        topA2AAgent: spec.a2aContinuousAgents[topAgent].id,
+        topA2AWeight: Number(topProb.toFixed(4)),
+        secondA2AAgent: spec.a2aContinuousAgents[secondAgent].id,
+        secondA2AWeight: Number(secondProb.toFixed(4)),
+        primaryControlAction:
+          spec.continuousFormulations.plane3ControlField.controlActionBasis[topAction].id,
+        controlVector: Array.from(controlVec, (v) => Number(v.toFixed(4))),
+        stateVector16D: Array.from(zState, (v) => Number(v.toFixed(4))),
+      });
+    }
+
+    const frontierScore =
+      a2aEntropy * 0.55 + Math.min(1.0, Math.abs(driftScore - 1.0)) * 0.25 + spectralOscEnergy * 0.2;
+    if (frontierCandidates.length < deciderSamplesCount) {
+      frontierCandidates.push({
+        journeyId: "JRN-" + String(j + 1).padStart(7, "0"),
+        blueprintId: spec.goldenAttractorTubes[bpIdx].blueprintId,
+        frontierScore: Number(frontierScore.toFixed(4)),
+        tau: Number(tau.toFixed(3)),
+        elapsedSec: Math.round(elapsedSec),
+        slaBudgetSec: bpSlaBudget[bpIdx],
+        driftMahalanobis: Number(driftScore.toFixed(4)),
+        lyapunovExponent: Number(lyapunovExp.toFixed(5)),
+        contextFidelity: Number(finalContextFidelity.toFixed(4)),
+        spectralLoopEnergy: Number(spectralOscEnergy.toFixed(4)),
+        a2aEntropy: Number(a2aEntropy.toFixed(4)),
+        topA2AAgent: spec.a2aContinuousAgents[topAgent].id,
+        topA2AWeight: Number(topProb.toFixed(4)),
+        fastControlAction:
+          spec.continuousFormulations.plane3ControlField.controlActionBasis[topAction].id,
+        fastControlVector: Array.from(controlVec, (v) => Number(v.toFixed(4))),
+      });
+      frontierCandidates.sort((a, b) => b.frontierScore - a.frontierScore);
+    } else if (frontierScore > frontierCandidates[frontierCandidates.length - 1].frontierScore) {
+      frontierCandidates[frontierCandidates.length - 1] = {
+        journeyId: "JRN-" + String(j + 1).padStart(7, "0"),
+        blueprintId: spec.goldenAttractorTubes[bpIdx].blueprintId,
+        frontierScore: Number(frontierScore.toFixed(4)),
+        tau: Number(tau.toFixed(3)),
+        elapsedSec: Math.round(elapsedSec),
+        slaBudgetSec: bpSlaBudget[bpIdx],
+        driftMahalanobis: Number(driftScore.toFixed(4)),
+        lyapunovExponent: Number(lyapunovExp.toFixed(5)),
+        contextFidelity: Number(finalContextFidelity.toFixed(4)),
+        spectralLoopEnergy: Number(spectralOscEnergy.toFixed(4)),
+        a2aEntropy: Number(a2aEntropy.toFixed(4)),
+        topA2AAgent: spec.a2aContinuousAgents[topAgent].id,
+        topA2AWeight: Number(topProb.toFixed(4)),
+        fastControlAction:
+          spec.continuousFormulations.plane3ControlField.controlActionBasis[topAction].id,
+        fastControlVector: Array.from(controlVec, (v) => Number(v.toFixed(4))),
+      };
+      frontierCandidates.sort((a, b) => b.frontierScore - a.frontierScore);
+    }
+  }
+
+  return {
+    totalEventsProcessed,
+    sumDrift,
+    sumWasserstein,
+    sumLyapunov,
+    sumContextFidelity,
+    sumContextEntropy,
+    sumA2AEntropy,
+    sumSpectralLoopEnergy,
+    sumTauProgress,
+    countConvergent,
+    countOrbital,
+    countDivergent,
+    countSipStripped,
+    countHighSpectralLoop,
+    sumLatentAxes,
+    controlWeightSums,
+    controlDominantCounts,
+    agentSoftMass,
+    agentTop1Counts,
+    a2aFlowMatrix,
+    blueprintCounts,
+    blueprintDriftSums,
+    blueprintFidelitySums,
+    blueprintLyapSums,
+    blueprintTauSums,
+    blueprintElapsedSecSums,
+    blueprintSipStrippedCounts,
+    blueprintConvergentCounts,
+    blueprintDivergentCounts,
+    blueprintAxisSums,
+    blueprintAxisSqSums,
+    blueprintControlSums,
+    phaseSpaceTauDriftGrid,
+    phaseSpaceFidelityLoopGrid,
+    resDrifts: resDrifts.subarray(0, resIdx),
+    resFidelities: resFidelities.subarray(0, resIdx),
+    resLyapunovs: resLyapunovs.subarray(0, resIdx),
+    resA2AEntropies: resA2AEntropies.subarray(0, resIdx),
+    manifoldSamples,
+    frontierCandidates,
+  };
+}
+
+/* ---------- Worker Thread Entrypoint ---------- */
+
+if (!isMainThread) {
+  const partResult = runPartition(workerData);
+  parentPort.postMessage(partResult);
+  process.exit(0);
+}
+
+/* ---------- Main Thread Orchestration ---------- */
+
+const rawArgs = process.argv.slice(2);
+const argOf = (flag) => {
+  const idx = rawArgs.indexOf(flag);
+  return idx >= 0 ? rawArgs[idx + 1] : undefined;
+};
+
+const scaleJourneys = Math.max(100, Number(argOf("--scale") ?? 10000));
+const seedInput = Number(argOf("--seed") ?? 20261017);
+const explicitWorkers = argOf("--workers");
+const workersUsed = Math.max(
+  1,
+  explicitWorkers !== undefined
+    ? Number(explicitWorkers)
+    : scaleJourneys >= 50000
+      ? Math.min(os.availableParallelism(), 8)
+      : 1,
+);
+const withDecider = rawArgs.includes("--with-decider");
+const deciderSamplesCount = Math.max(1, Number(argOf("--decider-samples") ?? 12));
+const deciderPort = Number(argOf("--port") ?? process.env.STRANDS_DECIDER_PORT ?? 8111);
+const asJson = rawArgs.includes("--json");
+const outFile = resolve(
+  argOf("--out") ?? join(workspaceRoot, ".tmp", "continuous-scale", "manifold-summary.json"),
+);
+
+const MAX_MANIFOLD_SAMPLES = 120;
+const TOTAL_RESERVOIR_CAP = 100000;
 
 const tStart = performance.now();
 
-// Scratch buffers reused per journey for zero GC pressure in the tight loop
-const zState = new Float64Array(DIM);
-const zPrev = new Float64Array(DIM);
-const yObs = new Float64Array(DIM);
-const muPlan = new Float64Array(DIM);
-const sigPlan = new Float64Array(DIM);
-const stepVecPrev = new Float64Array(DIM);
-const stepVecCurr = new Float64Array(DIM);
-const ctxTensor = new Float64Array(NUM_CTX_FIELDS);
-const a2aProbs = new Float64Array(NUM_AGENTS);
-const a2aLogits = new Float64Array(NUM_AGENTS);
-const controlVec = new Float64Array(NUM_ACTIONS);
+let partials = [];
+if (workersUsed === 1) {
+  partials = [
+    runPartition({
+      startIdx: 0,
+      endIdx: scaleJourneys,
+      totalScale: scaleJourneys,
+      workerSeed: seedInput,
+      deciderSamplesCount,
+      reservoirCap: TOTAL_RESERVOIR_CAP,
+      maxManifoldSamples: MAX_MANIFOLD_SAMPLES,
+    }),
+  ];
+} else {
+  const perWorkerReservoir = Math.max(1000, Math.ceil(TOTAL_RESERVOIR_CAP / workersUsed));
+  const workerPromises = [];
+  for (let w = 0; w < workersUsed; w++) {
+    const startIdx = Math.floor((w * scaleJourneys) / workersUsed);
+    const endIdx = Math.floor(((w + 1) * scaleJourneys) / workersUsed);
+    const workerSeed = (seedInput + w * 104729) >>> 0;
+    workerPromises.push(
+      new Promise((resolveWorker, rejectWorker) => {
+        const worker = new Worker(currentFile, {
+          workerData: {
+            startIdx,
+            endIdx,
+            totalScale: scaleJourneys,
+            workerSeed,
+            deciderSamplesCount,
+            reservoirCap: perWorkerReservoir,
+            maxManifoldSamples: MAX_MANIFOLD_SAMPLES,
+          },
+        });
+        worker.once("message", resolveWorker);
+        worker.once("error", rejectWorker);
+        worker.once("exit", (code) => {
+          if (code !== 0) {
+            rejectWorker(new Error("Worker exited with code " + String(code)));
+          }
+        });
+      }),
+    );
+  }
+  partials = await Promise.all(workerPromises);
+}
 
-// Aggregators across the entire continuous population
+/* ---------- Deterministic Merge of Worker Partials ---------- */
+
 let totalEventsProcessed = 0;
 let sumDrift = 0.0;
 let sumWasserstein = 0.0;
@@ -247,451 +823,119 @@ let countSipStripped = 0;
 let countHighSpectralLoop = 0;
 
 const sumLatentAxes = new Float64Array(DIM);
-const sumControlActions = new Float64Array(NUM_ACTIONS);
-const primaryActionCounts = new Uint32Array(NUM_ACTIONS);
+const controlWeightSums = new Float64Array(NUM_ACTIONS);
+const controlDominantCounts = new Uint32Array(NUM_ACTIONS);
 const agentSoftMass = new Float64Array(NUM_AGENTS);
 const agentTop1Counts = new Uint32Array(NUM_AGENTS);
 const a2aFlowMatrix = new Float64Array(NUM_AGENTS * NUM_AGENTS);
+
 const blueprintCounts = new Uint32Array(NUM_BLUEPRINTS);
 const blueprintDriftSums = new Float64Array(NUM_BLUEPRINTS);
 const blueprintFidelitySums = new Float64Array(NUM_BLUEPRINTS);
 const blueprintLyapSums = new Float64Array(NUM_BLUEPRINTS);
+const blueprintTauSums = new Float64Array(NUM_BLUEPRINTS);
+const blueprintElapsedSecSums = new Float64Array(NUM_BLUEPRINTS);
+const blueprintSipStrippedCounts = new Uint32Array(NUM_BLUEPRINTS);
+const blueprintConvergentCounts = new Uint32Array(NUM_BLUEPRINTS);
+const blueprintDivergentCounts = new Uint32Array(NUM_BLUEPRINTS);
+const blueprintAxisSums = new Float64Array(NUM_BLUEPRINTS * DIM);
+const blueprintAxisSqSums = new Float64Array(NUM_BLUEPRINTS * DIM);
+const blueprintControlSums = new Float64Array(NUM_BLUEPRINTS * NUM_ACTIONS);
 
-// 2D Phase-Space Density Grid: Progress tau (10 bins) x Conformance Drift D_drift (10 bins)
-const GRID_BINS = 10;
 const phaseSpaceTauDriftGrid = new Uint32Array(GRID_BINS * GRID_BINS);
-// 2D Phase-Space Density Grid: Context Fidelity F(t) (10 bins) x Spectral Loop Energy L_spec (10 bins)
 const phaseSpaceFidelityLoopGrid = new Uint32Array(GRID_BINS * GRID_BINS);
 
-// Reservoir of all drift values for exact percentile computation
-const allDrifts = new Float64Array(scaleJourneys);
-const allFidelities = new Float64Array(scaleJourneys);
-const allLyapunovs = new Float64Array(scaleJourneys);
-const allA2AEntropies = new Float64Array(scaleJourneys);
+let totalReservoirItems = 0;
+for (const p of partials) {
+  totalReservoirItems += p.resDrifts.length;
+}
+const allDrifts = new Float64Array(totalReservoirItems);
+const allFidelities = new Float64Array(totalReservoirItems);
+const allLyapunovs = new Float64Array(totalReservoirItems);
+const allA2AEntropies = new Float64Array(totalReservoirItems);
+let rOffset = 0;
 
-// Keep a sample of 120 manifold point projections for 3D/2D visualizers + top frontier states for Tier-2 Strands 2B
-const MAX_MANIFOLD_SAMPLES = 120;
-const manifoldSamples = [];
-const frontierCandidates = [];
+const mergedManifoldSamples = [];
+const mergedFrontierCandidates = [];
 
-const BETA_TEMP = spec.continuousFormulations.a2aContinuousField.hyperparameters.inverseTemperatureBeta;
-const GAMMA_LOAD = spec.continuousFormulations.a2aContinuousField.hyperparameters.loadPenaltyGamma;
-const ETA_LAT = spec.continuousFormulations.a2aContinuousField.hyperparameters.latencyPenaltyEta;
-const KAPPA_AUTH = spec.continuousFormulations.a2aContinuousField.hyperparameters.authoritySlopeKappa;
-const LOG_NUM_AGENTS = Math.log(NUM_AGENTS);
+for (const p of partials) {
+  totalEventsProcessed += p.totalEventsProcessed;
+  sumDrift += p.sumDrift;
+  sumWasserstein += p.sumWasserstein;
+  sumLyapunov += p.sumLyapunov;
+  sumContextFidelity += p.sumContextFidelity;
+  sumContextEntropy += p.sumContextEntropy;
+  sumA2AEntropy += p.sumA2AEntropy;
+  sumSpectralLoopEnergy += p.sumSpectralLoopEnergy;
+  sumTauProgress += p.sumTauProgress;
 
-for (let j = 0; j < scaleJourneys; j++) {
-  const bpIdx = j % NUM_BLUEPRINTS;
-  blueprintCounts[bpIdx]++;
+  countConvergent += p.countConvergent;
+  countOrbital += p.countOrbital;
+  countDivergent += p.countDivergent;
+  countSipStripped += p.countSipStripped;
+  countHighSpectralLoop += p.countHighSpectralLoop;
 
-  // Assign a continuous journey regime (smoothly distributed across golden, noisy, context-loss, and oscillatory regimes)
-  const regimeRoll = nextFloat();
-  // Number of continuous event micro-steps in this journey trace (between 4 and 14)
-  const numSteps = 4 + (nextU32() % 11);
-  totalEventsProcessed += numSteps;
-
-  // Initialize continuous Context Fidelity Tensor F(t_0) in [0, 1]^6
-  for (let k = 0; k < NUM_CTX_FIELDS; k++) {
-    ctxTensor[k] = 0.94 + 0.06 * nextFloat();
-  }
-
-  let tau = 0.02 + 0.06 * nextFloat();
-  let elapsedSec = 0.0;
-  let prevModality = nextU32() & 1; // start in mobile_app (0) or web_portal (1)
-  let prevAgent = 0; // cai_concierge
-
-  // Initial Plane 1 evaluation at tau_0
-  evaluateAttractorTube(bpIdx, tau, muPlan, sigPlan);
-
-  // Initialize z(t_0) near the entry knot with realistic initial customer state dispersion
-  let initialDriftSq = 0.0;
-  for (let d = 0; d < DIM; d++) {
-    const noise = nextGaussian() * sigPlan[d] * 0.85;
-    const z0 = clamp01(muPlan[d] + noise);
-    zState[d] = z0;
-    zPrev[d] = z0;
-    stepVecPrev[d] = 0.0;
-    const diff = (z0 - muPlan[d]) / sigPlan[d];
-    initialDriftSq += diff * diff;
-  }
-  const initialDrift = Math.sqrt(initialDriftSq / DIM);
-
-  let spectralOscEnergy = 0.0;
-  let sipStrippedOccurred = false;
-
-  for (let step = 1; step <= numSteps; step++) {
-    // Continuous inter-arrival time delta_t (seconds)
-    const dt = 4.0 + nextFloat() * (regimeRoll > 0.78 ? 48.0 : 18.0);
-    elapsedSec += dt;
-
-    // Modality evolution: most steps stay in modality, some transition across modalities
-    let currModality = prevModality;
-    let sipHeaderStripped = false;
-    if (nextFloat() < (regimeRoll > 0.68 ? 0.36 : 0.10)) {
-      currModality = (prevModality + 1 + (nextU32() % (MODALITIES.length - 1))) % MODALITIES.length;
-      if ((currModality === 4 || currModality === 5) && nextFloat() < (regimeRoll > 0.78 ? 0.45 : 0.06)) {
-        sipHeaderStripped = true;
-        sipStrippedOccurred = true;
-      }
-    }
-
-    // 1. Update Continuous Context Fidelity Tensor F(t)
-    const modLoss = modalityLossMatrix[prevModality * MODALITIES.length + currModality];
-    const carrierPenalty = sipHeaderStripped ? 0.44 : 0.0;
-    const lossRetention = (1.0 - modLoss) * (1.0 - carrierPenalty);
-    let mutualInfoRetention = 0.0;
-    for (let k = 0; k < NUM_CTX_FIELDS; k++) {
-      const timeDecay = 1.0 / (1.0 + ctxDecayLambdas[k] * dt);
-      ctxTensor[k] = clamp01(ctxTensor[k] * timeDecay * lossRetention);
-      mutualInfoRetention += ctxWeights[k] * ctxTensor[k];
-    }
-
-    // Progress velocity d(tau)/dt depends on context fidelity and regime
-    const targetHorizonTau = 0.22 + 0.78 * ((j * 7919 + step * 131) % 1000) * 0.001;
-    let dTau = (targetHorizonTau / numSteps) * (0.68 + 0.52 * mutualInfoRetention);
-    if (regimeRoll > 0.84) {
-      // Stalled / oscillatory regime
-      dTau *= 0.25 + 0.22 * nextFloat();
-    } else if (regimeRoll < 0.62) {
-      // Smooth golden progression converging into the attractor tube
-      dTau *= 1.05;
-    }
-    tau = clamp01(tau + dTau);
-
-    // Evaluate Plane 1 Golden Attractor Tube at current tau inline at final step or intermediate
-    evaluateAttractorTube(bpIdx, tau, muPlan, sigPlan);
-
-    // Construct observation vector y_obs(t_n) in R^16
-    const slaRatio = elapsedSec / bpSlaBudget[bpIdx];
-    const contextLossPenalty = 1.0 - mutualInfoRetention;
-
-    // Noise dampens as trajectory converges along golden path (regimeRoll < 0.62), or amplifies in divergent regime
-    const noiseScale =
-      regimeRoll < 0.62
-        ? 0.28 * (1.0 - 0.55 * tau)
-        : regimeRoll < 0.80
-          ? 0.68
-          : 1.45;
-
-    for (let d = 0; d < DIM; d++) {
-      const perturb = nextGaussian() * sigPlan[d] * noiseScale;
-      yObs[d] = clamp01(muPlan[d] + perturb);
-    }
-
-    // Couple specific manifold axes to continuous physical telemetry
-    if (regimeRoll >= 0.62) {
-      const xLat = 3.2 * (slaRatio - 0.85);
-      const latencyPressureObs = clamp01(0.5 + 0.5 * (xLat / (1.0 + Math.abs(xLat))));
-      yObs[0] = clamp01(muPlan[0] * (0.55 + 0.45 * mutualInfoRetention) - 0.22 * contextLossPenalty);
-      yObs[2] = clamp01(muPlan[2] - 0.42 * contextLossPenalty - 0.28 * Math.max(0.0, slaRatio - 1.0));
-      yObs[3] = clamp01(muPlan[3] + 0.45 * contextLossPenalty + 0.30 * Math.max(0.0, slaRatio - 0.9));
-      yObs[5] = clamp01(muPlan[5] + 0.38 * contextLossPenalty + (regimeRoll > 0.82 ? 0.28 : 0.0));
-      yObs[11] = clamp01(ctxTensor[1]);
-      yObs[12] = modalitySynchronicity[currModality];
-      yObs[13] = latencyPressureObs;
-      yObs[14] = clamp01(muPlan[14] + 0.58 * contextLossPenalty + (sipHeaderStripped ? 0.28 : 0.0));
-      yObs[15] = clamp01(dTau * numSteps * 0.82);
-    }
-
-    // Continuous-time Kalman / EMA assimilation: z(t_n) = (1 - K) * z(t_{n-1}) + K * y_obs(t_n)
-    const kalmanGain = 0.64;
-    const oneMinusK = 0.36;
-    let stepNormSq = 0.0;
-    let prevStepNormSq = 0.0;
-    let dotStep = 0.0;
-
-    for (let d = 0; d < DIM; d++) {
-      const oldZ = zState[d];
-      const newZ = oneMinusK * oldZ + kalmanGain * yObs[d];
-      const dv = newZ - oldZ;
-      const effectiveDv = regimeRoll > 0.84 && (step & 1) === 0 ? -stepVecPrev[d] * 0.9 : dv;
-      const prevDv = stepVecPrev[d];
-      dotStep += effectiveDv * prevDv;
-      stepNormSq += effectiveDv * effectiveDv;
-      prevStepNormSq += prevDv * prevDv;
-      stepVecPrev[d] = effectiveDv;
-      zState[d] = newZ;
-    }
-
-    // Update Spectral Loop & Ping-Pong Oscillation Energy L_spec(t) in [0, 1]
-    if (step >= 2 && stepNormSq > 1e-8 && prevStepNormSq > 1e-8) {
-      const cosTurn = dotStep / Math.sqrt(stepNormSq * prevStepNormSq);
-      const reversalEnergy = cosTurn < 0.0 ? clamp01(-cosTurn) : 0.04 * (1.0 - cosTurn);
-      const decay = 1.0 / (1.0 + 0.004 * dt);
-      spectralOscEnergy = clamp01(0.65 * spectralOscEnergy * decay + 0.35 * reversalEnergy);
-    }
-
-    prevModality = currModality;
-  }
-
-  if (sipStrippedOccurred) countSipStripped++;
-  if (spectralOscEnergy >= 0.52) countHighSpectralLoop++;
-
-  // Compute Plane 2 Mahalanobis Conformance Drift D_drift(t) and Wasserstein-2 transport cost
-  let mahaSq = 0.0;
-  let wassSq = 0.0;
-  let zNormSq = 0.0;
-  for (let d = 0; d < DIM; d++) {
-    const zVal = zState[d];
-    sumLatentAxes[d] += zVal;
-    zNormSq += zVal * zVal;
-    const diff = zVal - muPlan[d];
-    const sig = sigPlan[d];
-    mahaSq += (diff * diff) / (sig * sig);
-    const empSig = sig * (0.85 + 0.35 * spectralOscEnergy);
-    const sigDiff = empSig - sig;
-    wassSq += diff * diff + sigDiff * sigDiff;
-  }
-  const zNorm = Math.sqrt(zNormSq) + 1e-9;
-  const driftScore = Math.sqrt(mahaSq / DIM);
-  const wassersteinCost = Math.sqrt(wassSq / DIM);
-
-  // Continuous Lyapunov Divergence Exponent lambda_Lyap(t)
-  const lyapunovExp =
-    (1.0 / Math.max(elapsedSec, 10.0)) * Math.log((driftScore + 0.05) / (initialDrift + 0.05));
-
-  if (lyapunovExp < -0.0015) {
-    countConvergent++;
-  } else if (lyapunovExp <= 0.0015) {
-    countOrbital++;
-  } else {
-    countDivergent++;
-  }
-
-  // Final Context Mutual Information Retention & Shannon Context Entropy H(C_t)
-  let finalContextFidelity = 0.0;
-  let shannonCtx = 0.0;
-  for (let k = 0; k < NUM_CTX_FIELDS; k++) {
-    const pk = clamp01(ctxTensor[k]);
-    finalContextFidelity += ctxWeights[k] * pk;
-    if (pk > 1e-6 && pk < 1.0 - 1e-6) {
-      shannonCtx -= pk * Math.log(pk) + (1.0 - pk) * Math.log(1.0 - pk);
-    }
-  }
-  shannonCtx /= NUM_CTX_FIELDS * 0.6931471805599453; // normalized to [0, 1]
-
-  // 2. Evaluate A2A Continuous Capability Field & Boltzmann Routing Kernel P(a | z_t)
-  const maxRiskExposure =
-    0.45 * zState[7] + 0.35 * Math.max(zState[9], zState[10]) + 0.2 * spectralOscEnergy;
-  let maxLogit = -1e9;
-
-  for (let a = 0; a < NUM_AGENTS; a++) {
-    const base = a * DIM;
-    let dot = 0.0;
-    for (let d = 0; d < DIM; d++) {
-      dot += zState[d] * agentCapMatrix[base + d];
-    }
-    const cosSim = dot / (zNorm * agentCapNorms[a]);
-    const authGate = sigmoid(KAPPA_AUTH * (agentAuthRadius[a] - maxRiskExposure));
-    // Domain affinity boost from active latent state axes
-    let domainAffinity = 0.0;
-    if (a === 0)
-      domainAffinity = 0.26 * zState[6] * finalContextFidelity * (1.0 - Math.max(0.0, tau - 0.88)); // cai_concierge
-    else if (a === 1) domainAffinity = 0.28 * zState[9]; // billing_specialist_agent
-    else if (a === 2) domainAffinity = 0.28 * zState[8]; // tech_diagnostics_agent
-    else if (a === 3) domainAffinity = 0.30 * zState[10]; // fraud_trust_agent
-    else if (a === 4) domainAffinity = 0.28 * zState[4] * zState[5]; // retention_negotiator_agent
-    else if (a === 5) domainAffinity = 0.32 * (1.0 - finalContextFidelity); // context_hydration_fabric_agent
-    else if (a === 6) domainAffinity = 0.28 * zState[13] * zState[6]; // async_modality_shifter_agent
-    else if (a === 7) domainAffinity = bpIdx === 4 ? 0.26 : 0.09 * zState[6]; // order_logistics_fulfillment_agent
-    else if (a === 8) domainAffinity = 0.18 * zState[7] * zState[9]; // critic_policy_verifier_agent
-    else if (a === 9) domainAffinity = tau > 0.91 && driftScore < 0.45 ? 0.26 : -0.08; // outreach_suppression_governor
-    else if (a === 10) domainAffinity = 0.24 * Math.max(0.0, driftScore - 0.85); // tier2_human_specialist_copilot
-    else if (a === 11) domainAffinity = 0.30 * spectralOscEnergy + 0.22 * Math.max(0.0, driftScore - 1.25); // senior_human_advocate
-
-    const instLoad = clamp01(agentBaseLoad[a] + 0.04 * ((j + a) & 3) * 0.25);
-    const utility =
-      cosSim * authGate + domainAffinity - GAMMA_LOAD * instLoad - ETA_LAT * agentLatencyHazard[a];
-    const logit = BETA_TEMP * utility;
-    a2aLogits[a] = logit;
-    if (logit > maxLogit) maxLogit = logit;
-  }
-
-  let sumExp = 0.0;
-  for (let a = 0; a < NUM_AGENTS; a++) {
-    const w = Math.exp(a2aLogits[a] - maxLogit);
-    a2aProbs[a] = w;
-    sumExp += w;
-  }
-
-  let a2aEntropy = 0.0;
-  let topAgent = 0;
-  let secondAgent = 0;
-  let topProb = -1.0;
-  let secondProb = -1.0;
-
-  for (let a = 0; a < NUM_AGENTS; a++) {
-    const p = a2aProbs[a] / sumExp;
-    a2aProbs[a] = p;
-    agentSoftMass[a] += p;
-    if (p > 1e-9) {
-      a2aEntropy -= p * Math.log(p);
-    }
-    if (p > topProb) {
-      secondProb = topProb;
-      secondAgent = topAgent;
-      topProb = p;
-      topAgent = a;
-    } else if (p > secondProb) {
-      secondProb = p;
-      secondAgent = a;
-    }
-  }
-  a2aEntropy /= LOG_NUM_AGENTS; // normalized in [0, 1]
-  agentTop1Counts[topAgent]++;
-  a2aFlowMatrix[prevAgent * NUM_AGENTS + topAgent] += topProb;
-  a2aFlowMatrix[topAgent * NUM_AGENTS + secondAgent] += secondProb;
-
-  // 5. Plane 3 Continuous Hamiltonian / MPC Control Vector u*(t) in [0, 1]^6
-  // Basis: [autonomous_progression, context_rehydration_impulse, a2a_specialist_blend,
-  //         modality_fluid_shift, human_advocate_blend, outreach_damping_factor]
-  const rawU0 =
-    3.4 * zState[6] * finalContextFidelity * (1.0 - spectralOscEnergy) -
-    1.5 * Math.max(0.0, driftScore - 0.55) +
-    (tau < 0.88 && driftScore < 0.55 ? 0.85 : 0.0);
-  const rawU1 =
-    4.2 * (1.0 - finalContextFidelity) + 1.3 * zState[14] + (sipStrippedOccurred ? 1.85 : -0.25);
-  const rawU2 =
-    2.9 * Math.max(zState[8], zState[9], zState[10], zState[5] * zState[4]) +
-    (topAgent >= 1 && topAgent <= 8 ? 0.85 : -0.2);
-  const rawU3 =
-    3.1 * zState[13] * zState[6] + (zState[12] > 0.80 && zState[13] > 0.35 ? 1.65 : -0.2);
-  const rawU4 =
-    2.6 * Math.max(0.0, driftScore - 1.15) +
-    2.8 * spectralOscEnergy +
-    2.2 * Math.max(0.0, lyapunovExp * 95.0) +
-    1.4 * zState[7] * (1.0 - zState[6]) -
-    0.55;
-  const rawU5 =
-    2.2 * tau * (1.0 - zState[1]) * zState[15] + (tau > 0.91 && driftScore < 0.45 ? 1.65 : -0.85);
-
-  const rawActions = [rawU0, rawU1, rawU2, rawU3, rawU4, rawU5];
-  let maxActLogit = -1e9;
+  for (let d = 0; d < DIM; d++) sumLatentAxes[d] += p.sumLatentAxes[d];
   for (let c = 0; c < NUM_ACTIONS; c++) {
-    if (rawActions[c] > maxActLogit) maxActLogit = rawActions[c];
+    controlWeightSums[c] += p.controlWeightSums[c];
+    controlDominantCounts[c] += p.controlDominantCounts[c];
   }
-  let sumActExp = 0.0;
-  for (let c = 0; c < NUM_ACTIONS; c++) {
-    const e = Math.exp(rawActions[c] - maxActLogit);
-    controlVec[c] = e;
-    sumActExp += e;
+  for (let a = 0; a < NUM_AGENTS; a++) {
+    agentSoftMass[a] += p.agentSoftMass[a];
+    agentTop1Counts[a] += p.agentTop1Counts[a];
   }
-  let topAction = 0;
-  let topActionWeight = -1.0;
-  for (let c = 0; c < NUM_ACTIONS; c++) {
-    const w = controlVec[c] / sumActExp;
-    controlVec[c] = w;
-    sumControlActions[c] += w;
-    if (w > topActionWeight) {
-      topActionWeight = w;
-      topAction = c;
+  for (let i = 0; i < NUM_AGENTS * NUM_AGENTS; i++) {
+    a2aFlowMatrix[i] += p.a2aFlowMatrix[i];
+  }
+  for (let b = 0; b < NUM_BLUEPRINTS; b++) {
+    blueprintCounts[b] += p.blueprintCounts[b];
+    blueprintDriftSums[b] += p.blueprintDriftSums[b];
+    blueprintFidelitySums[b] += p.blueprintFidelitySums[b];
+    blueprintLyapSums[b] += p.blueprintLyapSums[b];
+    blueprintTauSums[b] += p.blueprintTauSums[b];
+    blueprintElapsedSecSums[b] += p.blueprintElapsedSecSums[b];
+    blueprintSipStrippedCounts[b] += p.blueprintSipStrippedCounts[b];
+    blueprintConvergentCounts[b] += p.blueprintConvergentCounts[b];
+    blueprintDivergentCounts[b] += p.blueprintDivergentCounts[b];
+  }
+  for (let i = 0; i < NUM_BLUEPRINTS * DIM; i++) {
+    blueprintAxisSums[i] += p.blueprintAxisSums[i];
+    blueprintAxisSqSums[i] += p.blueprintAxisSqSums[i];
+  }
+  for (let i = 0; i < NUM_BLUEPRINTS * NUM_ACTIONS; i++) {
+    blueprintControlSums[i] += p.blueprintControlSums[i];
+  }
+  for (let i = 0; i < GRID_BINS * GRID_BINS; i++) {
+    phaseSpaceTauDriftGrid[i] += p.phaseSpaceTauDriftGrid[i];
+    phaseSpaceFidelityLoopGrid[i] += p.phaseSpaceFidelityLoopGrid[i];
+  }
+
+  allDrifts.set(p.resDrifts, rOffset);
+  allFidelities.set(p.resFidelities, rOffset);
+  allLyapunovs.set(p.resLyapunovs, rOffset);
+  allA2AEntropies.set(p.resA2AEntropies, rOffset);
+  rOffset += p.resDrifts.length;
+
+  for (const s of p.manifoldSamples) {
+    if (mergedManifoldSamples.length < MAX_MANIFOLD_SAMPLES) {
+      mergedManifoldSamples.push(s);
     }
   }
-  primaryActionCounts[topAction]++;
-
-  // Update global population statistics
-  sumDrift += driftScore;
-  sumWasserstein += wassersteinCost;
-  sumLyapunov += lyapunovExp;
-  sumContextFidelity += finalContextFidelity;
-  sumContextEntropy += shannonCtx;
-  sumA2AEntropy += a2aEntropy;
-  sumSpectralLoopEnergy += spectralOscEnergy;
-  sumTauProgress += tau;
-
-  blueprintDriftSums[bpIdx] += driftScore;
-  blueprintFidelitySums[bpIdx] += finalContextFidelity;
-  blueprintLyapSums[bpIdx] += lyapunovExp;
-
-  allDrifts[j] = driftScore;
-  allFidelities[j] = finalContextFidelity;
-  allLyapunovs[j] = lyapunovExp;
-  allA2AEntropies[j] = a2aEntropy;
-
-  // Populate 2D Phase-Space Density Histograms
-  const tauBin = Math.min(GRID_BINS - 1, Math.max(0, Math.floor(tau * GRID_BINS)));
-  const driftBin = Math.min(GRID_BINS - 1, Math.max(0, Math.floor((driftScore / 2.5) * GRID_BINS)));
-  phaseSpaceTauDriftGrid[tauBin * GRID_BINS + driftBin]++;
-
-  const fidBin = Math.min(GRID_BINS - 1, Math.max(0, Math.floor(finalContextFidelity * GRID_BINS)));
-  const loopBin = Math.min(GRID_BINS - 1, Math.max(0, Math.floor(spectralOscEnergy * GRID_BINS)));
-  phaseSpaceFidelityLoopGrid[fidBin * GRID_BINS + loopBin]++;
-
-  // Sample stride for manifold visualization points
-  const sampleStride = Math.max(1, Math.floor(scaleJourneys / MAX_MANIFOLD_SAMPLES));
-  if (j % sampleStride === 0 && manifoldSamples.length < MAX_MANIFOLD_SAMPLES) {
-    manifoldSamples.push({
-      journeyId: "JRN-" + String(j + 1).padStart(7, "0"),
-      blueprintId: spec.goldenAttractorTubes[bpIdx].blueprintId,
-      tau: Number(tau.toFixed(4)),
-      driftMahalanobis: Number(driftScore.toFixed(4)),
-      wassersteinCost: Number(wassersteinCost.toFixed(4)),
-      lyapunovExponent: Number(lyapunovExp.toFixed(5)),
-      contextFidelity: Number(finalContextFidelity.toFixed(4)),
-      spectralLoopEnergy: Number(spectralOscEnergy.toFixed(4)),
-      a2aEntropy: Number(a2aEntropy.toFixed(4)),
-      topA2AAgent: spec.a2aContinuousAgents[topAgent].id,
-      topA2AWeight: Number(topProb.toFixed(4)),
-      secondA2AAgent: spec.a2aContinuousAgents[secondAgent].id,
-      secondA2AWeight: Number(secondProb.toFixed(4)),
-      primaryControlAction:
-        spec.continuousFormulations.plane3ControlField.controlActionBasis[topAction].id,
-      controlVector: Array.from(controlVec, (v) => Number(v.toFixed(4))),
-      stateVector16D: Array.from(zState, (v) => Number(v.toFixed(4))),
-    });
-  }
-
-  // Track frontier high-entropy / boundary trajectories for Tier-2 Strands 2B calibration
-  const frontierScore = a2aEntropy * 0.55 + Math.min(1.0, Math.abs(driftScore - 1.0)) * 0.25 + spectralOscEnergy * 0.2;
-  if (frontierCandidates.length < deciderSamplesCount) {
-    frontierCandidates.push({
-      journeyId: "JRN-" + String(j + 1).padStart(7, "0"),
-      blueprintId: spec.goldenAttractorTubes[bpIdx].blueprintId,
-      frontierScore: Number(frontierScore.toFixed(4)),
-      tau: Number(tau.toFixed(3)),
-      elapsedSec: Math.round(elapsedSec),
-      slaBudgetSec: bpSlaBudget[bpIdx],
-      driftMahalanobis: Number(driftScore.toFixed(4)),
-      lyapunovExponent: Number(lyapunovExp.toFixed(5)),
-      contextFidelity: Number(finalContextFidelity.toFixed(4)),
-      spectralLoopEnergy: Number(spectralOscEnergy.toFixed(4)),
-      a2aEntropy: Number(a2aEntropy.toFixed(4)),
-      topA2AAgent: spec.a2aContinuousAgents[topAgent].id,
-      topA2AWeight: Number(topProb.toFixed(4)),
-      fastControlAction:
-        spec.continuousFormulations.plane3ControlField.controlActionBasis[topAction].id,
-      fastControlVector: Array.from(controlVec, (v) => Number(v.toFixed(4))),
-    });
-    frontierCandidates.sort((a, b) => b.frontierScore - a.frontierScore);
-  } else if (frontierScore > frontierCandidates[frontierCandidates.length - 1].frontierScore) {
-    frontierCandidates[frontierCandidates.length - 1] = {
-      journeyId: "JRN-" + String(j + 1).padStart(7, "0"),
-      blueprintId: spec.goldenAttractorTubes[bpIdx].blueprintId,
-      frontierScore: Number(frontierScore.toFixed(4)),
-      tau: Number(tau.toFixed(3)),
-      elapsedSec: Math.round(elapsedSec),
-      slaBudgetSec: bpSlaBudget[bpIdx],
-      driftMahalanobis: Number(driftScore.toFixed(4)),
-      lyapunovExponent: Number(lyapunovExp.toFixed(5)),
-      contextFidelity: Number(finalContextFidelity.toFixed(4)),
-      spectralLoopEnergy: Number(spectralOscEnergy.toFixed(4)),
-      a2aEntropy: Number(a2aEntropy.toFixed(4)),
-      topA2AAgent: spec.a2aContinuousAgents[topAgent].id,
-      topA2AWeight: Number(topProb.toFixed(4)),
-      fastControlAction:
-        spec.continuousFormulations.plane3ControlField.controlActionBasis[topAction].id,
-      fastControlVector: Array.from(controlVec, (v) => Number(v.toFixed(4))),
-    };
-    frontierCandidates.sort((a, b) => b.frontierScore - a.frontierScore);
+  for (const fc of p.frontierCandidates) {
+    mergedFrontierCandidates.push(fc);
   }
 }
+
+mergedFrontierCandidates.sort((a, b) => b.frontierScore - a.frontierScore);
+const frontierCandidates = mergedFrontierCandidates.slice(0, deciderSamplesCount);
+const manifoldSamples = mergedManifoldSamples.slice(0, MAX_MANIFOLD_SAMPLES);
 
 const tFastEnd = performance.now();
 const elapsedMs = Math.max(0.1, tFastEnd - tStart);
 const journeysPerSec = Math.round((scaleJourneys / elapsedMs) * 1000);
 const eventsPerSec = Math.round((totalEventsProcessed / elapsedMs) * 1000);
 
-/* ---------- Exact Order-Statistic Quantiles ---------- */
+/* ---------- Exact / Reservoir Order-Statistic Quantiles ---------- */
 
 const sortedDrifts = Float64Array.from(allDrifts).sort();
 const sortedFidelities = Float64Array.from(allFidelities).sort();
@@ -767,9 +1011,9 @@ const controlActionSummary =
     index: i,
     id: act.id,
     mapsToDiscreteAction: act.mapsToDiscreteAction,
-    meanContinuousWeight: Number((sumControlActions[i] / scaleJourneys).toFixed(4)),
-    primaryDominantCount: primaryActionCounts[i],
-    primaryDominantShare: Number(((primaryActionCounts[i] / scaleJourneys) * 100).toFixed(2)),
+    meanContinuousWeight: Number((controlWeightSums[i] / scaleJourneys).toFixed(4)),
+    primaryDominantCount: controlDominantCounts[i],
+    primaryDominantShare: Number(((controlDominantCounts[i] / scaleJourneys) * 100).toFixed(2)),
   }));
 
 const a2aAgentFieldSummary = spec.a2aContinuousAgents.map((ag, a) => ({
@@ -785,15 +1029,39 @@ const a2aAgentFieldSummary = spec.a2aContinuousAgents.map((ag, a) => ({
 
 const blueprintAttractorSummary = spec.goldenAttractorTubes.map((tube, b) => {
   const cnt = Math.max(1, blueprintCounts[b]);
+  const axisBase = b * DIM;
+  const ctrlBase = b * NUM_ACTIONS;
+  const empiricalMeanVector = [];
+  const empiricalStdVector = [];
+  for (let d = 0; d < DIM; d++) {
+    const meanVal = blueprintAxisSums[axisBase + d] / cnt;
+    const meanSq = blueprintAxisSqSums[axisBase + d] / cnt;
+    const variance = Math.max(1e-6, meanSq - meanVal * meanVal);
+    empiricalMeanVector.push(Number(meanVal.toFixed(4)));
+    empiricalStdVector.push(Number(Math.sqrt(variance).toFixed(4)));
+  }
+  const meanControlVector = [];
+  for (let c = 0; c < NUM_ACTIONS; c++) {
+    meanControlVector.push(Number((blueprintControlSums[ctrlBase + c] / cnt).toFixed(4)));
+  }
   return {
     blueprintId: tube.blueprintId,
     name: tube.name,
     domain: tube.domain,
     slaBudgetSeconds: tube.slaBudgetSeconds,
+    momentOfTruthTau: tube.momentOfTruthTau,
     journeyCount: blueprintCounts[b],
+    meanProgressTau: Number((blueprintTauSums[b] / cnt).toFixed(4)),
+    meanElapsedSeconds: Number((blueprintElapsedSecSums[b] / cnt).toFixed(2)),
     meanMahalanobisDrift: Number((blueprintDriftSums[b] / cnt).toFixed(4)),
     meanContextFidelity: Number((blueprintFidelitySums[b] / cnt).toFixed(4)),
     meanLyapunovExponent: Number((blueprintLyapSums[b] / cnt).toFixed(5)),
+    convergentSharePercent: Number(((blueprintConvergentCounts[b] / cnt) * 100).toFixed(2)),
+    divergentSharePercent: Number(((blueprintDivergentCounts[b] / cnt) * 100).toFixed(2)),
+    sipStrippedSharePercent: Number(((blueprintSipStrippedCounts[b] / cnt) * 100).toFixed(2)),
+    empiricalMeanVector,
+    empiricalStdVector,
+    meanControlVector,
   };
 });
 
@@ -821,6 +1089,7 @@ const summaryArtifact = {
   benchmark: {
     scaleJourneys,
     totalEventsProcessed,
+    workersUsed,
     elapsedMilliseconds: Number(elapsedMs.toFixed(2)),
     throughputJourneysPerSec: journeysPerSec,
     throughputEventsPerSec: eventsPerSec,
@@ -909,7 +1178,7 @@ console.log(
   `  Scale Simulated      : ${scaleJourneys.toLocaleString()} continuous trajectories (${totalEventsProcessed.toLocaleString()} assimilated events)`,
 );
 console.log(
-  `  Compute Wall Time    : ${elapsedMs.toFixed(2)} ms`,
+  `  Worker Threads       : ${workersUsed} parallel worker(s)  |  Compute Wall Time: ${elapsedMs.toFixed(2)} ms`,
 );
 console.log(
   `  Vector Throughput    : ${journeysPerSec.toLocaleString()} journeys/sec  |  ${eventsPerSec.toLocaleString()} events/sec`,

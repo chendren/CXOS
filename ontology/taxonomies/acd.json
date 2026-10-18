@@ -97,5 +97,151 @@
     { "with": "wfm", "exchanges": ["Interval queue stats feed forecasting and intraday alerts", "Aux state definitions shared"] },
     { "with": "crm", "exchanges": ["Screen pop on answered contact", "Disposition and wrap codes written back"] },
     { "with": "qa", "exchanges": ["Recordings routed for evaluation sampling"] }
-  ]
+  ],
+  "scoringModel": {
+    "id": "acd_fluid_routing_stability_scorecard",
+    "name": "ACD Fluid Routing & Queue Stability Scorecard",
+    "scaleType": "weighted_rubric",
+    "maxPoints": 100,
+    "autoFailItems": [
+      "stranded_contact_in_empty_skill_queue",
+      "infinite_overflow_routing_loop",
+      "unrouted_emergency_priority_contact"
+    ],
+    "note": "Evaluates omnichannel queue stability, Halfin-Whitt service-level attainment, skill-affinity matching precision, and context-preserving transfer discipline.",
+    "dimensions": [
+      {
+        "id": "service_level_tail_wait_control",
+        "name": "Service Level & Tail Wait Control",
+        "weightPercent": 30,
+        "description": "Attainment of target SLA thresholds alongside bounded P95 tail wait latency and proactive expected-wait callback conversion",
+        "sampleCriteria": [
+          "Queue achieves 80 percent answered within threshold window",
+          "Tail wait time P95 remains below 2.5x target SLA threshold",
+          "Callback offer triggers automatically when EWT exceeds threshold"
+        ]
+      },
+      {
+        "id": "skill_affinity_matching_precision",
+        "name": "Skill-Affinity Cosine Matching Precision",
+        "weightPercent": 25,
+        "description": "Alignment between contact intent skill requirements and assigned agent capability vectors without starving niche queues",
+        "sampleCriteria": [
+          "Assigned agent possesses primary language and domain skill tags",
+          "Cosine affinity score between contact vector and agent skill profile exceeds 0.80",
+          "Zero negative-skill or compliance-exclusion routing violations"
+        ]
+      },
+      {
+        "id": "priority_aging_overflow_governance",
+        "name": "Dynamic Priority Aging & Overflow Governance",
+        "weightPercent": 20,
+        "description": "Smooth priority aging across tiers and timely overflow expansion preventing both skill starvation and priority inversion",
+        "sampleCriteria": [
+          "Aging gradient prevents standard-tier starvation under VIP surges",
+          "Overflow matrix expands to cross-trained skill group before abandon spike",
+          "Omnichannel blend respects voice preemption without dropping active chats"
+        ]
+      },
+      {
+        "id": "abandonment_hazard_suppression",
+        "name": "Abandonment Hazard Suppression",
+        "weightPercent": 15,
+        "description": "Minimization of true post-threshold abandonments through accurate EWT signaling and virtual queue preservation",
+        "sampleCriteria": [
+          "True abandonment rate after short-call filter stays under 5 percent",
+          "EWT prediction error remains within 15 percent of actual wait",
+          "Callback-converted contacts retain original queue aging timestamp"
+        ]
+      },
+      {
+        "id": "transfer_continuity_discipline",
+        "name": "Transfer Continuity & Ping-Pong Prevention",
+        "weightPercent": 10,
+        "description": "Warm consult execution and preferred-agent continuity eliminating multi-hop cold transfer chains",
+        "sampleCriteria": [
+          "Cold transfers represent fewer than 10 percent of total transfers",
+          "Context banner and verified CRM case ID attach across transfer hops",
+          "Zero contacts experience 3 or more sequential queue transfers"
+        ]
+      }
+    ]
+  },
+  "continuousDynamics": {
+    "stateSpaceDimension": 10,
+    "manifoldCoordinates": [
+      "fluid_queue_density",
+      "skill_affinity_cosine_field",
+      "priority_aging_potential",
+      "abandonment_hazard_intensity",
+      "halfin_whitt_safety_factor",
+      "expected_wait_estimate",
+      "idle_server_fraction",
+      "overflow_flux_rate",
+      "callback_virtual_backlog",
+      "transfer_reentry_intensity"
+    ],
+    "stateVariables": [
+      {
+        "id": "fluid_queue_density",
+        "symbol": "q(t, w)",
+        "domain": "[0, inf)",
+        "unit": "contacts cdot s^-1",
+        "description": "Fluid-limit Erlang-A queue age density of waiting contacts at time t that have accumulated wait time w"
+      },
+      {
+        "id": "skill_affinity_cosine_field",
+        "symbol": "A_skill(u, v)",
+        "domain": "[-1, 1]",
+        "unit": "cosine_similarity",
+        "description": "Continuous cosine matching field between contact requirement embedding u and available agent capability vector v"
+      },
+      {
+        "id": "priority_aging_potential",
+        "symbol": "P_age(t, w)",
+        "domain": "[0, inf)",
+        "unit": "priority_score",
+        "description": "Dynamic priority potential of a waiting contact combining base tier priority with continuous wait-time aging gradient"
+      },
+      {
+        "id": "abandonment_hazard_intensity",
+        "symbol": "h_aband(w)",
+        "domain": "[0, inf)",
+        "unit": "s^-1",
+        "description": "Instantaneous Erlang-A patience hazard rate at which a contact waiting for duration w abandons the queue"
+      },
+      {
+        "id": "halfin_whitt_safety_factor",
+        "symbol": "beta_hw(t)",
+        "domain": "(-inf, inf)",
+        "unit": "std_devs",
+        "description": "Quality-and-Efficiency-Driven (QED) Halfin-Whitt square-root staffing safety coefficient governing delay probability"
+      }
+    ],
+    "differentialEquations": [
+      {
+        "id": "erlang_a_transport_pde",
+        "name": "Fluid-Limit Erlang-A Queue Age Transport PDE",
+        "formula": "partial_t q(t, w) + partial_w q(t, w) = - (h_aband(w) + mu_route(t, w)) cdot q(t, w)",
+        "interpretation": "Conservation law for waiting contact density across clock time t and wait age w under simultaneous abandonment hazard and routing depletion"
+      },
+      {
+        "id": "dynamic_priority_aging_gradient",
+        "name": "Dynamic Priority Aging & Skill Dispatch Flow",
+        "formula": "dP_age(t, w) cdot dw^-1 = gamma_tier cdot (1 + alpha_sla cdot exp(kappa_sla cdot (w - tau_sla)))",
+        "interpretation": "Priority aging gradient accelerates exponentially as contact wait w approaches and exceeds the queue SLA threshold tau_sla"
+      },
+      {
+        "id": "halfin_whitt_heavy_traffic_sde",
+        "name": "Halfin-Whitt Heavy-Traffic Queue Diffusion SDE",
+        "formula": "dX_hw(t) = - mu_serv cdot (X_hw(t) + beta_hw(t)) dt - theta_aband cdot max(X_hw(t), 0) dt + sqrt(2 cdot mu_serv) dW_t",
+        "interpretation": "Rescaled queue length diffusion switches between Ornstein-Uhlenbeck restoring drift when servers are free and abandonment-damped drift in overload"
+      }
+    ],
+    "scaleInvariants": [
+      "Halfin-Whitt QED scaling: spare capacity N - lambda cdot mu^-1 scales as beta_hw cdot sqrt(N), holding delay probability invariant from 50 to 100k+ agents",
+      "O(1) bipartite dispatch lookup via quantized spherical locality-sensitive hashing on the skill-affinity cosine field A_skill(u, v)",
+      "Conservation of total offered traffic flux: ingress arrivals equal the sum of answered flux, true abandonment integral, and overflow divergence"
+    ]
+  }
 }

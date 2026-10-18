@@ -390,5 +390,149 @@
         "Schedule satisfaction items in employee pulse instruments"
       ]
     }
-  ]
+  ],
+  "scoringModel": {
+    "id": "wfm_intraday_forecasting_occupancy_scorecard",
+    "name": "WFM Intraday Forecasting & Occupancy Health Scorecard",
+    "scaleType": "weighted_rubric",
+    "maxPoints": 100,
+    "autoFailItems": [
+      "unmitigated_sustained_occupancy_above_95_percent",
+      "missing_campaign_or_outage_forecast_overlay",
+      "regulatory_break_or_meal_compliance_breach"
+    ],
+    "note": "Evaluates interval arrival forecasting accuracy, shrinkage accounting fidelity, real-time adherence governance, and burnout-safe occupancy bands.",
+    "dimensions": [
+      {
+        "id": "interval_forecast_precision",
+        "name": "Interval Arrival & AHT Forecast Precision",
+        "weightPercent": 30,
+        "description": "Accuracy of 15-minute and 30-minute volume and AHT predictions incorporating seasonal baselines and outbound event overlays",
+        "sampleCriteria": [
+          "Interval volume MAPE stays below 7 percent across prime hours",
+          "AHT forecast variance stays within 10 percent of interval actuals",
+          "Marketing and outbound calendars ingested prior to schedule lock"
+        ]
+      },
+      {
+        "id": "shrinkage_calibration_adherence",
+        "name": "Shrinkage Calibration & Real-Time Adherence",
+        "weightPercent": 25,
+        "description": "Alignment between budgeted and observed planned and unplanned shrinkage paired with schedule adherence discipline",
+        "sampleCriteria": [
+          "Real-time schedule adherence exceeds 90 percent across skilled queues",
+          "Planned versus actual shrinkage variance stays under 2.5 percentage points",
+          "Aux state codes map cleanly between ACD telemetry and WFM rosters"
+        ]
+      },
+      {
+        "id": "occupancy_burnout_equilibrium",
+        "name": "Occupancy Health & Burnout Equilibrium",
+        "weightPercent": 20,
+        "description": "Maintenance of productive occupancy inside the sustainable 78 to 86 percent band without inducing agent fatigue spirals",
+        "sampleCriteria": [
+          "Interval occupancy remains within 78 to 86 percent target corridor",
+          "Zero teams sustain occupancy above 90 percent for 4+ consecutive intervals",
+          "Coaching and recovery aux blocks protected from routine cancellation"
+        ]
+      },
+      {
+        "id": "intraday_rebalancing_agility",
+        "name": "Intraday Surplus & Deficit Rebalancing Agility",
+        "weightPercent": 15,
+        "description": "Speed and stability of intraday flex actions when live arrival intensity diverges from tactical schedule plans",
+        "sampleCriteria": [
+          "Intraday flex or skill-rebalance triggers within 15 minutes of 2-sigma volume spike",
+          "Break adjustments preserve downstream afternoon coverage without cascade gaps",
+          "Net staffing variance stays within plus or minus 5 percent of Erlang requirement"
+        ]
+      },
+      {
+        "id": "schedule_ergonomics_conformance",
+        "name": "Schedule Ergonomics & Shift Conformance",
+        "weightPercent": 10,
+        "description": "Fairness of shift bids, adherence to freeze windows, and full conformance to labor and break regulations",
+        "sampleCriteria": [
+          "Schedule published ahead of freeze window with zero labor rule violations",
+          "Shift conformance sits between 98 and 102 percent of contracted hours",
+          "Employee pulse schedule satisfaction trends positive quarter over quarter"
+        ]
+      }
+    ]
+  },
+  "continuousDynamics": {
+    "stateSpaceDimension": 8,
+    "manifoldCoordinates": [
+      "intraday_arrival_intensity",
+      "agent_shrinkage_fraction",
+      "occupancy_fatigue_index",
+      "staffing_surplus_deficit",
+      "effective_aht_trajectory",
+      "adherence_compliance_ratio",
+      "hawkes_excitability_memory",
+      "intraday_control_flux"
+    ],
+    "stateVariables": [
+      {
+        "id": "intraday_arrival_intensity",
+        "symbol": "lambda(t)",
+        "domain": "[0, inf)",
+        "unit": "contacts cdot s^-1",
+        "description": "Continuous intraday arrival intensity driven by an inhomogeneous Poisson baseline plus self-exciting Hawkes outage and retry bursts"
+      },
+      {
+        "id": "agent_shrinkage_fraction",
+        "symbol": "s_shrink(t)",
+        "domain": "[0, 1]",
+        "unit": "ratio",
+        "description": "Instantaneous fraction of scheduled paid agent capacity unavailable due to planned and unplanned shrinkage diffusion"
+      },
+      {
+        "id": "occupancy_fatigue_index",
+        "symbol": "Phi_fat(t)",
+        "domain": "[0, 1]",
+        "unit": "fatigue_index",
+        "description": "Accumulated cognitive and physiological agent fatigue state driven by sustained high occupancy above the recovery threshold"
+      },
+      {
+        "id": "staffing_surplus_deficit",
+        "symbol": "Delta_N(t)",
+        "domain": "(-inf, inf)",
+        "unit": "fte",
+        "description": "Continuous net staffing balance equal to effective available agents minus instantaneous Erlang-A required staffing"
+      },
+      {
+        "id": "intraday_control_flux",
+        "symbol": "u_wfm(t)",
+        "domain": "(-inf, inf)",
+        "unit": "fte cdot s^-1",
+        "description": "Intraday management control flow reallocating aux windows, cross-skilled pools, and overtime to damp staffing deficits"
+      }
+    ],
+    "differentialEquations": [
+      {
+        "id": "hawkes_arrival_intensity_sde",
+        "name": "Inhomogeneous Poisson-Hawkes Intraday Arrival Intensity",
+        "formula": "dlambda(t) = kappa_lam cdot (lambda_base(t) - lambda(t)) dt + alpha_hawk cdot dN_retry(t) + sigma_lam cdot sqrt(lambda(t)) dW_t",
+        "interpretation": "Arrival rate tracks diurnal baseline lambda_base(t) while self-exciting retry and outage jumps dN_retry and Cox-Ingersoll-Ross volatility capture surge dynamics"
+      },
+      {
+        "id": "shrinkage_jacobi_diffusion_sde",
+        "name": "Continuous Agent Shrinkage Jacobi Diffusion",
+        "formula": "ds_shrink(t) = theta_shr cdot (s_plan(t) - s_shrink(t)) dt + eta_fat cdot Phi_fat(t) dt + sigma_shr cdot sqrt(s_shrink(t) cdot (1 - s_shrink(t))) dB_t",
+        "interpretation": "Shrinkage mean-reverts toward planned schedule s_plan(t) on [0, 1] while accumulated occupancy fatigue Phi_fat(t) drives upward unplanned drift"
+      },
+      {
+        "id": "occupancy_fatigue_staffing_control",
+        "name": "Occupancy Fatigue Accumulation & Staffing Control Flow",
+        "formula": "dPhi_fat(t) cdot dt^-1 = gamma_load cdot max(rho_occ(t) - rho_crit, 0) - mu_rec cdot (1 - rho_occ(t)), with dDelta_N(t) cdot dt^-1 = u_wfm(t) - N_sched(t) cdot (ds_shrink(t) cdot dt^-1) - dN_req(t) cdot dt^-1",
+        "interpretation": "Fatigue accumulates whenever occupancy rho_occ exceeds critical threshold rho_crit (~0.85) and recovers during idle intervals, coupling directly into net staffing Delta_N(t)"
+      }
+    ],
+    "scaleInvariants": [
+      "Square-root staffing elasticity: relative shrinkage variance decays as N_sched^-0.5 across pooled multi-skill rosters",
+      "O(1) streaming Kalman-Bucy filter update for intraday arrival intensity lambda(t) and shrinkage drift at 1-second telemetry ticks",
+      "Work-energy conservation over diurnal cycles: excess occupancy above rho_crit integrates linearly into downstream unplanned absenteeism and AHT inflation"
+    ]
+  }
 }

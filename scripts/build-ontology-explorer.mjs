@@ -32,6 +32,7 @@ const historyPath = resolve(argOf("--history") ?? join(ROOT, ".tmp", "qa-triage"
 const journeyTracesPath = resolve(argOf("--journey-traces") ?? join(ROOT, "fixtures", "journey-a2a-traces.sample.json"));
 const journeyHistoryPath = resolve(argOf("--journey-history") ?? join(ROOT, ".tmp", "qa-triage", "journey-a2a-history.jsonl"));
 const manifoldSummaryPath = resolve(argOf("--manifold") ?? join(ROOT, ".tmp", "continuous-scale", "manifold-summary.json"));
+const recalibratedPath = resolve(argOf("--recalibrated") ?? join(ROOT, ".tmp", "continuous-scale", "recalibrated-blueprints.json"));
 
 const esc = (s) =>
   String(s ?? "")
@@ -109,6 +110,9 @@ const journeyTriadTraces = journeyFixtures.map((jf) => ({
 }));
 const manifoldSummary = existsSync(manifoldSummaryPath)
   ? JSON.parse(readFileSync(manifoldSummaryPath, "utf8"))
+  : null;
+const recalibratedBlueprints = existsSync(recalibratedPath)
+  ? JSON.parse(readFileSync(recalibratedPath, "utf8"))
   : null;
 
 function countFacetNodes(node) {
@@ -314,6 +318,7 @@ const clientPayload = {
   triage: uniqueTriage,
   journeyTriadTraces,
   manifoldSummary,
+  recalibratedBlueprints,
   packSummary: pack
     ? {
         version: pack.version,
@@ -1668,6 +1673,42 @@ const html = `<!DOCTYPE html>
       var envSpec = (DATA.ontology.core && DATA.ontology.core.contextEnvelopeSpec) || null;
       var traces = DATA.journeyTriadTraces || [];
       var mf = DATA.manifoldSummary || null;
+      var rb = DATA.recalibratedBlueprints || null;
+
+      var recalHtml = "";
+      if (rb && rb.portfolioRecalibrationSummary && rb.recalibratedBlueprints) {
+        var prs = rb.portfolioRecalibrationSummary;
+        var rbRows = rb.recalibratedBlueprints.map(function (b) {
+          var ci = b.counterfactualImpact || {};
+          var sla = b.slaRecalibration || {};
+          var topAxes = (b.topDivergingAxes || []).map(function (ax) {
+            return '<code>' + escHtml(ax.axisId) + '</code> (' + (ax.driftResidualDeltaMu >= 0 ? '+' : '') + Number(ax.driftResidualDeltaMu).toFixed(3) + ')';
+          }).join(', ');
+          var firstRec = (b.prescriptiveStructuralRecommendations && b.prescriptiveStructuralRecommendations[0]) || "";
+          return (
+            "<tr>" +
+              "<td><strong>" + escHtml(b.name) + "</strong><br/><code>" + escHtml(b.blueprintId) + "</code></td>" +
+              "<td><code>" + Number(ci.priorMahalanobisDrift || 0).toFixed(4) + "</code> &rarr; <strong class=\"ok\"><code>" + Number(ci.counterfactualPostDrift || 0).toFixed(4) + "</code></strong><br/><span class=\"ok\">-" + Number(ci.driftReductionPercent || 0).toFixed(1) + "% drift</span></td>" +
+              "<td><code>" + Number(ci.priorConvergentSharePercent || 0).toFixed(1) + "%</code> &rarr; <strong class=\"ok\"><code>" + Number(ci.projectedPostConvergentSharePercent || 0).toFixed(1) + "%</code></strong><br/><span class=\"ok\">+" + Number(ci.projectedLyapunovConvergenceLiftPctPoints || 0).toFixed(1) + " pp</span></td>" +
+              "<td><code>" + escHtml(sla.priorSlaBudgetSeconds) + "s</code> &rarr; <code>" + escHtml(sla.recalibratedSlaBudgetSeconds) + "s</code></td>" +
+              "<td style=\"font-size:0.77rem;\">" + topAxes + "</td>" +
+              "<td class=\"muted\" style=\"font-size:0.77rem;\">" + escHtml(firstRec) + "</td>" +
+            "</tr>"
+          );
+        }).join("");
+
+        recalHtml =
+          '<div class="sub-box" style="margin-bottom:16px;border-color:#a78bfa;">' +
+            '<h4>' +
+              '<span>Closed-Loop Plane 1 &larr; Plane 2/3 Robbins-Monro Blueprint Recalibration (' + prs.blueprintsRecalibrated + ' Golden Attractor Tubes)</span>' +
+              '<code>Portfolio Drift -' + prs.overallDriftReductionPercent + '% (' + prs.meanPriorMahalanobisDrift + ' &rarr; ' + prs.meanCounterfactualPostDrift + ') &middot; Lyapunov Convergence +' + prs.overallLyapunovConvergenceLiftPctPoints + ' pp</code>' +
+            '</h4>' +
+            '<table>' +
+              '<thead><tr><th>Golden Attractor Blueprint (Plane 1)</th><th>Mahalanobis Drift (Prior &rarr; Post)</th><th>Lyapunov Convergence</th><th>SLA Velocity Budget</th><th>Top 3 Diverging R^16 Axes</th><th>Prescriptive Structural Recommendation</th></tr></thead>' +
+              '<tbody>' + rbRows + '</tbody>' +
+            '</table>' +
+          '</div>';
+      }
 
       var manifoldBannerHtml = "";
       if (mf && mf.benchmark && mf.continuousFieldMetrics) {
@@ -1796,6 +1837,7 @@ const html = `<!DOCTYPE html>
 
       container.innerHTML =
         manifoldBannerHtml +
+        recalHtml +
         '<div class="tax-cols" style="margin-bottom:16px;">' +
           planesHtml +
         '</div>' +

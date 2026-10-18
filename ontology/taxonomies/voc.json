@@ -69,11 +69,146 @@
     { "id": "driver_gaps", "name": "Unactioned Drivers", "signal": "Same top-3 driver verbatims every quarter with no linked backlog items", "mitigation": "Driver themes must open KM/QA/routing backlog items with owners" },
     { "id": "sampling_bias", "name": "Sampling Bias", "signal": "Respondents skew to extreme experiences; mid-experience voice missing", "mitigation": "Quota sampling across journey stages and sentiment strata" }
   ],
+  "scoringModel": {
+    "id": "voc_signal_fidelity_scorecard",
+    "name": "VOC Signal Fidelity & Closed-Loop Recovery Scorecard",
+    "scaleType": "weighted_rubric",
+    "maxPoints": 100,
+    "autoFailItems": [
+      "agent_survey_gating_manipulation",
+      "pii_unredacted_in_verbatim_export",
+      "critical_detractor_alert_ignored"
+    ],
+    "note": "Scores Voice of the Customer program execution on statistical de-biasing, multi-signal perception fusion, root-cause driver attribution, and timely close-the-loop detractor recovery.",
+    "dimensions": [
+      {
+        "id": "sampling_integrity_debiasing",
+        "name": "Sampling Integrity & Non-Response De-Biasing",
+        "weightPercent": 25,
+        "description": "Stratified invitation governance, fatigue throttling, and inverse-propensity weighting to eliminate extreme-experience survivorship bias",
+        "sampleCriteria": [
+          "Zero agent-controlled survey gating or selective invitation suppression",
+          "Fatigue quarantine enforced per customer across channels and journey stages",
+          "Direct survey scores fused with unsolicited behavioral and sentiment proxies"
+        ]
+      },
+      {
+        "id": "driver_attribution_precision",
+        "name": "Root-Cause Driver Attribution Precision",
+        "weightPercent": 25,
+        "description": "Causal linkage from verbatim themes and operational telemetry (AHT, transfers, hold time, policy friction) to CSAT, CES, and NPS shifts",
+        "sampleCriteria": [
+          "Verbatims automatically decomposed into structured operational root causes",
+          "Driver elasticity quantified against FCR, effort, and repeat contact rates",
+          "Top negative drivers linked directly to owned KM, QA, or routing backlog items"
+        ]
+      },
+      {
+        "id": "closed_loop_detractor_recovery",
+        "name": "Closed-Loop Detractor Recovery Execution",
+        "weightPercent": 30,
+        "description": "Speed, empathy, and resolution completeness of follow-up workflows triggered by high-severity detractor responses",
+        "sampleCriteria": [
+          "High-severity detractors contacted within 24-hour close-the-loop SLA",
+          "Underlying customer issue resolved rather than merely acknowledged",
+          "Recovery outcome and systemic fix logged back to CRM and VOC ledger"
+        ]
+      },
+      {
+        "id": "continuous_journey_calibration",
+        "name": "Continuous Journey & Model Calibration",
+        "weightPercent": 20,
+        "description": "Ongoing alignment between inferred interaction sentiment and post-contact survey truth across customer segments",
+        "sampleCriteria": [
+          "Latent satisfaction model recalibrated weekly against completed CSAT and CES",
+          "CSAT-theater divergence between survey scores and churn flagged automatically",
+          "Frontline Voice of the Employee insights corroborated against VOC trends"
+        ]
+      }
+    ]
+  },
   "integrations": [
     { "with": "speech_analytics", "exchanges": ["Interaction mining as unsolicited listening posts", "Verbatim topic models shared for driver analysis"] },
     { "with": "crm", "exchanges": ["Survey trigger keyed to case and contact", "Respondent profile for close-the-loop workflow"] },
     { "with": "qa", "exchanges": ["Evaluation outcomes correlated with transactional surveys", "Low-score contacts feed targeted QA sampling"] },
     { "with": "outbound", "exchanges": ["Close-the-loop callbacks as compliant service outreach"] },
     { "with": "km", "exchanges": ["Driver themes missing answers open content backlog"] }
-  ]
+  ],
+  "continuousDynamics": {
+    "stateSpaceDimension": 10,
+    "manifoldCoordinates": [
+      "latent_satisfaction_posterior",
+      "customer_effort_friction_potential",
+      "non_response_propensity_weight",
+      "detractor_churn_hazard",
+      "verbatim_driver_elasticity",
+      "survey_fatigue_saturation",
+      "closed_loop_recovery_impulse",
+      "sentiment_survey_alignment_gain",
+      "repeat_driver_persistence",
+      "net_promoter_drift_velocity"
+    ],
+    "stateVariables": [
+      {
+        "id": "latent_satisfaction_state",
+        "symbol": "S_voc(t)",
+        "domain": "[0, 1]",
+        "unit": "satisfaction_index",
+        "description": "Continuous latent customer satisfaction state fusing sparse post-contact survey posteriors with dense real-time behavioral effort and acoustic-textual sentiment proxies"
+      },
+      {
+        "id": "response_propensity_field",
+        "symbol": "pi_resp(x, t)",
+        "domain": "(0, 1]",
+        "unit": "probability",
+        "description": "Observation selection probability modeling survey completion propensity as a function of interaction intensity and survey fatigue to correct non-response survivorship bias"
+      },
+      {
+        "id": "detractor_churn_hazard_rate",
+        "symbol": "h_churn(t)",
+        "domain": "R_+",
+        "unit": "hazard_rate",
+        "description": "Instantaneous customer defection and relationship attrition hazard driven by cumulative unresolved effort friction and detractor state"
+      },
+      {
+        "id": "driver_attribution_elasticity_vector",
+        "symbol": "beta_drv(t)",
+        "domain": "R^K",
+        "unit": "sensitivity_vector",
+        "description": "Time-varying partial derivative vector quantifying the marginal impact of K operational friction drivers (hold time, transfers, policy denials, repeat touches) on S_voc(t)"
+      },
+      {
+        "id": "survey_fatigue_state",
+        "symbol": "F_surv(t)",
+        "domain": "[0, 1]",
+        "unit": "fatigue_ratio",
+        "description": "Cumulative solicitation fatigue state that depresses response propensity pi_resp(x, t) when customers are over-sampled across channels"
+      }
+    ],
+    "differentialEquations": [
+      {
+        "id": "debiased_kalman_satisfaction_fusion_sde",
+        "name": "Survivorship-Corrected Latent Satisfaction Filtering SDE",
+        "formula": "dS_voc(t) = -lambda_decay * (S_voc(t) - S_base) * dt - beta_drv(t)^T * dPhi_friction(t) + K_kalman * pi_resp(x, t)^(-1) * (Y_surv(t) - S_voc(t)) * dN_obs(t)",
+        "interpretation": "Continuously evolves latent satisfaction S_voc(t) under operational friction impulses dPhi_friction(t) while applying inverse-propensity-weighted Kalman updates pi_resp(x, t)^(-1) whenever a sparse survey response dN_obs(t) arrives, eliminating non-response survivorship bias"
+      },
+      {
+        "id": "detractor_churn_hazard_recovery_ode",
+        "name": "Detractor Churn Hazard & Closed-Loop Recovery Dynamics",
+        "formula": "dh_churn(t) * inv(dt) = alpha_det * max(0, S_crit - S_voc(t))^2 + gamma_effort * CES_latent(t) - mu_ctl * u_recovery(t) * h_churn(t)",
+        "interpretation": "Models the quadratic surge in churn hazard h_churn(t) when latent satisfaction drops below the detractor threshold S_crit or effort CES_latent(t) spikes, and quantifies hazard damping achieved by timely close-the-loop recovery interventions u_recovery(t)"
+      },
+      {
+        "id": "driver_attribution_elasticity_flow",
+        "name": "Continuous Operational Driver Attribution Elasticity Equation",
+        "formula": "beta_drv_k(t) = -grad_Phi_k E[ S_voc(t) | Phi_friction(t) ] = Cov_local( dS_voc(t), dPhi_k(t) ) * inv( Var_local( dPhi_k(t) ) )",
+        "interpretation": "Computes the exact instantaneous elasticity of customer perception with respect to each operational driver k, ranking root-cause fixes by their true marginal lift on S_voc(t)"
+      }
+    ],
+    "scaleInvariants": [
+      "Horvitz-Thompson de-biasing invariant: inverse-propensity weighting pi_resp(x, t)^(-1) yields an unbiased estimator of population satisfaction across 100% of contacts even when survey response rates are below 5%",
+      "Closed-loop Lyapunov stability: executing recovery action u_recovery(t) within the golden SLA window guarantees negative churn-hazard drift dh_churn(t) * inv(dt) < 0",
+      "Driver conservation identity: sum of attributed driver elasticities plus unmodeled residual equals total observed variance in latent satisfaction S_voc(t)"
+    ]
+  }
 }

@@ -203,6 +203,64 @@
       "mitigation": "Require validated simulation pass rates and 2-week single-skill FCR stability before activating secondary ACD skills"
     }
   ],
+  "scoringModel": {
+    "id": "wfo_coaching_retention_scorecard",
+    "name": "WFO Coaching Impact & Agent Retention Scorecard",
+    "scaleType": "weighted_rubric",
+    "maxPoints": 100,
+    "autoFailItems": [
+      "unethical_gamification_speed_gaming",
+      "retaliatory_voe_feedback_handling",
+      "acute_burnout_escalation_ignored"
+    ],
+    "note": "Evaluates Workforce Optimization effectiveness across closed-loop 14-day coaching behavior lift, validated multi-skill progression, desktop workflow friction reduction, and proactive burnout and attrition prevention.",
+    "dimensions": [
+      {
+        "id": "closed_loop_coaching_efficacy",
+        "name": "Closed-Loop Coaching & Behavior Lift",
+        "weightPercent": 30,
+        "description": "Measurable 14-day post-coaching improvement in FCR, QA defects, and handling fluency rather than check-the-box session completion",
+        "sampleCriteria": [
+          "Coaching sessions anchored to specific QA evaluation clips and root-cause tags",
+          "Documented 14-day post-coaching lift on the targeted skill or behavior",
+          "Intraday micro-learning nudges completed during low-occupancy intervals"
+        ]
+      },
+      {
+        "id": "burnout_prevention_retention_health",
+        "name": "Burnout Prevention & Longitudinal Retention",
+        "weightPercent": 25,
+        "description": "Proactive monitoring of occupancy streaks, angry-call exposure, and schedule fatigue with automated recovery cooldowns and stay check-ins",
+        "sampleCriteria": [
+          "Post-escalation recovery cooldowns enforced after consecutive high-stress contacts",
+          "Proactive supervisor stay check-in completed when attrition risk score rises",
+          "Sustained high-occupancy streaks (>88%) rebalanced in coordination with WFM"
+        ]
+      },
+      {
+        "id": "skill_progression_governance",
+        "name": "Validated Skill Progression & Cross-Skilling",
+        "weightPercent": 25,
+        "description": "Competency-gated advancement from foundation single-queue handling to blended omnichannel and specialist escalation tiers",
+        "sampleCriteria": [
+          "Secondary ACD queue skills activated only after 2-week primary FCR stability",
+          "Speed-to-proficiency milestones tracked for nesting and cross-trained cohorts",
+          "Balanced gamification rewards gated by minimum QA and FCR quality floors"
+        ]
+      },
+      {
+        "id": "desktop_friction_elimination",
+        "name": "Desktop Workflow Friction Elimination",
+        "weightPercent": 20,
+        "description": "Time-motion and screen-transition telemetry used to remove swivel-chair bottlenecks, hold-time drivers, and manual ACW rework",
+        "sampleCriteria": [
+          "High-friction app-switching paths identified and routed to Desktop Assist automation",
+          "Customer hold intervals correlated to specific KM or tool latency root causes",
+          "Wrap-up bottleneck traces used to streamline disposition and note templates"
+        ]
+      }
+    ]
+  },
   "integrations": [
     {
       "with": "qa",
@@ -232,5 +290,82 @@
         "Targeted in-call coaching reminders and micro-tips surfaced in agent co-pilot"
       ]
     }
-  ]
+  ],
+  "continuousDynamics": {
+    "stateSpaceDimension": 10,
+    "manifoldCoordinates": [
+      "agent_skill_proficiency_level",
+      "coaching_retention_trace",
+      "desktop_workflow_friction_index",
+      "emotional_burnout_load_state",
+      "longitudinal_attrition_hazard",
+      "speed_to_proficiency_velocity",
+      "multiskill_transfer_elasticity",
+      "occupancy_fatigue_integral",
+      "gamification_quality_alignment",
+      "voe_sentiment_equilibrium"
+    ],
+    "stateVariables": [
+      {
+        "id": "agent_skill_proficiency_state",
+        "symbol": "K_skill(t)",
+        "domain": "[0, 1]",
+        "unit": "proficiency_index",
+        "description": "Continuous agent competency and resolution mastery state evolving along a saturating learning curve driven by deliberate practice and targeted coaching"
+      },
+      {
+        "id": "coaching_intervention_trace",
+        "symbol": "C_coach(t)",
+        "domain": "R_+",
+        "unit": "coaching_potency",
+        "description": "Active behavioral retention trace from 1-on-1 coaching and micro-learning nudges, decaying with exponential half-life unless consolidated by on-queue practice"
+      },
+      {
+        "id": "desktop_workflow_friction_index",
+        "symbol": "F_desk(t)",
+        "domain": "[0, 1]",
+        "unit": "friction_ratio",
+        "description": "Normalized time-motion workflow friction index quantifying swivel-chair app switches, copy-paste density, and tool-induced hold stalls per contact"
+      },
+      {
+        "id": "longitudinal_attrition_hazard",
+        "symbol": "h_attrit(t)",
+        "domain": "R_+",
+        "unit": "annualized_hazard",
+        "description": "Instantaneous agent voluntary turnover hazard rate driven by sustained occupancy overload, cumulative angry-contact exposure, and unresolved tool friction"
+      },
+      {
+        "id": "cumulative_burnout_fatigue",
+        "symbol": "B_burn(t)",
+        "domain": "[0, 1]",
+        "unit": "burnout_load",
+        "description": "Allostatic emotional and cognitive fatigue state integrating high-occupancy streaks and abusive escalations minus scheduled recovery cooldowns"
+      }
+    ],
+    "differentialEquations": [
+      {
+        "id": "skill_proficiency_learning_curve_ode",
+        "name": "Agent Skill Proficiency Learning & Coaching Retention ODE",
+        "formula": "dK_skill(t) * inv(dt) = (1 - K_skill(t)) * ( alpha_learn * lambda_handled(t) + beta_coach * C_coach(t) ) - delta_forget * (1 - u_practice(t)) * K_skill(t)",
+        "interpretation": "Models logistic skill acquisition toward mastery (K_skill -> 1) driven by handled contact volume lambda_handled(t) and active coaching potency C_coach(t), balanced against Ebbinghaus skill decay delta_forget on unpracticed secondary queues"
+      },
+      {
+        "id": "coaching_decay_half_life_dynamics",
+        "name": "Coaching Intervention Decay & Consolidation Half-Life Equation",
+        "formula": "dC_coach(t) * inv(dt) = -ln(2) * inv(tau_half) * C_coach(t) + sum_k I_nudge_k * delta(t - t_k)",
+        "interpretation": "Quantifies the exponential decay of coaching salience with retention half-life tau_half, demonstrating why periodic intraday micro-learning impulses I_nudge_k are required to lock in permanent FCR and QA behavior lift"
+      },
+      {
+        "id": "longitudinal_attrition_hazard_cox_ode",
+        "name": "Longitudinal Agent Attrition Hazard & Burnout Dynamics",
+        "formula": "h_attrit(t) = h_0(t) * exp( gamma_occ * max(0, rho_occ(t) - 0.85) + gamma_fric * F_desk(t) + gamma_burn * B_burn(t) - eta_support * C_coach(t) )",
+        "interpretation": "Proportional-hazards dynamics showing how occupancy above 85%, desktop swivel-chair friction F_desk(t), and emotional burnout load B_burn(t) exponentially accelerate turnover hazard, while supportive coaching C_coach(t) dampens attrition risk"
+      }
+    ],
+    "scaleInvariants": [
+      "Coaching consolidation invariant: spacing micro-learning reinforcements at intervals Delta_t < tau_half guarantees monotonic positive skill drift dK_skill(t) * inv(dt) > 0",
+      "Burnout stability bound: enforcing ACD recovery cooldowns keeps cumulative emotional fatigue B_burn(t) below the critical turnover bifurcation threshold across 1,000+ agent cohorts",
+      "Proficiency-AHT reciprocity: as K_skill(t) -> 1 and desktop friction F_desk(t) -> 0, proficiency-normalized handle time converges to the theoretical minimum ergonomic floor"
+    ]
+  }
 }

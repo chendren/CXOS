@@ -90,5 +90,142 @@
     { "with": "ivr", "exchanges": ["Dynamic informational prompt content drawn from machine-facing articles"] },
     { "with": "qa", "exchanges": ["Knowledge-gap root causes open curation tickets; article quality feeds QA coaching"] },
     { "with": "voc", "exchanges": ["Driver themes with missing answers become content backlog items"] }
-  ]
+  ],
+  "scoringModel": {
+    "id": "km_grounding_lifecycle_freshness_scorecard",
+    "name": "Knowledge Grounding & Lifecycle Freshness Scorecard",
+    "scaleType": "weighted_rubric",
+    "maxPoints": 100,
+    "autoFailItems": [
+      "published_contradictory_regulatory_or_pricing_fact",
+      "expired_or_recalled_policy_served_to_production_rag",
+      "unreviewed_ai_generated_article_published_live"
+    ],
+    "note": "Evaluates Single Source of Truth (SSOT) governance, semantic vector coverage of live contact drivers, RAG citation grounding precision, and closed-loop self-service deflection lift.",
+    "dimensions": [
+      {
+        "id": "citation_grounding_factual_precision",
+        "name": "Citation Grounding & SSOT Factual Precision",
+        "weightPercent": 30,
+        "description": "Precision of retrieved knowledge chunks and strict alignment between customer-facing help, agent desktop assist, and bot RAG responses",
+        "sampleCriteria": [
+          "Every policy or pricing fact traces to a single canonical SSOT article ID",
+          "Agent assist and CAI RAG top-3 chunk retrieval precision exceeds 90 percent",
+          "Zero divergence between external help portal and internal agent guidance"
+        ]
+      },
+      {
+        "id": "semantic_embedding_coverage",
+        "name": "Semantic Vector Coverage & Drift Control",
+        "weightPercent": 25,
+        "description": "Minimization of semantic embedding distance between emerging live contact intents and indexed knowledge chunks",
+        "sampleCriteria": [
+          "Mean cosine distance between live contact intents and nearest KM chunk stays below 0.18",
+          "New product and promo launches pass KM embedding readiness gate prior to go-live",
+          "Zero-click and failed search queries automatically cluster into curation tickets"
+        ]
+      },
+      {
+        "id": "lifecycle_freshness_staleness_control",
+        "name": "Article Lifecycle Freshness & Staleness Control",
+        "weightPercent": 20,
+        "description": "Adherence to review-age SLAs, rapid remediation of flagged content, and automatic archival of expired announcements",
+        "sampleCriteria": [
+          "Stale article share past review threshold remains under 3 percent of published corpus",
+          "Agent-flagged or QA-flagged articles enter urgent review within 4 business hours",
+          "Time-bound outage and promotional articles enforce automatic expiry timestamps"
+        ]
+      },
+      {
+        "id": "closed_loop_deflection_lift",
+        "name": "Closed-Loop Deflection & Agent Assist Lift",
+        "weightPercent": 15,
+        "description": "Measurable reduction in inbound repeat contacts and agent handle time attributable to article consumption and macro reuse",
+        "sampleCriteria": [
+          "KM-backed self-service sessions achieve >75 percent containment without 24-hour callback",
+          "Agent assist snippet acceptance rate exceeds 65 percent on matched intents",
+          "Article helpfulness vote ratio stays above 80 percent positive"
+        ]
+      },
+      {
+        "id": "machine_readable_structure_ergonomics",
+        "name": "Model-Aware Structure & Readability Ergonomics",
+        "weightPercent": 10,
+        "description": "Clean schema chunking, scannable step procedures, and plain-language compliance enabling both fast agent scanning and zero-hallucination RAG",
+        "sampleCriteria": [
+          "Articles expose structured preconditions, step lists, and eligibility tables",
+          "Reading level and plain-language scores pass style guide automated checks",
+          "Chunk boundaries preserve complete conditional rules without mid-clause truncation"
+        ]
+      }
+    ]
+  },
+  "continuousDynamics": {
+    "stateSpaceDimension": 8,
+    "manifoldCoordinates": [
+      "semantic_embedding_drift",
+      "article_staleness_hazard",
+      "citation_grounding_precision",
+      "deflection_lift_derivative",
+      "curation_backlog_pressure",
+      "ssot_concordance_index",
+      "agent_assist_acceptance_prob",
+      "query_coverage_density"
+    ],
+    "stateVariables": [
+      {
+        "id": "semantic_embedding_drift",
+        "symbol": "D_sem(t)",
+        "domain": "[0, 2]",
+        "unit": "cosine_distance",
+        "description": "Continuous cosine Wasserstein drift between the live contact intent embedding distribution and indexed KM article chunk centroids"
+      },
+      {
+        "id": "article_staleness_hazard",
+        "symbol": "h_stale(a, t)",
+        "domain": "[0, inf)",
+        "unit": "days^-1",
+        "description": "Instantaneous hazard rate that an article of review age a becomes factually obsolete due to product or policy change"
+      },
+      {
+        "id": "citation_grounding_precision",
+        "symbol": "P_ground(t)",
+        "domain": "[0, 1]",
+        "unit": "precision_ratio",
+        "description": "Continuous probability that a retrieved knowledge chunk entails the exact factual answer required by the active contact intent"
+      },
+      {
+        "id": "closed_loop_deflection_lift",
+        "symbol": "L_defl(t)",
+        "domain": "[0, 1]",
+        "unit": "deflection_share",
+        "description": "Net self-service deflection rate attributable to grounded KM retrieval across portal, IVR, and virtual agent surfaces"
+      }
+    ],
+    "differentialEquations": [
+      {
+        "id": "semantic_embedding_drift_sde",
+        "name": "Semantic Vector Embedding Drift Dynamics",
+        "formula": "dD_sem(t) = (v_launch(t) - mu_curate cdot u_publish(t) cdot D_sem(t)) dt + sigma_sem dW_t",
+        "interpretation": "Live contact intent distribution drifts away from static KM embeddings at velocity v_launch(t) during product and policy shifts and contracts at rate mu_curate as curated chunks u_publish(t) are indexed"
+      },
+      {
+        "id": "article_staleness_weibull_hazard",
+        "name": "Article Staleness Hazard & Grounding Precision Field",
+        "formula": "h_stale(a, t) = k_weib cdot lambda_age^k_weib cdot a^(k_weib - 1) + beta_flag cdot I_flagged(t), with P_ground(t) = P_max cdot exp(-alpha_sem cdot D_sem(t) - integral_0^a h_stale(u, t) du)",
+        "interpretation": "Article obsolescence follows a Weibull aging hazard amplified by agent and QA flag events I_flagged(t), exponentially attenuating citation grounding precision P_ground(t)"
+      },
+      {
+        "id": "closed_loop_deflection_lift_ode",
+        "name": "Closed-Loop Deflection Lift Derivative",
+        "formula": "dL_defl(t) cdot dt^-1 = eta_lift cdot P_ground(t) cdot (1 - D_sem(t) cdot D_max^-1) - delta_decay cdot h_stale(a, t) cdot L_defl(t)",
+        "interpretation": "Self-service deflection lift grows proportionally to grounding precision and semantic coverage while decaying when article staleness hazard rises"
+      }
+    ],
+    "scaleInvariants": [
+      "Unit-hypersphere normalization invariance: L2-normalized chunk embeddings ensure inner-product retrieval scores equal exact cosine similarity across embedding dimensions",
+      "Sub-linear O(log M) approximate nearest-neighbor HNSW retrieval latency across corpora scaling from 1k to 10M+ knowledge chunks",
+      "SSOT referential idempotence: updating one canonical article atomically zeroes staleness hazard across all dependent IVR, CAI, and agent-assist surfaces"
+    ]
+  }
 }

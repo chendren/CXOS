@@ -234,6 +234,64 @@
       "mitigation": "Enable Opus FEC packet recovery, DSCP QoS tagging, and pre-shift WebRTC network readiness checks"
     }
   ],
+  "scoringModel": {
+    "id": "ccaas_media_resilience_scorecard",
+    "name": "CCaaS Media Quality & Carrier Resilience Scorecard",
+    "scaleType": "weighted_rubric",
+    "maxPoints": 100,
+    "autoFailItems": [
+      "pci_audio_masking_failure",
+      "unencrypted_rtp_media_exposure",
+      "multi_region_failover_blackhole"
+    ],
+    "note": "Evaluates cloud telephony and media fabric health across perceptual voice quality (MOS), SIP signaling and cryptographic security, recording stream integrity, and multi-carrier regional failover.",
+    "dimensions": [
+      {
+        "id": "perceptual_voice_media_quality",
+        "name": "Perceptual Voice & WebRTC Media Quality",
+        "weightPercent": 30,
+        "description": "Sustained ITU-T E-model R-factor and MOS performance across carrier trunks, SBC edges, and remote agent WebRTC endpoints",
+        "sampleCriteria": [
+          "Mean Opinion Score (MOS) sustained at or above 4.1 across active calls",
+          "Adaptive jitter buffer and Opus FEC prevent audible clipping under packet loss",
+          "Zero one-way audio or symmetric NAT blackholes on agent answer"
+        ]
+      },
+      {
+        "id": "carrier_region_failover_resilience",
+        "name": "Carrier & Multi-Region Failover Resilience",
+        "weightPercent": 25,
+        "description": "Sub-second SIP OPTIONS health probing, elastic trunk burst capacity, and active-active cloud region continuity",
+        "sampleCriteria": [
+          "Automatic reroute to secondary carrier within 2 seconds of SIP 503 or timeout",
+          "Zero SIP 486 trunk exhaustion drops during peak traffic surges",
+          "Active-active regional mesh preserves live signaling state during zone brownouts"
+        ]
+      },
+      {
+        "id": "signaling_media_security_compliance",
+        "name": "Signaling Security & PCI Media Compliance",
+        "weightPercent": 25,
+        "description": "End-to-end TLS and SRTP encryption, STIR and SHAKEN attestation verification, and automated PCI pause-and-resume masking",
+        "sampleCriteria": [
+          "All SIP signaling and RTP voice streams encrypted via mutual TLS and SRTP",
+          "PCI DSS audio and DTMF clamping triggered automatically on payment fields",
+          "STIR and SHAKEN attestation headers parsed and forwarded to fraud engine"
+        ]
+      },
+      {
+        "id": "siprec_streaming_fork_integrity",
+        "name": "SIPREC Recording & Real-Time Fork Integrity",
+        "weightPercent": 20,
+        "description": "Lossless dual-channel stereo recording and low-latency WebSocket PCM streaming to conversational AI and agent co-pilots",
+        "sampleCriteria": [
+          "100 percent of handled calls captured in isolated caller-agent stereo channels",
+          "Real-time audio fork latency kept below 50ms for live co-pilot and biometrics",
+          "Automated switchover to secondary recorder on RTP fork packet stall"
+        ]
+      }
+    ]
+  },
   "integrations": [
     {
       "with": "acd",
@@ -263,5 +321,82 @@
         "Real-time RTP audio stream for passive voice biometric verification"
       ]
     }
-  ]
+  ],
+  "continuousDynamics": {
+    "stateSpaceDimension": 10,
+    "manifoldCoordinates": [
+      "gilbert_elliott_burst_loss_state",
+      "adaptive_jitter_buffer_depth",
+      "itu_e_model_r_factor",
+      "perceptual_mos_surface",
+      "sip_trunk_occupancy_fluid",
+      "carrier_route_health_conductance",
+      "webrtc_opus_fec_redundancy",
+      "mouth_to_ear_latency_budget",
+      "siprec_fork_throughput_margin",
+      "failover_convergence_phase"
+    ],
+    "stateVariables": [
+      {
+        "id": "itu_transmission_rating_factor",
+        "symbol": "R_mos(t)",
+        "domain": "[0, 100]",
+        "unit": "r_factor",
+        "description": "Continuous ITU-T G.107 E-model transmission rating factor R(t) in [0, 100] mapping mouth-to-ear delay, jitter, and codec equipment impairment onto perceptual Mean Opinion Score"
+      },
+      {
+        "id": "gilbert_elliott_burst_probability",
+        "symbol": "P_burst(t)",
+        "domain": "[0, 1]",
+        "unit": "probability",
+        "description": "Instantaneous probability of residing in the high-loss burst state of the two-state continuous-time Gilbert-Elliott RTP packet-loss and jitter Markov process"
+      },
+      {
+        "id": "sip_trunk_utilization_fluid",
+        "symbol": "rho_sip(t)",
+        "domain": "[0, 1]",
+        "unit": "utilization_ratio",
+        "description": "Continuous fluid utilization state of active concurrent SIP trunk channels relative to provisioned and burst-elastic carrier edge capacity"
+      },
+      {
+        "id": "carrier_failover_convergence_state",
+        "symbol": "phi_failover(t)",
+        "domain": "[0, 1]",
+        "unit": "routing_share",
+        "description": "Continuous traffic-steering convergence coordinate governing DNS SRV and SBC egress shift from a degraded primary carrier to healthy secondary peering fabrics"
+      },
+      {
+        "id": "jitter_buffer_delay_state",
+        "symbol": "D_jit(t)",
+        "domain": "R_+",
+        "unit": "milliseconds",
+        "description": "Dynamic playout buffer depth balancing late-packet discard probability against conversational mouth-to-ear latency impairment"
+      }
+    ],
+    "differentialEquations": [
+      {
+        "id": "gilbert_elliott_rtp_burst_kolmogorov_ode",
+        "name": "Gilbert-Elliott RTP Packet-Loss & Jitter Kolmogorov Forward Equation",
+        "formula": "dP_burst(t) * inv(dt) = q_gb * (1 - P_burst(t)) - q_bg * P_burst(t) + sigma_net * J_var(t)",
+        "interpretation": "Tracks transitions between good (low-loss) and burst-loss network states at rates q_gb and q_bg driven by last-mile jitter variance J_var(t), governing when Opus forward error correction (FEC) must expand"
+      },
+      {
+        "id": "itu_e_model_r_factor_dynamics",
+        "name": "Continuous ITU-T E-Model Perceptual Quality Field Equation",
+        "formula": "R_mos(t) = R_0 - I_s - I_d(D_prop + D_jit(t)) - I_e_eff(codec, P_burst(t), u_fec(t)) + A_adv",
+        "interpretation": "Computes real-time perceptual voice quality R_mos(t) in [0, 100] (which maps monotonically to MOS in [1.0, 4.5]) by subtracting delay impairment I_d and burst-loss codec impairment I_e_eff from baseline signal-to-noise ratio R_0"
+      },
+      {
+        "id": "sip_trunk_fluid_failover_dynamics",
+        "name": "SIP Trunk Fluid Utilization & Multi-Region Carrier Failover ODE",
+        "formula": "d_rho_sip(t) * inv(dt) = C_trunk^(-1) * ( lambda_ingress(t) * (1 - phi_failover(t)) - mu_call * C_trunk * rho_sip(t) )",
+        "interpretation": "Models fluid call occupancy rho_sip(t) across carrier trunks while automatic failover steering phi_failover(t) rapidly drains ingress load lambda_ingress(t) onto secondary regional peering paths before trunk saturation or 503 drops occur"
+      }
+    ],
+    "scaleInvariants": [
+      "Perceptual quality floor invariant: adaptive Opus FEC control u_fec(t) and jitter buffer regulation maintain R_mos(t) >= 70 (MOS >= 3.6) for packet loss up to 5%",
+      "Sub-second failover convergence: carrier health degradation triggers exponential steering convergence phi_failover(t) -> 1 with time constant tau_failover < 1.5 seconds",
+      "Zero-loss SIPREC media conservation: dual-channel RTP fork packet count matches primary media bridge within 99.999% fidelity across region switchovers"
+    ]
+  }
 }

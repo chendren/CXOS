@@ -128,5 +128,149 @@
     { "with": "acd", "exchanges": ["Transfer with selected skill queue and priority", "Callback placement into queue"] },
     { "with": "km", "exchanges": ["Dynamic content retrieval for informational prompts"] },
     { "with": "speech_analytics", "exchanges": ["IVR turn transcripts for intent and abandon analysis"] }
-  ]
+  ],
+  "scoringModel": {
+    "id": "ivr_containment_acoustic_scorecard",
+    "name": "IVR Self-Service Containment & Acoustic Health Scorecard",
+    "scaleType": "weighted_rubric",
+    "maxPoints": 100,
+    "autoFailItems": [
+      "unauthenticated_transaction_execution",
+      "dead_end_disconnect_without_transfer",
+      "pci_dtmf_clamping_failure"
+    ],
+    "note": "Evaluates voice self-service containment, acoustic ASR confidence stability, prompt ergonomics, and context continuity on live transfers.",
+    "dimensions": [
+      {
+        "id": "true_containment_completion",
+        "name": "True Self-Service Containment & Task Completion",
+        "weightPercent": 30,
+        "description": "End-to-end completion of informational and transactional flows without zero-out or repeat contact within 24 hours",
+        "sampleCriteria": [
+          "Caller reaches terminal success node without agent transfer",
+          "Zero-out hazard stays below threshold across menu turns",
+          "No repeat inbound call on identical intent within 24 hours"
+        ]
+      },
+      {
+        "id": "acoustic_asr_grammar_precision",
+        "name": "Acoustic ASR & Grammar Recognition Precision",
+        "weightPercent": 25,
+        "description": "Posterior recognition confidence across caller utterances, grammar coverage, and resilience to background noise",
+        "sampleCriteria": [
+          "First-turn ASR posterior confidence exceeds 0.85 threshold",
+          "No-match reprompts occur on fewer than 8 percent of turns",
+          "Barge-in speech endpointing captures complete caller utterance"
+        ]
+      },
+      {
+        "id": "prompt_friction_navigation_ergonomics",
+        "name": "Prompt Friction & Navigation Ergonomics",
+        "weightPercent": 20,
+        "description": "Menu depth discipline, concise TTS phrasing, and calibrated barge-in responsiveness minimizing caller cognitive load",
+        "sampleCriteria": [
+          "Tree traversal completes in 3 or fewer menu levels",
+          "Prompt duration stays under 12 seconds per turn",
+          "Full-duplex barge-in halts playback within 150 milliseconds"
+        ]
+      },
+      {
+        "id": "data_dip_personalization_handoff",
+        "name": "Data-Dip Personalization & Context Handoff",
+        "weightPercent": 15,
+        "description": "Sub-second CRM lookup for proactive status readouts and lossless attachment of verified context on queue transfer",
+        "sampleCriteria": [
+          "ANI data dip resolves account context prior to first menu branch",
+          "Verified authentication state and slot values pass to ACD screen pop",
+          "Eligible high-wait transfers receive accurate EWT callback offer"
+        ]
+      },
+      {
+        "id": "recovery_fallback_governance",
+        "name": "Error Recovery & Fallback Governance",
+        "weightPercent": 10,
+        "description": "Graceful multimodal or DTMF fallback after recognition failure without trapping callers in reprompt loops",
+        "sampleCriteria": [
+          "Automatic switch to DTMF keypad grammar after second no-match",
+          "Immediate warm routing to skilled queue on third recognition failure",
+          "Dynamic outage announcements governed by current KM source of truth"
+        ]
+      }
+    ]
+  },
+  "continuousDynamics": {
+    "stateSpaceDimension": 8,
+    "manifoldCoordinates": [
+      "asr_posterior_confidence",
+      "barge_in_hazard_rate",
+      "cumulative_prompt_friction",
+      "containment_survival_prob",
+      "menu_depth_level",
+      "dtmf_fallback_propensity",
+      "data_dip_hydration_state",
+      "caller_acoustic_agitation"
+    ],
+    "stateVariables": [
+      {
+        "id": "asr_posterior_confidence",
+        "symbol": "c_asr(t)",
+        "domain": "[0, 1]",
+        "unit": "probability",
+        "description": "Continuous acoustic and lexical posterior probability assigned to the top grammar or NLU intent hypothesis at time t"
+      },
+      {
+        "id": "barge_in_hazard_rate",
+        "symbol": "h_barge(t)",
+        "domain": "[0, inf)",
+        "unit": "s^-1",
+        "description": "Instantaneous hazard rate of caller DTMF keypress or speech barge-in interrupting active prompt playback"
+      },
+      {
+        "id": "cumulative_prompt_friction",
+        "symbol": "F_ivr(t)",
+        "domain": "[0, inf)",
+        "unit": "friction_nats",
+        "description": "Cumulative cognitive and temporal friction integral accrued across menu depth, reprompts, and TTS latency"
+      },
+      {
+        "id": "containment_survival_prob",
+        "symbol": "S_ivr(t)",
+        "domain": "[0, 1]",
+        "unit": "probability",
+        "description": "Continuous survival probability that the caller remains contained in self-service without zero-out or hang-up through time t"
+      },
+      {
+        "id": "zero_out_hazard_intensity",
+        "symbol": "h_zero(t)",
+        "domain": "[0, inf)",
+        "unit": "s^-1",
+        "description": "Instantaneous hazard rate of explicit zero-out transfer or frustration hang-up driven by accumulated prompt friction"
+      }
+    ],
+    "differentialEquations": [
+      {
+        "id": "containment_survival_evolution",
+        "name": "Containment Survival Probability Evolution",
+        "formula": "S_ivr(t) = exp(-integral_0^t h_zero(tau) dtau), with dS_ivr(t) cdot dt^-1 = -h_zero(t) cdot S_ivr(t)",
+        "interpretation": "Containment survival decays exponentially with the integrated zero-out and abandonment hazard intensity along the call trajectory"
+      },
+      {
+        "id": "prompt_friction_accumulation_ode",
+        "name": "Cumulative Prompt Friction Integral Dynamics",
+        "formula": "dF_ivr(t) cdot dt^-1 = alpha_depth cdot L_menu(t) + beta_err cdot (1 - c_asr(t)) + gamma_wait cdot I_reprompt(t)",
+        "interpretation": "Prompt friction accumulates continuously with menu depth level L_menu, ASR recognition uncertainty (1 - c_asr), and reprompt indicator penalties"
+      },
+      {
+        "id": "asr_confidence_sde",
+        "name": "Acoustic ASR Confidence Trajectory SDE",
+        "formula": "dc_asr(t) = kappa_asr cdot (c_grammar(t) - c_asr(t)) dt - eta_noise cdot h_barge(t) cdot c_asr(t) dt + sigma_asr dW_t",
+        "interpretation": "ASR confidence mean-reverts toward grammar acoustic clarity while premature barge-in collisions and channel noise induce stochastic drops"
+      }
+    ],
+    "scaleInvariants": [
+      "O(1) per-turn state update complexity via recursive sufficient statistics on (c_asr, F_ivr, S_ivr) across 100k+ concurrent IVR ports",
+      "Memoryless hazard additivity: composite exit intensity equals the sum of independent zero-out, no-match exhaustion, and timeout hazards",
+      "Time-rescaling invariance: transforming prompt clock time by cumulative hazard integral maps heterogeneous call flows onto a unit-rate exponential survival curve"
+    ]
+  }
 }
