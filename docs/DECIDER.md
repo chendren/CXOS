@@ -46,6 +46,27 @@ npm run decide -- --state "Customer called about a double charge..." \
 npm run decide -- --serve
 ```
 
+### QA triage (uses the decider over a local server)
+
+```bash
+# Batch: triage a JSON array or JSONL of contacts, accumulate history
+npm run qa-triage -- --file fixtures/qa-triage-contacts.sample.json \
+  --out .tmp/qa-triage/history.jsonl
+
+# Live: tail -f a contacts JSONL — appended contacts are triaged as they arrive
+npm run qa-triage -- --file .tmp/qa-triage/live-contacts.jsonl --watch \
+  --out .tmp/qa-triage/history.jsonl --json --interval 2000
+
+# Report: standalone offline HTML summary from one or more history files
+npm run qa-report -- --results .tmp/qa-triage/history.jsonl --out qa-triage-report.html
+```
+
+Policy (confidence bands, in precedence order): compliance noul ≥ 0.70 → targeted
+human QA; severity ≥ 1.5 with confidence ≥ 0.70 → targeted human QA; noul < 0.20
+with score < 1.0 → auto-only (clear low risk); severity confidence < 0.40 →
+needs_review; otherwise auto-only full-coverage scoring. Everything not
+human-sampled still receives auto QA.
+
 Example server round-trip:
 
 ```bash

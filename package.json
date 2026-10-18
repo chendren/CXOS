@@ -42,6 +42,7 @@
     "validate:ontology": "node ./scripts/validate-ontology.mjs",
     "decide": "node ./scripts/decide.mjs",
     "qa-triage": "node ./scripts/qa-triage.mjs",
+    "qa-report": "node ./scripts/qa-report.mjs",
     "validate": "node ./scripts/validate-ontology.mjs && python3 -m json.tool board-sync.json > /dev/null && echo 'board-sync.json valid' && cfn-lint cx-export/**/template.yaml || echo 'cfn-lint warnings'"
   },
   "license": "Apache-2.0",

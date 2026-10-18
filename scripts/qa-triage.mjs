@@ -21,13 +21,19 @@
  *
  * Usage:
  *   npm run qa-triage -- --file fixtures/qa-triage-contacts.sample.json
- *   npm run qa-triage -- --file contacts.json --json          # JSONL to stdout
+ *   npm run qa-triage -- --file contacts.jsonl --json            # JSONL input
+ *   npm run qa-triage -- --file live-contacts.jsonl --watch \
+ *       --out .tmp/qa-triage/history.jsonl --json                 # tail -f triage
+ *
+ * --watch requires a .jsonl file: appended contacts are triaged as they arrive
+ * (poll every --interval ms, default 2000). With --out, every triage result row is
+ * appended to the given JSONL file — the history feeds npm run qa-report.
  *
  * The decider server is spawned on 127.0.0.1:8111 (or STRANDS_DECIDER_PORT / --port);
  * if one is already healthy on that port it is reused and left running.
  */
 import { spawn } from "node:child_process";
-import { existsSync, readFileSync } from "node:fs";
+import { appendFileSync, existsSync, mkdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -49,20 +55,75 @@ const argOf = (flag) => {
 const file = argOf("--file");
 const port = Number(argOf("--port") ?? process.env.STRANDS_DECIDER_PORT ?? 8111);
 const asJson = rawArgs.includes("--json");
+const watch = rawArgs.includes("--watch");
+const outPath = argOf("--out") ? resolve(argOf("--out")) : undefined;
+const interval = Number(argOf("--interval") ?? 2000);
 
 if (!file || !existsSync(resolve(file))) {
   console.error(
-    `Usage: npm run qa-triage -- --file <contacts.json> [--json] [--port 8111]\n` +
-      `  contacts.json: [{ "id": "...", "channel": "...", "summary": "..." }, ...]`,
+    `Usage: npm run qa-triage -- --file <contacts.json|.jsonl> [--json] [--watch] [--out history.jsonl] [--port 8111]\n` +
+      `  --file accepts a JSON array or JSONL (one contact object per line)\n` +
+      `  --watch tails a .jsonl file, triaging appended contacts as they arrive`,
   );
   process.exit(2);
 }
-
-const contacts = JSON.parse(readFileSync(resolve(file), "utf8"));
-if (!Array.isArray(contacts) || contacts.length === 0) {
-  console.error("Contacts file must be a non-empty JSON array.");
+if (watch && !file.endsWith(".jsonl")) {
+  console.error("--watch requires a .jsonl file (append-mode input).");
   process.exit(2);
 }
+
+/* ---------- contacts loading ---------- */
+
+const contactsPath = resolve(file);
+
+/** Parse JSONL buffer tail into contact objects; returns {rows, completeBytes}. */
+const parseJsonlChunk = (chunk) => {
+  const lines = chunk.split("\n");
+  const completeLines = chunk.endsWith("\n") ? lines.slice(0, -1) : lines.slice(0, -1);
+  const completeBytes = completeLines.reduce((acc, l) => acc + l.length + 1, 0);
+  const rows = [];
+  for (const line of completeLines) {
+    const trimmed = line.trim();
+    if (!trimmed) continue;
+    try {
+      rows.push(JSON.parse(trimmed));
+    } catch {
+      console.error(`WARN  skipping malformed contact line: ${trimmed.slice(0, 80)}`);
+    }
+  }
+  return { rows, completeBytes };
+};
+
+const loadBatch = () => {
+  if (file.endsWith(".jsonl")) {
+    const { rows } = parseJsonlChunk(readFileSync(contactsPath, "utf8"));
+    return rows;
+  }
+  const arr = JSON.parse(readFileSync(contactsPath, "utf8"));
+  if (!Array.isArray(arr) || arr.length === 0) {
+    console.error("Contacts file must be a non-empty JSON array (or non-empty JSONL).");
+    process.exit(2);
+  }
+  return arr;
+};
+
+if (outPath) {
+  mkdirSync(dirname(outPath), { recursive: true });
+}
+const appendOut = (row) => {
+  if (!outPath) return;
+  try {
+    const { consoleLine, ...persist } = row; // display artifact stays out of the history
+    appendFileSync(outPath, JSON.stringify(persist) + "\n");
+  } catch (e) {
+    console.error(`WARN  could not append to ${outPath}: ${String(e instanceof Error ? e.message : e)}`);
+  }
+};
+
+const printRow = (row) => {
+  if (asJson) console.log(JSON.stringify(row));
+  else console.log(row.consoleLine);
+};
 
 /* ---------- server lifecycle ---------- */
 
@@ -183,22 +244,24 @@ const triagePolicy = (answers) => {
   return { qa_path: "auto_qa_only", priority: 4, band: "medium", reason: `no_high_band_signal (noul ${p.toFixed(3)}, score ${sev.score.toFixed(2)})` };
 };
 
-/* ---------- run ---------- */
+/* ---------- run: one contact -> row ---------- */
 
-const results = [];
 const failures = [];
-for (const contact of contacts) {
+
+const triageContact = async (contact) => {
   let answers;
   try {
     answers = await askSystemOne(contact);
   } catch (e) {
     // One failed ask must not abort the batch; record it and continue.
-    failures.push({ contact_id: contact.id, error: String(e instanceof Error ? e.message : e) });
-    console.error(`WARN  ask failed for ${contact.id}: ${failures.at(-1).error}`);
-    continue;
+    const msg = String(e instanceof Error ? e.message : e);
+    failures.push({ contact_id: contact.id, error: msg });
+    console.error(`WARN  ask failed for ${contact.id}: ${msg}`);
+    return null;
   }
   const decision = triagePolicy(answers);
   const row = {
+    triaged_at: new Date().toISOString(),
     contact_id: contact.id,
     channel: contact.channel ?? "unknown",
     qa_path: decision.qa_path,
@@ -209,30 +272,109 @@ for (const contact of contacts) {
     severity_score: Number(answers.severity.score.toFixed(2)),
     severity_confidence: answers.severity.confidence !== undefined ? Number(answers.severity.confidence.toFixed(3)) : null,
   };
-  results.push(row);
-  if (asJson) console.log(JSON.stringify(row));
-}
+  row.consoleLine =
+    `${String(row.contact_id).padEnd(10)}${row.qa_path.padEnd(18)}${String(row.compliance_noul).padEnd(7)}` +
+    `${String(row.severity_score).padEnd(5)}${String(row.severity_confidence ?? "-").padEnd(8)}${row.reason}`;
+  return row;
+};
 
-results.sort((a, b) => a.priority - b.priority || a.contact_id.localeCompare(b.contact_id));
+const printSummary = (rowsSoFar) => {
+  const human = rowsSoFar.filter((r) => r.qa_path === "targeted_human_qa").length;
+  const review = rowsSoFar.filter((r) => r.qa_path === "needs_review").length;
+  console.log(`\nSummary: ${human} targeted human QA, ${review} needs review, ${rowsSoFar.length - human - review} auto-QA only.`);
+  if (outPath) console.error(`History: results appended to ${outPath}`);
+};
 
-if (!asJson) {
-  const width = (s, n) => String(s).padEnd(n);
-  console.log(`\nQA triage — ${results.length} contact(s), policy: compliance>=0.7 || (severity>=1.5 & conf>=0.7) -> human QA; noul<0.2 & score<1.0 -> auto; conf<0.4 -> review\n`);
-  console.log(`${width("CONTACT", 10)}${width("PATH", 18)}${width("NOUT", 7)}${width("SEV", 5)}${width("SEVCONF", 8)}REASON`);
-  for (const r of results) {
-    console.log(
-      `${width(r.contact_id, 10)}${width(r.qa_path, 18)}${width(r.compliance_noul, 7)}${width(r.severity_score, 5)}${width(r.severity_confidence ?? "-", 8)}${r.reason}`,
-    );
+/* ---------- batch mode ---------- */
+
+if (!watch) {
+  const contacts = loadBatch();
+  const results = [];
+  console.error(
+    `\nQA triage — ${contacts.length} contact(s), policy: compliance>=0.7 || (severity>=1.5 & conf>=0.7) -> human QA; noul<0.2 & score<1.0 -> auto; conf<0.4 -> review\n`,
+  );
+  if (!asJson) {
+    console.log(`${"CONTACT".padEnd(10)}${"PATH".padEnd(18)}${"NOUT".padEnd(7)}${"SEV".padEnd(5)}${"SEVCONF".padEnd(8)}REASON`);
   }
-  const human = results.filter((r) => r.qa_path === "targeted_human_qa").length;
-  const review = results.filter((r) => r.qa_path === "needs_review").length;
-  console.log(`\nSummary: ${human} targeted human QA, ${review} needs review, ${results.length - human - review} auto-QA only.`);
+  for (const contact of contacts) {
+    const row = await triageContact(contact);
+    if (row) {
+      results.push(row);
+      appendOut(row);
+      printRow(row);
+    }
+  }
+  results.sort((a, b) => a.priority - b.priority || a.contact_id.localeCompare(b.contact_id));
+  if (!asJson) printSummary(results);
+  shutdown();
+  if (failures.length > 0) {
+    console.error(`\nCOMPLETE WITH ERRORS — ${failures.length}/${contacts.length} contact(s) failed:`);
+    for (const f of failures) console.error(`  ${f.contact_id}: ${f.error}`);
+    process.exit(1);
+  }
+  process.exit(0);
 }
 
-shutdown();
-if (failures.length > 0) {
-  console.error(`\nCOMPLETE WITH ERRORS — ${failures.length}/${contacts.length} contact(s) failed:`);
-  for (const f of failures) console.error(`  ${f.contact_id}: ${f.error}`);
-  process.exit(1);
+/* ---------- watch mode: tail -f the JSONL file ---------- */
+
+console.error(`watching ${contactsPath} every ${interval}ms — append contacts to triage them live (Ctrl-C to stop)`);
+if (!asJson) {
+  console.log(`${"CONTACT".padEnd(10)}${"PATH".padEnd(18)}${"NOUT".padEnd(7)}${"SEV".padEnd(5)}${"SEVCONF".padEnd(8)}REASON`);
 }
-process.exit(0);
+
+const allRows = [];
+let offset = 0;
+if (existsSync(contactsPath)) {
+  const initial = readFileSync(contactsPath, "utf8");
+  const { rows, completeBytes } = parseJsonlChunk(initial);
+  for (const contact of rows) {
+    const row = await triageContact(contact);
+    if (row) {
+      allRows.push(row);
+      appendOut(row);
+      printRow(row);
+    }
+  }
+  offset = completeBytes;
+  console.error(`triaged ${rows.length} existing contact(s)`);
+}
+
+let fileGoneWarned = false;
+while (true) {
+  await new Promise((r) => setTimeout(r, interval));
+  if (serverCrashed) {
+    console.error("decider server is gone — stopping watch");
+    process.exit(1);
+  }
+  let size = 0;
+  try {
+    size = statSync(contactsPath).size;
+  } catch {
+    if (!fileGoneWarned) {
+      fileGoneWarned = true;
+      console.error(`WARN  ${contactsPath} is gone; waiting for it to reappear`);
+    }
+    continue;
+  }
+  fileGoneWarned = false;
+  if (size <= offset) continue;
+  let chunk;
+  try {
+    chunk = readFileSync(contactsPath, "utf8").slice(offset);
+  } catch (e) {
+    // File truncated or replaced; reset to the current end and warn.
+    console.error(`WARN  could not read from offset ${offset} (${String(e instanceof Error ? e.message : e)}); resetting`);
+    offset = size;
+    continue;
+  }
+  const { rows, completeBytes } = parseJsonlChunk(chunk);
+  for (const contact of rows) {
+    const row = await triageContact(contact);
+    if (row) {
+      allRows.push(row);
+      appendOut(row);
+      printRow(row);
+    }
+  }
+  offset += completeBytes;
+}
