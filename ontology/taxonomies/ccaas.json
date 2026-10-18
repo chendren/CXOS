@@ -1,0 +1,267 @@
+{
+  "kind": "cxTaxonomy",
+  "id": "ccaas",
+  "acronym": "CCaaS",
+  "name": "Contact Center as a Service & Telephony Fabric",
+  "category": "routing",
+  "version": "2026.10.0",
+  "description": "Cloud-native telephony and media fabric providing carrier connectivity, SIP trunking, session border control, WebRTC browser endpoints, dual-channel media forking, and multi-region failover.",
+  "roleInCenter": "Carrier and media foundation: terminates PSTN and digital ingress, secures signaling and voice paths, records media streams, and guarantees multi-region availability.",
+  "glossary": [
+    {
+      "id": "sip_trunk",
+      "term": "SIP Trunk",
+      "definition": "Session Initiation Protocol logical link connecting enterprise voice infrastructure to PSTN carriers over IP networks",
+      "tags": ["telephony", "core"],
+      "seeAlso": ["ivr", "acd"]
+    },
+    {
+      "id": "session_border_controller",
+      "term": "Session Border Controller",
+      "definition": "Network edge appliance that secures, normalizes, and polices SIP signaling and RTP media streams between carrier and cloud",
+      "tags": ["security", "telephony"],
+      "aliases": ["SBC"]
+    },
+    {
+      "id": "webrtc_endpoint",
+      "term": "WebRTC Agent Endpoint",
+      "definition": "Browser-embedded real-time audio and signaling client eliminating desktop softphone hardware via SRTP and Opus codecs",
+      "tags": ["agent", "media"],
+      "seeAlso": ["desktop_assist"]
+    },
+    {
+      "id": "siprec_forking",
+      "term": "SIPREC Media Forking",
+      "definition": "Standardized active splitting of caller and agent RTP audio streams to recording, transcription, and voice biometric consumers",
+      "tags": ["media", "compliance"],
+      "seeAlso": ["speech_analytics", "fraud_auth"]
+    },
+    {
+      "id": "carrier_failover",
+      "term": "Carrier Failover Routing",
+      "definition": "Automated DNS SRV and SIP options health switching across redundant telecommunications carriers when trunk degradation occurs",
+      "tags": ["continuity", "telephony"]
+    },
+    {
+      "id": "active_active_region",
+      "term": "Active-Active Region Topology",
+      "definition": "Multi-region cloud deployment where signaling state and ingress numbers route live traffic across geographically isolated availability zones",
+      "tags": ["continuity", "core"]
+    },
+    {
+      "id": "jitter_buffer",
+      "term": "Adaptive Jitter Buffer",
+      "definition": "Media pipeline queue that smooths packet arrival variance to prevent choppy voice audio without adding excessive conversational delay",
+      "tags": ["media", "quality"]
+    },
+    {
+      "id": "stir_shaken_attestation",
+      "term": "STIR and SHAKEN Attestation",
+      "definition": "Cryptographic caller ID signing framework verifying calling party number authenticity across carrier hops",
+      "tags": ["security", "telephony"],
+      "seeAlso": ["fraud_auth"]
+    },
+    {
+      "id": "pstn_ingress",
+      "term": "PSTN Ingress Toll-Free and DID",
+      "definition": "Public Switched Telephone Network number termination mapping dialed toll-free and direct inward dial numbers to cloud contact flows",
+      "tags": ["telephony"],
+      "aliases": ["TFN", "DID"]
+    }
+  ],
+  "facets": [
+    {
+      "id": "ccaas_telephony_ingress",
+      "name": "Telephony & Media Ingress Architecture",
+      "description": "Signaling, edge control, and endpoint transport layers across the cloud voice fabric",
+      "root": {
+        "id": "telephony_fabric_root",
+        "name": "Telephony & Media Fabric",
+        "children": [
+          {
+            "id": "carrier_peering",
+            "name": "Carrier Peering & SIP Trunking",
+            "children": [
+              { "id": "byoc_cloud_peering", "name": "Bring Your Own Carrier Peering", "description": "Customer-contracted SIP trunks terminated into cloud SBC edges" },
+              { "id": "native_carrier_fabric", "name": "Provider-Managed Carrier Fabric", "description": "Platform-bundled PSTN origination and termination with automated least-cost routing" },
+              { "id": "local_gateway_survivability", "name": "Local Branch Survivability Gateway", "description": "Premises edge appliance maintaining emergency and local PSTN calls during WAN outages" }
+            ]
+          },
+          {
+            "id": "edge_security_sbc",
+            "name": "Session Border Control & Signaling Security",
+            "children": [
+              { "id": "tls_sip_signaling", "name": "TLS Encrypted SIP Signaling", "description": "Mutual TLS authentication and encryption for signaling headers" },
+              { "id": "srtp_media_encryption", "name": "SRTP Media Encryption", "description": "End-to-end encrypted RTP voice packets from carrier edge to agent browser" },
+              { "id": "dos_rate_limiting", "name": "Telephony Denial-of-Service Protection", "description": "SIP invite flood policing and anomalous trunk traffic throttling", "seeAlso": ["fraud_auth"] }
+            ]
+          },
+          {
+            "id": "agent_media_delivery",
+            "name": "Agent Audio Delivery & Codecs",
+            "children": [
+              { "id": "webrtc_opus", "name": "WebRTC Opus Dynamic Bitrate", "description": "Browser-based wideband audio adapting dynamically to home-agent bandwidth", "seeAlso": ["desktop_assist"] },
+              { "id": "pstn_nail_up", "name": "PSTN Nail-Up Connection", "description": "Persistent circuit leg for remote agents on constrained packet networks" }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "ccaas_media_services",
+      "name": "Media Recording & Stream Forking",
+      "description": "Real-time audio capture, compliance pause controls, and streaming tap pipelines",
+      "root": {
+        "id": "media_services_root",
+        "name": "Media Processing Services",
+        "children": [
+          {
+            "id": "dual_channel_recording",
+            "name": "Dual-Channel Stereo Recording",
+            "description": "Isolated caller and agent audio tracks for accurate speaker diarization",
+            "seeAlso": ["speech_analytics", "qa"]
+          },
+          {
+            "id": "pci_pause_resume",
+            "name": "PCI Compliance Pause & Resume",
+            "description": "Automated audio masking and DTMF clamping when payment card fields are focused",
+            "seeAlso": ["desktop_assist"]
+          },
+          {
+            "id": "live_audio_streaming",
+            "name": "Low-Latency Media Streaming",
+            "children": [
+              { "id": "siprec_stream", "name": "SIPREC Forked Stream", "description": "Dedicated RTP fork to voice biometrics and compliance recorders" },
+              { "id": "websocket_pcm_stream", "name": "WebSocket PCM Audio Tap", "description": "Bidirectional audio frames piped to conversational AI and real-time co-pilots", "seeAlso": ["cai", "desktop_assist"] }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "ccaas_resilience_failover",
+      "name": "Region Resilience & Continuity",
+      "description": "Disaster recovery and carrier failover mechanisms preserving inbound reachability",
+      "root": {
+        "id": "resilience_root",
+        "name": "Platform Resilience Controls",
+        "children": [
+          {
+            "id": "carrier_level_failover",
+            "name": "Multi-Carrier Trunk Failover",
+            "children": [
+              { "id": "sip_options_probing", "name": "SIP OPTIONS Heartbeat Probing", "description": "Continuous sub-second trunk availability checks" },
+              { "id": "alternate_carrier_reroute", "name": "Secondary Carrier Reroute", "description": "Automatic ingress and egress shift on SIP 503 or timeout responses" }
+            ]
+          },
+          {
+            "id": "region_level_failover",
+            "name": "Cloud Region Failover",
+            "children": [
+              { "id": "active_active_fabric", "name": "Active-Active Multi-Region Mesh", "description": "Simultaneous call processing across paired geographic regions" },
+              { "id": "emergency_dr_ivr", "name": "Survivor Cloud IVR & Deflection", "description": "Lightweight edge IVR playing outage notifications and triggering callback capture", "seeAlso": ["ivr"] }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "metrics": [
+    {
+      "id": "mean_opinion_score",
+      "name": "Voice Mean Opinion Score (MOS)",
+      "unit": "score_1_to_5",
+      "direction": "higher_is_better",
+      "definition": "ITU-T perceptual audio quality score derived from packet loss, latency, jitter, and codec R-factor across active calls",
+      "mapsToKpi": "csat"
+    },
+    {
+      "id": "call_setup_success_rate",
+      "name": "Call Setup & Ingress Completion Rate",
+      "unit": "percent",
+      "direction": "higher_is_better",
+      "definition": "Percentage of inbound PSTN and SIP invites that successfully establish media without carrier 5xx failure or dead-air drop",
+      "mapsToKpi": "sla_compliance_rate"
+    },
+    {
+      "id": "post_dial_delay_seconds",
+      "name": "Post-Dial Delay (PDD)",
+      "unit": "seconds",
+      "direction": "lower_is_better",
+      "definition": "Elapsed time from final digit dialed to ringing or IVR media start across carrier and SBC hops",
+      "mapsToKpi": "avg_wait_time"
+    },
+    {
+      "id": "webrtc_media_drop_rate",
+      "name": "WebRTC Media Drop & Reconnect Rate",
+      "unit": "percent",
+      "direction": "lower_is_better",
+      "definition": "Share of handled contacts experiencing mid-call audio loss or ICE transport renegotiation adding handling friction",
+      "mapsToKpi": "aht_seconds"
+    },
+    {
+      "id": "platform_ingested_contacts",
+      "name": "Total Fabric Ingested Contacts",
+      "unit": "count",
+      "direction": "neutral",
+      "definition": "Total voice and digital sessions terminated onto the CCaaS fabric across all ingress trunks and gateways",
+      "mapsToKpi": "total_contacts"
+    }
+  ],
+  "failureModes": [
+    {
+      "id": "one_way_audio_nat",
+      "name": "One-Way Audio & Symmetric NAT Block",
+      "signal": "Agent hears caller or caller hears silence; short-duration agent disconnects and repeat redials spike",
+      "mitigation": "Enforce TURN relay fallback on WebRTC endpoints and validate symmetric RTP latching at the SBC"
+    },
+    {
+      "id": "carrier_trunk_saturation",
+      "name": "SIP Trunk Concurrent Channel Exhaustion",
+      "signal": "Carrier returns SIP 486 or 503 busy signals during peak intervals while agents remain idle in ACD",
+      "mitigation": "Configure burst-elastic SIP trunk capacity and automated overflow across secondary carrier peers"
+    },
+    {
+      "id": "siprec_fork_drop",
+      "name": "Silent Recording & Stream Fork Failure",
+      "signal": "Completed interactions lack dual-channel audio in QA and real-time co-pilot transcripts stall mid-call",
+      "mitigation": "Enable continuous RTP packet-count telemetry on SIPREC forks with automated switchover to backup media recorders"
+    },
+    {
+      "id": "webrtc_home_isp_jitter",
+      "name": "Remote Agent Last-Mile Jitter Degradation",
+      "signal": "MOS drops below 3.5 for specific remote agents; talk-over and repeat verification requests increase AHT",
+      "mitigation": "Enable Opus FEC packet recovery, DSCP QoS tagging, and pre-shift WebRTC network readiness checks"
+    }
+  ],
+  "integrations": [
+    {
+      "with": "acd",
+      "exchanges": [
+        "SIP session metadata, DNIS, and ANI delivered to queueing engine",
+        "Agent WebRTC endpoint state and media bridge commands"
+      ]
+    },
+    {
+      "with": "ivr",
+      "exchanges": [
+        "Ingress SIP call leg anchored for VXML and voicebot media execution",
+        "RFC 2833 DTMF payload events and barge-in audio markers"
+      ]
+    },
+    {
+      "with": "speech_analytics",
+      "exchanges": [
+        "Dual-channel stereo recordings and live SIPREC audio forks",
+        "Call correlation identifiers and PCI pause masking intervals"
+      ]
+    },
+    {
+      "with": "fraud_auth",
+      "exchanges": [
+        "STIR and SHAKEN attestation headers and P-Asserted-Identity metadata",
+        "Real-time RTP audio stream for passive voice biometric verification"
+      ]
+    }
+  ]
+}

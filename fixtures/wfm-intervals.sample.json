@@ -1,0 +1,80 @@
+[
+  {
+    "id": "wfm-0900",
+    "interval": "09:00-09:30",
+    "queue": "general_care_voice",
+    "forecast_volume": 320,
+    "actual_volume": 315,
+    "forecast_aht_sec": 290,
+    "actual_aht_sec": 286,
+    "occupancy_pct": 78.5,
+    "shrinkage_pct": 18.0,
+    "service_level_pct": 84.2,
+    "summary": "Interval 09:00-09:30 on general_care_voice: actual volume 315 vs 320 forecast (-1.6%), AHT 286s vs 290s planned, occupancy at 78.5%, shrinkage 18.0% within 20% budget, service level at 84.2% against 80/20 target. Queue depth is 2 calls with longest wait 11 seconds."
+  },
+  {
+    "id": "wfm-1030",
+    "interval": "10:30-11:00",
+    "queue": "billing_voice",
+    "forecast_volume": 410,
+    "actual_volume": 495,
+    "forecast_aht_sec": 310,
+    "actual_aht_sec": 335,
+    "occupancy_pct": 89.4,
+    "shrinkage_pct": 22.5,
+    "service_level_pct": 68.0,
+    "summary": "Interval 10:30-11:00 on billing_voice: statement cycle drop drove actual volume to 495 vs 410 forecast (+20.7%), AHT elevated at 335s vs 310s forecast. Service level dipped to 68.0% (target 80%). 18 multi-skilled chat agents have 42% idle capacity in adjacent blended pool."
+  },
+  {
+    "id": "wfm-1200",
+    "interval": "12:00-12:30",
+    "queue": "technical_support",
+    "forecast_volume": 280,
+    "actual_volume": 340,
+    "forecast_aht_sec": 480,
+    "actual_aht_sec": 545,
+    "occupancy_pct": 94.8,
+    "shrinkage_pct": 29.0,
+    "service_level_pct": 54.5,
+    "summary": "Interval 12:00-12:30 on technical_support: volume +21.4% over forecast and AHT +65s due to firmware rollout issues. Occupancy has stayed above 93% for 3 consecutive intervals; 14 agents are scheduled for 30-minute offline coaching and team huddles during this lunch window."
+  },
+  {
+    "id": "wfm-1400",
+    "interval": "14:00-14:30",
+    "queue": "retention_save",
+    "forecast_volume": 190,
+    "actual_volume": 275,
+    "forecast_aht_sec": 520,
+    "actual_aht_sec": 610,
+    "occupancy_pct": 96.2,
+    "shrinkage_pct": 31.5,
+    "service_level_pct": 41.0,
+    "summary": "Interval 14:00-14:30 on retention_save: promotional expiry spike pushed volume +44.7% over forecast and AHT to 610s. Occupancy is pinned at 96.2% with unscheduled absenteeism pushing shrinkage to 31.5%. All offline coaching was already cancelled and blended queues are exhausted; spike is projected to persist through 18:00."
+  },
+  {
+    "id": "wfm-1530",
+    "interval": "15:30-16:00",
+    "queue": "order_fulfillment",
+    "forecast_volume": 260,
+    "actual_volume": 510,
+    "forecast_aht_sec": 270,
+    "actual_aht_sec": 390,
+    "occupancy_pct": 98.7,
+    "shrinkage_pct": 34.0,
+    "service_level_pct": 19.5,
+    "summary": "Interval 15:30-16:00 on order_fulfillment: regional carrier outage caused 96% volume surge (510 vs 260 forecast) and AHT jumped to 390s. Occupancy is 98.7% for the fourth straight interval, abandonment hit 24%, EWT is 19 minutes, and internal queues are completely saturated requiring immediate BPO partner overflow."
+  },
+  {
+    "id": "wfm-1700",
+    "interval": "17:00-17:30",
+    "queue": "general_care_voice",
+    "forecast_volume": 300,
+    "actual_volume": 318,
+    "forecast_aht_sec": 295,
+    "actual_aht_sec": 308,
+    "occupancy_pct": 92.1,
+    "shrinkage_pct": 26.8,
+    "service_level_pct": 73.5,
+    "summary": "Interval 17:00-17:30 on general_care_voice: late-afternoon volume slightly above forecast (+6.0%), service level at 73.5% (mildly below 80% goal). However, agents have run above 91% occupancy since 13:30 due to high unplanned shrinkage (26.8%), with 9 scheduled 1:1 coaching blocks currently active."
+  }
+]

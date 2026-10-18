@@ -4,7 +4,7 @@
   "version": "2026.10.0",
   "name": "CX Ontology",
   "license": "Apache-2.0",
-  "description": "Closed-world CX ontology for the CXOS workspace: system-level, domain-specific taxonomies for the contact center stack (IVR, ACD, WFM, QA, CRM, KM, Speech Analytics, Outbound, VOC), aligned with the Coxswain engine ontology so model proposals stay inside a deterministic vocabulary.",
+  "description": "Closed-world CX ontology for the CXOS workspace: system-level, domain-specific taxonomies for the contact center stack (IVR, ACD, WFM, QA, CRM, KM, Speech Analytics, Outbound, VOC, CCaaS, CAI, WFO, Journey Orchestration, Fraud & Auth, Desktop Assist), aligned with the Coxswain engine ontology so model proposals stay inside a deterministic vocabulary.",
   "engineAlignment": {
     "engine": "coxswain",
     "ontologyCatalog": "packages/cx-core/src/ontology/catalogs/default.json",
@@ -100,6 +100,12 @@
     { "id": "km", "acronym": "KM", "name": "Knowledge Management", "category": "knowledge", "path": "taxonomies/km.json", "summary": "Curated answers: article lifecycle, agent assist, customer-facing help" },
     { "id": "speech_analytics", "acronym": "SA", "name": "Speech & Text Analytics", "category": "analytics", "path": "taxonomies/speech-analytics.json", "summary": "Transcription, topics, sentiment, emotion, auto-disposition, compliance spotting" },
     { "id": "outbound", "acronym": "OB", "name": "Outbound Dialer & Campaigns", "category": "outreach", "path": "taxonomies/outbound.json", "summary": "Dialing modes, campaign types, list management, regulatory controls" },
-    { "id": "voc", "acronym": "VOC", "name": "Voice of the Customer", "category": "feedback", "path": "taxonomies/voc.json", "summary": "Surveys, listening posts, NPS/CSAT/CES instruments, close-the-loop" }
+    { "id": "voc", "acronym": "VOC", "name": "Voice of the Customer", "category": "feedback", "path": "taxonomies/voc.json", "summary": "Surveys, listening posts, NPS/CSAT/CES instruments, close-the-loop" },
+    { "id": "ccaas", "acronym": "CCaaS", "name": "Contact Center as a Service & Telephony Fabric", "category": "routing", "path": "taxonomies/ccaas.json", "summary": "SIP trunks, SBC, WebRTC endpoints, media recording, carrier failover, region resilience" },
+    { "id": "cai", "acronym": "CAI", "name": "Conversational AI & Virtual Agents", "category": "self_service", "path": "taxonomies/cai.json", "summary": "Intent NLU, slot filling, LLM RAG grounding, hallucination guardrails, containment handoff, turn latency" },
+    { "id": "wfo", "acronym": "WFO", "name": "Workforce Optimization & Engagement", "category": "workforce", "path": "taxonomies/wfo.json", "summary": "Coaching workflows, gamification, skill progression matrices, agent attrition risk, desktop analytics" },
+    { "id": "journey_orchestration", "acronym": "JO", "name": "Journey Orchestration & Next-Best-Action", "category": "routing", "path": "taxonomies/journey-orchestration.json", "summary": "Journey state machine, event triggers, NBA arbitration, channel suppression, proactive nudges" },
+    { "id": "fraud_auth", "acronym": "FA", "name": "Fraud Detection & Caller Authentication", "category": "customer_data", "path": "taxonomies/fraud-auth.json", "summary": "ANI spoofing detection, voice biometrics, KBA threat mitigation, step-up MFA, ATO prevention" },
+    { "id": "desktop_assist", "acronym": "DA", "name": "Agent Desktop & Real-Time Co-Pilot", "category": "knowledge", "path": "taxonomies/desktop-assist.json", "summary": "Unified agent desktop, real-time call summarization, next-best-response cards, ACW automation, swivel-chair elimination" }
   ]
 }

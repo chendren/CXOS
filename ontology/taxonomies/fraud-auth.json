@@ -1,0 +1,241 @@
+{
+  "kind": "cxTaxonomy",
+  "id": "fraud_auth",
+  "acronym": "FA",
+  "name": "Fraud Detection & Caller Authentication",
+  "category": "customer_data",
+  "version": "2026.10.0",
+  "description": "Real-time identity verification and fraud prevention layer combining network ANI spoofing telemetry, passive and active voice biometrics, step-up multi-factor authentication (MFA), and account takeover (ATO) threat scoring.",
+  "roleInCenter": "Trust and identity gatekeeper: verifies genuine customers with minimal friction while intercepting social engineering, voice spoofing, and account takeover attacks before sensitive data or funds are exposed.",
+  "glossary": [
+    {
+      "id": "ani_spoofing_detection",
+      "term": "ANI Spoofing & Network Forensics",
+      "definition": "Pre-answer telephony inspection analyzing STIR and SHAKEN attestation, carrier origin, VoIP aggregator hops, and virtual number velocity to spot forged caller IDs",
+      "tags": ["telephony", "security", "core"],
+      "seeAlso": ["ccaas", "ivr"]
+    },
+    {
+      "id": "passive_voice_biometrics",
+      "term": "Passive Voice Biometrics",
+      "definition": "Background acoustic voiceprint verification that authenticates a caller during natural conversation within seconds without requiring a fixed passphrase",
+      "tags": ["biometrics", "core"],
+      "seeAlso": ["ccaas"]
+    },
+    {
+      "id": "synthetic_voice_liveness",
+      "term": "Deepfake & Synthetic Voice Liveness Detection",
+      "definition": "Acoustic spectral analyzer that detects replay attacks, voice clones, and text-to-speech artifacts in the incoming audio stream",
+      "tags": ["biometrics", "security"]
+    },
+    {
+      "id": "kba_vulnerability",
+      "term": "Knowledge-Based Authentication (KBA) Threat",
+      "definition": "Security risk inherent in static personal questions such as mother's maiden name or date of birth that fraudsters easily harvest from data breaches",
+      "tags": ["security", "compliance"]
+    },
+    {
+      "id": "step_up_mfa",
+      "term": "Step-Up Multi-Factor Authentication",
+      "definition": "Risk-triggered out-of-band verification challenge such as an authenticated mobile app push, FIDO passkey, or cryptographic OTP required before high-risk actions",
+      "tags": ["authentication", "core"],
+      "aliases": ["Step-Up Auth"]
+    },
+    {
+      "id": "account_takeover_prevention",
+      "term": "Account Takeover (ATO) Prevention",
+      "definition": "Multi-signal defense stopping bad actors from hijacking customer credentials, SIM-swapping phone numbers, or socially engineering agents into resetting access",
+      "tags": ["security", "core"],
+      "aliases": ["ATO"]
+    },
+    {
+      "id": "fraud_watchlist_voiceprint",
+      "term": "Known Fraudster Voiceprint Watchlist",
+      "definition": "Gallery of acoustic voiceprints belonging to repeat bad actors used to flag incoming calls across any dialed account in real time",
+      "tags": ["biometrics", "security"]
+    },
+    {
+      "id": "sim_swap_indicator",
+      "term": "Carrier SIM-Swap & Port-Out Check",
+      "definition": "Real-time mobile network query verifying whether the caller's mobile subscriber identity or carrier port status changed recently before trusting SMS factors",
+      "tags": ["telephony", "security"]
+    }
+  ],
+  "facets": [
+    {
+      "id": "fa_authentication_modalities",
+      "name": "Authentication Modalities & Assurance Tiers",
+      "description": "Layered identity verification methods balanced by risk level and customer friction",
+      "root": {
+        "id": "auth_modalities_root",
+        "name": "Caller Authentication Factors",
+        "children": [
+          {
+            "id": "passive_zero_friction_factors",
+            "name": "Passive Zero-Friction Signals",
+            "children": [
+              { "id": "network_ani_attestation", "name": "Carrier Attestation & Line Intelligence", "description": "STIR and SHAKEN level-A attestation combined with clean SIM tenure", "seeAlso": ["ccaas"] },
+              { "id": "passive_voiceprint_match", "name": "Enrolled Passive Voiceprint Match", "description": "Continuous acoustic match against the customer's enrolled voice model" },
+              { "id": "authenticated_app_handoff", "name": "In-App Biometric Session Token", "description": "Cryptographic token passed when call originates from a FaceID or TouchID logged-in mobile app", "seeAlso": ["journey_orchestration"] }
+            ]
+          },
+          {
+            "id": "active_step_up_factors",
+            "name": "Active Step-Up Verification Factors",
+            "children": [
+              { "id": "push_app_approval", "name": "Mobile App Push Biometric Approval", "description": "Out-of-band prompt approved inside the customer's registered mobile device" },
+              { "id": "sim_verified_otp", "name": "SIM-Tenure Verified One-Time Passcode", "description": "Time-bound passcode allowed only after passing real-time SIM-swap checks" },
+              { "id": "hardware_fido_challenge", "name": "FIDO2 & Passkey Challenge", "description": "Phishing-resistant cryptographic verification for high-value wire or profile changes" }
+            ]
+          },
+          {
+            "id": "deprecated_weak_factors",
+            "name": "Legacy High-Risk Factors (Restricted)",
+            "children": [
+              { "id": "static_kba_questions", "name": "Static Demographic KBA", "description": "DOB, postal code, or static security questions vulnerable to breach dumps and social engineering" }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "fa_threat_vectors",
+      "name": "Contact Center Fraud & Threat Vectors",
+      "description": "Attack patterns targeting IVR self-service and live contact center agents",
+      "root": {
+        "id": "threat_vectors_root",
+        "name": "Fraud Attack Taxonomy",
+        "children": [
+          {
+            "id": "telephony_audio_attacks",
+            "name": "Telephony & Audio Manipulation",
+            "children": [
+              { "id": "ani_cli_spoofing", "name": "ANI Caller ID Spoofing", "description": "Forging the victim's phone number to bypass naive ANI-based CRM lookups" },
+              { "id": "synthetic_deepfake_voice", "name": "AI Voice Cloning & Replay Attack", "description": "Using generative TTS voice clones to fool agents or weak voice biometrics" }
+            ]
+          },
+          {
+            "id": "social_engineering_ato",
+            "name": "Social Engineering & Account Takeover",
+            "children": [
+              { "id": "agent_pretexting_recon", "name": "Multi-Call Pretexting & Reconnaissance", "description": "Harassing multiple agents across repeat calls to harvest partial account clues" },
+              { "id": "credential_sim_hijack", "name": "SIM-Swap & MFA Hijack", "description": "Porting victim's mobile number to intercept SMS recovery codes and reset contact center PINs" },
+              { "id": "ivr_credential_stuffing", "name": "Automated IVR PIN Brute-Forcing", "description": "High-velocity automated dialing probing IVR self-service balance and card activation flows", "seeAlso": ["ivr"] }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "fa_risk_orchestration_actions",
+      "name": "Real-Time Fraud Intervention Controls",
+      "description": "Automated policy responses executed when risk scores cross threshold bands",
+      "root": {
+        "id": "fraud_intervention_root",
+        "name": "Risk Policy Actions",
+        "children": [
+          { "id": "green_fast_track", "name": "Low-Risk Green Fast-Track", "description": "Pre-authenticates caller in IVR and suppresses manual agent security questions", "seeAlso": ["desktop_assist"] },
+          { "id": "yellow_step_up_gate", "name": "Medium-Risk Step-Up Gate", "description": "Locks sensitive CRM actions on agent desktop until out-of-band step-up MFA succeeds", "seeAlso": ["crm"] },
+          { "id": "red_fraud_desk_divert", "name": "High-Risk Fraud Specialist Divert", "description": "Silently routes suspected ATO or watchlist matches to the specialized fraud investigation queue", "seeAlso": ["acd"] }
+        ]
+      }
+    }
+  ],
+  "metrics": [
+    {
+      "id": "authentication_handle_time_seconds",
+      "name": "Average Authentication Time per Contact",
+      "unit": "seconds",
+      "direction": "lower_is_better",
+      "definition": "Mean interaction seconds spent verifying caller identity before issue handling begins",
+      "mapsToKpi": "aht_seconds"
+    },
+    {
+      "id": "passive_auth_success_rate",
+      "name": "Passive Zero-Friction Authentication Rate",
+      "unit": "percent",
+      "direction": "higher_is_better",
+      "definition": "Percentage of eligible inbound callers verified automatically via network, app token, or passive voice biometrics without verbal interrogation",
+      "mapsToKpi": "csat"
+    },
+    {
+      "id": "verified_self_service_containment",
+      "name": "Authenticated Self-Service Containment Rate",
+      "unit": "percent",
+      "direction": "higher_is_better",
+      "definition": "Share of callers completing high-assurance IVR or virtual agent transactions enabled by automated authentication",
+      "mapsToKpi": "deflection_rate"
+    },
+    {
+      "id": "high_risk_fraud_escalations",
+      "name": "High-Risk Fraud Alert Escalations",
+      "unit": "count",
+      "direction": "lower_is_better",
+      "definition": "Volume of inbound contacts flagged for high-priority fraud investigation due to watchlist match, spoofing, or ATO signals",
+      "mapsToKpi": "high_priority_contacts"
+    },
+    {
+      "id": "false_reject_friction_rate",
+      "name": "Genuine Caller False Rejection Rate (FRR)",
+      "unit": "percent",
+      "direction": "lower_is_better",
+      "definition": "Percentage of legitimate customers erroneously failed by biometric or network risk checks and forced into manual recovery"
+    }
+  ],
+  "failureModes": [
+    {
+      "id": "kba_social_engineering_breach",
+      "name": "Static KBA Social Engineering Bypass",
+      "signal": "Fraudsters pass verbal security questions using leaked personal data and convince agents to change email or wire funds",
+      "mitigation": "Retire static KBA questions and enforce hard desktop locks requiring cryptographic step-up MFA before profile or payment mutations"
+    },
+    {
+      "id": "sms_otp_sim_swap_compromise",
+      "name": "SMS OTP Interception via SIM Swap",
+      "signal": "High-value accounts experience sudden password and phone changes shortly after carrier port-out events",
+      "mitigation": "Query carrier SIM-swap and port-age APIs prior to SMS dispatch; block SMS OTP if SIM changed within 72 hours"
+    },
+    {
+      "id": "biometric_false_reject_spike",
+      "name": "Noisy Environment Biometric False Rejects",
+      "signal": "Legitimate mobile callers in noisy environments repeatedly fail voice verification, spiking AHT and customer frustration",
+      "mitigation": "Check audio SNR prior to biometric scoring and fall back seamlessly to in-app push approval when background noise is high"
+    },
+    {
+      "id": "synthetic_voice_clone_bypass",
+      "name": "Generative Voice Clone Spoofing",
+      "signal": "Synthetic TTS audio replays attempt to pass voiceprint matching on high-balance accounts",
+      "mitigation": "Enable acoustic liveness and synthetic artifact detection alongside multi-signal carrier attestation"
+    }
+  ],
+  "integrations": [
+    {
+      "with": "ccaas",
+      "exchanges": [
+        "STIR and SHAKEN carrier headers, ANI metadata, and real-time SIPREC audio stream ingested",
+        "Automated call termination or fraud honey-pot media routing instructions"
+      ]
+    },
+    {
+      "with": "ivr",
+      "exchanges": [
+        "Pre-answer risk score and passive authentication status returned to gate self-service menus",
+        "Out-of-band push MFA and OTP challenge status synchronized with voice prompts"
+      ]
+    },
+    {
+      "with": "acd",
+      "exchanges": [
+        "High-risk ATO and watchlist matches diverted directly to specialized security queues",
+        "Verified identity assurance tier attached to routing context"
+      ]
+    },
+    {
+      "with": "desktop_assist",
+      "exchanges": [
+        "Green-yellow-red trust badge and passive verification status displayed on agent screen pop",
+        "Step-up MFA trigger button and hard UI lock on sensitive CRM fields until verification completes"
+      ]
+    }
+  ]
+}

@@ -63,6 +63,15 @@ npm run qa-report -- --results .tmp/qa-triage/history.jsonl --out qa-triage-repo
 # Calibration harness: Brier, ECE, and threshold sweep against gold QA fixture
 npm run qa-calibrate
 
+# ACD Routing Decider: skill queue choice + VIP priority noul + EWT callback noul
+npm run routing-decide -- --file fixtures/routing-contacts.sample.json
+
+# WFM Intraday Decider: SLA breach score + intraday staffing choice + burnout noul
+npm run wfm-decide -- --file fixtures/wfm-intervals.sample.json
+
+# IVR Containment Decider: failure mode choice + zero-out risk noul + friction score
+npm run ivr-decide -- --file fixtures/ivr-sessions.sample.json
+
 # Wire ontology + triage + calibration into cxos-dashboard.html
 npm run dashboard:ontology
 ```

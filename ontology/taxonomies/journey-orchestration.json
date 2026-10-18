@@ -1,0 +1,238 @@
+{
+  "kind": "cxTaxonomy",
+  "id": "journey_orchestration",
+  "acronym": "JO",
+  "name": "Journey Orchestration & Next-Best-Action",
+  "category": "routing",
+  "version": "2026.10.0",
+  "description": "Real-time cross-channel state engine that tracks customer lifecycle context, evaluates business and propensity rules to arbitrate the Next-Best-Action (NBA), triggers proactive nudges, and suppresses redundant outreach.",
+  "roleInCenter": "Cross-channel brain: maintains persistent journey state across time and channels so every inbound or proactive touchpoint advances the customer's goal without repetition.",
+  "glossary": [
+    {
+      "id": "journey_state_machine",
+      "term": "Customer Journey State Machine",
+      "definition": "Persistent graph tracking a customer's current lifecycle stage, open issues, prior channel touches, and pending commitments across sessions",
+      "tags": ["core", "state"],
+      "seeAlso": ["crm"]
+    },
+    {
+      "id": "event_stream_trigger",
+      "term": "Real-Time Journey Event Trigger",
+      "definition": "Streaming business or telemetry event such as a failed payment, shipment delay, or repeated app error that initiates or transitions a journey state",
+      "tags": ["events", "core"]
+    },
+    {
+      "id": "nba_arbitration",
+      "term": "Next-Best-Action (NBA) Arbitration",
+      "definition": "Decisioning matrix that ranks competing retention, service recovery, protocol, and sales actions by customer value, urgency, and eligibility",
+      "tags": ["decisioning", "core"],
+      "aliases": ["NBA"]
+    },
+    {
+      "id": "channel_suppression",
+      "term": "Cross-Channel Suppression Rule",
+      "definition": "Governance control that halts marketing or automated outbound campaigns when an active service escalation, dispute, or recent contact exists",
+      "tags": ["governance", "outreach"],
+      "seeAlso": ["outbound"]
+    },
+    {
+      "id": "proactive_nudge",
+      "term": "Proactive Contextual Nudge",
+      "definition": "Timely push notification, SMS, or in-app card sent ahead of a predicted inbound call to resolve an issue or confirm status effortlessly",
+      "tags": ["self_service", "outreach"],
+      "seeAlso": ["cai"]
+    },
+    {
+      "id": "contact_fatigue_cap",
+      "term": "Contact Frequency & Fatigue Cap",
+      "definition": "Rolling window ceiling limiting total proactive notifications and outbound touches across all channels per customer",
+      "tags": ["governance", "compliance"],
+      "seeAlso": ["outbound"]
+    },
+    {
+      "id": "journey_continuity_token",
+      "term": "Omnichannel Continuity Context",
+      "definition": "Shared context payload linking a digital web failure or mobile app flow directly to an inbound voice or chat session within the same journey",
+      "tags": ["state", "routing"],
+      "seeAlso": ["acd", "ivr"]
+    },
+    {
+      "id": "abandon_recovery_flow",
+      "term": "Digital & Queue Abandon Recovery",
+      "definition": "Automated orchestration step that follows up on high-value cart, application, or queue abandons via preferred asynchronous channel",
+      "tags": ["outcome", "retention"]
+    }
+  ],
+  "facets": [
+    {
+      "id": "jo_triggers_state",
+      "name": "Journey Event Triggers & State Management",
+      "description": "Signals and state transitions that drive real-time journey progression",
+      "root": {
+        "id": "journey_triggers_root",
+        "name": "Journey Signals & States",
+        "children": [
+          {
+            "id": "operational_event_triggers",
+            "name": "Operational & Product Event Triggers",
+            "children": [
+              { "id": "fulfillment_exception_event", "name": "Service or Fulfillment Exception", "description": "Order delay, outage impact, or appointment reschedule event" },
+              { "id": "billing_anomaly_event", "name": "Billing Shock or Declined Payment", "description": "Unusual bill spike or renewal failure likely to drive an inbound contact" },
+              { "id": "digital_struggle_signal", "name": "Digital Friction & Rage-Click Signal", "description": "Repeated form errors, failed login attempts, or help-page looping in web or app" }
+            ]
+          },
+          {
+            "id": "lifecycle_journey_stages",
+            "name": "Customer Lifecycle Journey Stages",
+            "children": [
+              { "id": "onboarding_activation_stage", "name": "Onboarding & First-Value Stage", "description": "Guided setup and early adoption milestones", "seeAlso": ["crm"] },
+              { "id": "active_issue_resolution_stage", "name": "Active Case & Recovery Stage", "description": "Open support ticket or SLA breach recovery state" },
+              { "id": "renewal_retention_stage", "name": "Churn Risk & Retention Stage", "description": "Contract maturity or downgrade signal requiring retention arbitration" }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "jo_nba_arbitration_matrix",
+      "name": "Next-Best-Action Arbitration & Policy",
+      "description": "Scoring and prioritization logic selecting the single best action for a customer moment",
+      "root": {
+        "id": "nba_arbitration_root",
+        "name": "NBA Decisioning Hierarchy",
+        "children": [
+          {
+            "id": "priority_override_tiers",
+            "name": "Action Priority Override Tiers",
+            "children": [
+              { "id": "safety_compliance_tier", "name": "Regulatory, Fraud & Safety Override", "description": "Mandatory security verification or regulatory disclosure preempts all other actions", "seeAlso": ["fraud_auth"] },
+              { "id": "service_recovery_tier", "name": "Urgent Service Recovery & SLA Save", "description": "Proactive apology, fee credit, or priority routing when service failure occurred", "seeAlso": ["acd"] },
+              { "id": "retention_save_tier", "name": "Churn Prevention & Retention Offer", "description": "Targeted loyalty intervention for high-LTV customers exhibiting churn signals" },
+              { "id": "value_expansion_tier", "name": "Contextual Cross-Sell & Onboarding", "description": "Eligible plan optimization or feature adoption offer only when sentiment is positive" }
+            ]
+          },
+          {
+            "id": "channel_selection_logic",
+            "name": "Channel & Timing Selection",
+            "children": [
+              { "id": "in_session_agent_prompt", "name": "Live Agent Co-Pilot NBA Card", "description": "Surfaces arbitrated action directly inside an active voice or chat handling session", "seeAlso": ["desktop_assist"] },
+              { "id": "proactive_async_push", "name": "Proactive SMS or In-App Notification", "description": "Low-friction digital nudge honoring customer channel preference and quiet hours", "seeAlso": ["outbound"] }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "jo_suppression_governance",
+      "name": "Channel Suppression & Contact Governance",
+      "description": "Guardrails preventing conflicting messages, over-contacting, and tone-deaf outreach",
+      "root": {
+        "id": "suppression_governance_root",
+        "name": "Suppression & Fatigue Guardrails",
+        "children": [
+          { "id": "open_escalation_mute", "name": "Open Escalation Promotional Mute", "description": "Suppresses all sales and marketing outreach while an unresolved complaint or high-priority ticket is open" },
+          { "id": "recent_inbound_cooldown", "name": "Post-Contact Outbound Cooldown", "description": "Cancels scheduled outbound reminders if the customer resolved the issue inbound minutes earlier", "seeAlso": ["outbound"] },
+          { "id": "cross_channel_deduplication", "name": "Multi-Channel Alert Deduplication", "description": "Ensures a single disruption event sends one preferred notification rather than simultaneous email, SMS, and voice blasts" }
+        ]
+      }
+    }
+  ],
+  "metrics": [
+    {
+      "id": "proactive_deflection_rate",
+      "name": "Proactive Nudge Inbound Deflection Rate",
+      "unit": "percent",
+      "direction": "higher_is_better",
+      "definition": "Percentage of customers receiving a proactive status or resolution nudge who do not initiate a predicted inbound contact within 48 hours",
+      "mapsToKpi": "deflection_rate"
+    },
+    {
+      "id": "nba_attributed_contact_value",
+      "name": "NBA-Attributed Contact Value",
+      "unit": "currency_usd",
+      "direction": "higher_is_better",
+      "definition": "Average retained or incremental customer value realized per interaction where the arbitrated Next-Best-Action was executed",
+      "mapsToKpi": "avg_contact_value"
+    },
+    {
+      "id": "journey_fcr_completion_rate",
+      "name": "End-to-End Journey Resolution Rate",
+      "unit": "percent",
+      "direction": "higher_is_better",
+      "definition": "Share of multi-step customer journeys resolved on the first assisted or automated touch without channel-hopping repeats",
+      "mapsToKpi": "fcr_rate"
+    },
+    {
+      "id": "high_priority_journey_intercepts",
+      "name": "High-Priority Journey Escalation Intercepts",
+      "unit": "count",
+      "direction": "lower_is_better",
+      "definition": "Count of critical at-risk customer journeys requiring high-priority queue intervention",
+      "mapsToKpi": "high_priority_contacts"
+    },
+    {
+      "id": "journey_continuity_csat",
+      "name": "Cross-Channel Journey CSAT",
+      "unit": "score_1_to_5",
+      "direction": "higher_is_better",
+      "definition": "Customer satisfaction score on interactions where prior digital or proactive journey state was preserved into handling",
+      "mapsToKpi": "csat"
+    }
+  ],
+  "failureModes": [
+    {
+      "id": "tone_deaf_upsell_collision",
+      "name": "Tone-Deaf Upsell During Service Failure",
+      "signal": "Angry customers receive promotional NBA offers during outage or billing-dispute calls; CSAT drops and complaints spike",
+      "mitigation": "Enforce real-time sentiment and open-incident suppression gates that zero commercial NBA weights when frustration or active tickets exist"
+    },
+    {
+      "id": "stale_event_nudge_storm",
+      "name": "Delayed Event Nudge After Resolution",
+      "signal": "Customers receive proactive 'issue detected' SMS hours after already calling in and resolving the problem, triggering confused repeat calls",
+      "mitigation": "Enforce sub-second CRM and ACD disposition state checks immediately prior to message dispatch"
+    },
+    {
+      "id": "omnichannel_context_drop",
+      "name": "Web-to-Voice Journey Amnesia",
+      "signal": "Customer clicks 'Call Support' inside an authenticated app error flow but lands in generic IVR root menu with no context",
+      "mitigation": "Pass short-lived journey continuity tokens bindable by ANI or one-time session code to fast-track IVR and ACD routing"
+    },
+    {
+      "id": "fatigue_cap_bypass",
+      "name": "Siloed Campaign Fatigue Cap Bypass",
+      "signal": "Opt-out rates and spam complaints climb because billing, collections, and marketing triggers fire independently on the same day",
+      "mitigation": "Centralize all outbound and proactive triggers through a unified journey suppression ledger with hard daily and weekly caps"
+    }
+  ],
+  "integrations": [
+    {
+      "with": "crm",
+      "exchanges": [
+        "Customer tier, lifetime value, consent flags, and open case states read for NBA arbitration",
+        "Journey state transitions and NBA acceptance outcomes persisted to customer record"
+      ]
+    },
+    {
+      "with": "acd",
+      "exchanges": [
+        "Journey continuity context, predicted intent, and dynamic priority boosts passed at call arrival",
+        "Queue wait telemetry read to decide between live routing and proactive digital deflection"
+      ]
+    },
+    {
+      "with": "outbound",
+      "exchanges": [
+        "Proactive nudge dispatches and abandon-recovery triggers sent for campaign execution",
+        "Real-time channel suppression and fatigue-cap blocks enforced before dialing or messaging"
+      ]
+    },
+    {
+      "with": "desktop_assist",
+      "exchanges": [
+        "Visual customer journey timeline and arbitrated Next-Best-Action card pushed to agent desktop",
+        "Agent action disposition and offer response captured in real time"
+      ]
+    }
+  ]
+}

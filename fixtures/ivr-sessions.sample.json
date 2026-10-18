@@ -1,0 +1,50 @@
+[
+  {
+    "id": "ivr-001",
+    "flow_name": "main_billing_autopay",
+    "turns": 3,
+    "duration_sec": 52,
+    "contained": true,
+    "summary": "Caller authenticated via ANI and 4-digit PIN on first attempt, requested current account balance and paid 124.50 dollars using stored Visa ending in 4412. Confirmation number read back and caller hung up satisfied."
+  },
+  {
+    "id": "ivr-002",
+    "flow_name": "tech_support_triage",
+    "turns": 11,
+    "duration_sec": 245,
+    "contained": false,
+    "summary": "Caller traversed 5 nested sub-menus (Main -> Internet -> Wi-Fi -> Equipment -> Advanced Settings) and was looped back to the main menu twice after selecting option 4. Caller pressed 0 repeatedly and shouted 'representative' before abandoning."
+  },
+  {
+    "id": "ivr-003",
+    "flow_name": "order_status_returns",
+    "turns": 6,
+    "duration_sec": 130,
+    "contained": false,
+    "summary": "Prompt asked 'Are you calling about a new order, an existing delivery, or a trade-in Modification?' Caller said 'I need to swap the phone color on the order I placed this morning,' and ASR misclassified three times between 'new order' and 'trade-in' with low NLU confidence before caller demanded an agent."
+  },
+  {
+    "id": "ivr-004",
+    "flow_name": "account_security_verify",
+    "turns": 7,
+    "duration_sec": 165,
+    "contained": false,
+    "summary": "Caller entered valid billing ZIP code and last 4 of SSN twice, but IVR CRM lookup failed to match because the account is under a corporate FEIN rather than a personal SSN. Flow locked self-service authentication and forced a security queue transfer while caller expressed frustration."
+  },
+  {
+    "id": "ivr-005",
+    "flow_name": "holiday_store_hours",
+    "turns": 4,
+    "duration_sec": 95,
+    "contained": false,
+    "summary": "IVR announcement recited a promotional rebate deadline from November 2024 and listed store pickup hours for a retail branch that permanently closed six months ago. Caller asked 'Wait, isn't that location closed?' and pressed 0 to reach a human agent."
+  },
+  {
+    "id": "ivr-006",
+    "flow_name": "warranty_claim_intake",
+    "turns": 8,
+    "duration_sec": 190,
+    "contained": false,
+    "summary": "Caller completed full device serial number capture, issue categorization, and troubleshooting acknowledgment in the IVR, then was cold-transferred to the tier-1 queue with zero CTI screen-pop attributes attached; live agent opened with 'Can I get your name, serial number, and what you're calling about today?'"
+  }
+]

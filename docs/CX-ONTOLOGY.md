@@ -1,9 +1,10 @@
 # CX Ontology — Structured CX Taxonomies
 
 The CXOS workspace ships a **closed-world CX ontology** at `ontology/`: a JSON-structured
-model of the contact-center system landscape (IVR, ACD, WFM, QA, CRM, KM, Speech Analytics,
-Outbound, VOC) aligned with the [Coxswain](https://github.com/chendren/coxswain) engine
-ontology (`packages/cx-core/src/ontology/catalogs/default.json`, version `2026.08.0`).
+model of the 15-system contact-center landscape (IVR, ACD, WFM, QA, CRM, KM, Speech Analytics,
+Outbound, VOC, CCaaS, CAI, WFO, Journey Orchestration, Fraud/Auth, Desktop Assist) aligned with
+the [Coxswain](https://github.com/chendren/coxswain) engine ontology
+(`packages/cx-core/src/ontology/catalogs/default.json` and `cxos-systems.json`, version `2026.08.0`).
 
 ## Why
 
@@ -18,21 +19,30 @@ of free-form prose.
 
 ```
 ontology/
-  cx-ontology.json           # Root ontology: version, engine alignment, core lifecycle,
-                             # channel facets, cross-cutting concerns, taxonomy registry
-  taxonomy.schema.json       # Uniform JSON Schema (draft 2020-12) every taxonomy satisfies
+  cx-ontology.json              # Root ontology: version, engine alignment, core lifecycle,
+                                # channel facets, cross-cutting concerns, taxonomy registry
+  taxonomy.schema.json          # Uniform JSON Schema (draft 2020-12) every taxonomy satisfies
+  cxos-systems-pack.json        # Compiled Coxswain CxOntologyCatalog extension pack (15 domains)
   taxonomies/
-    ivr.json                  # Voice self-service: menus, ASR/DTMF, containment, outcomes
-    acd.json                  # Routing: queues, skills, SL strategies, transfer types
-    wfm.json                  # Workforce: forecasting, shrinkage, adherence, scheduling
-    qa.json                   # Quality: evaluation scopes, root causes, scoring model
-    crm.json                  # Customer data: record hierarchy, screen pops, consent
-    km.json                   # Knowledge: audiences, content types, article lifecycle
-    speech-analytics.json     # Analytics: analyte classes, use cases, precision
-    outbound.json              # Outreach: dialing modes, campaign types, compliance controls
-    voc.json                  # Feedback: listening posts, instruments, drivers
+    ivr.json                    # Voice self-service: menus, ASR/DTMF, containment, outcomes
+    acd.json                    # Routing: queues, skills, SL strategies, transfer types
+    wfm.json                    # Workforce: forecasting, shrinkage, adherence, scheduling
+    qa.json                     # Quality: evaluation scopes, root causes, scoring model
+    crm.json                    # Customer data: record hierarchy, screen pops, consent
+    km.json                     # Knowledge: audiences, content types, article lifecycle
+    speech-analytics.json       # Analytics: analyte classes, use cases, precision
+    outbound.json               # Outreach: dialing modes, campaign types, compliance controls
+    voc.json                    # Feedback: listening posts, instruments, drivers
+    ccaas.json                  # Telephony fabric: SIP, WebRTC, media recording, carrier failover
+    cai.json                    # Conversational AI: NLU, RAG grounding, guardrails, handoff
+    wfo.json                    # Workforce optimization: coaching, gamification, desktop analytics
+    journey-orchestration.json  # Journey state: cross-channel stitching, NBA triggers, suppression
+    fraud-auth.json             # Identity & trust: voice biometrics, ANI spoofing, step-up MFA
+    desktop-assist.json         # Agent workspace: unified desktop, real-time copilot, auto-summary
 scripts/
-  validate-ontology.mjs       # Deterministic offline validator (zero deps, zero regex)
+  validate-ontology.mjs         # Deterministic offline validator (zero deps, zero regex)
+  build-engine-pack.mjs         # Compiles 15 taxonomies into ontology/cxos-systems-pack.json
+  build-ontology-explorer.mjs   # Generates standalone interactive cxos-ontology-explorer.html
 ```
 
 ## Taxonomy file shape
@@ -57,16 +67,18 @@ either direction fails validation rather than silently diverging. `core.interact
 gives both layers a shared nine-stage spine (arrival → identity → self-service → queue →
 routing → handling → wrap-up → resolution → feedback) that every taxonomy relates to.
 
-## Validation & Engine Pack Build
+## Validation, Engine Pack & Explorer Build
 
 ```bash
 npm run validate:ontology
 npm run ontology:pack
+npm run ontology:explorer
 npm run dashboard:ontology
 ```
 
-- `npm run validate:ontology` runs the deterministic, offline, dependency-free, regex-free validator.
-- `npm run ontology:pack` compiles the 9 workspace taxonomies into a Coxswain-compatible `CxOntologyCatalog` extension pack at `ontology/cxos-systems-pack.json` (9 `sys_*` domains, 63 operational intents, 2 journeys, 4 NBA rules, 9 aligned KPIs) ready for `mergeOntologies(DEFAULT_ONTOLOGY, pack)`.
+- `npm run validate:ontology` runs the deterministic, offline, dependency-free, regex-free validator across all 15 taxonomies (146 glossary terms, 335 facet nodes, 50 KPI-linked metrics, 61 failure modes, 61 cross-taxonomy integrations).
+- `npm run ontology:pack` compiles the 15 workspace taxonomies into a Coxswain-compatible `CxOntologyCatalog` extension pack at `ontology/cxos-systems-pack.json` (15 `sys_*` domains, 105 operational intents, 2 journeys, 4 NBA rules, 9 aligned KPIs) ready for `mergeOntologies(DEFAULT_ONTOLOGY, pack)` or native `CXOS_FULL_ONTOLOGY` in `@cox/cx-core`.
+- `npm run ontology:explorer` generates `cxos-ontology-explorer.html`, a standalone interactive SVG/HTML explorer with integration graph topology, global term/facet/failure-mode search, KPI rollup matrix, and Strands 2B calibration inspector.
 - `npm run dashboard:ontology` injects the ontology summary, engine pack metrics, Strands 2B QA triage distribution, and calibration scores into `cxos-dashboard.html`.
 
 The validator checks:
