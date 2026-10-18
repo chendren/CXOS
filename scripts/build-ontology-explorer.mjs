@@ -31,6 +31,7 @@ const calibrationPath = resolve(argOf("--calibration") ?? join(ROOT, ".tmp", "qa
 const historyPath = resolve(argOf("--history") ?? join(ROOT, ".tmp", "qa-triage", "history.jsonl"));
 const journeyTracesPath = resolve(argOf("--journey-traces") ?? join(ROOT, "fixtures", "journey-a2a-traces.sample.json"));
 const journeyHistoryPath = resolve(argOf("--journey-history") ?? join(ROOT, ".tmp", "qa-triage", "journey-a2a-history.jsonl"));
+const manifoldSummaryPath = resolve(argOf("--manifold") ?? join(ROOT, ".tmp", "continuous-scale", "manifold-summary.json"));
 
 const esc = (s) =>
   String(s ?? "")
@@ -106,6 +107,9 @@ const journeyTriadTraces = journeyFixtures.map((jf) => ({
   ...jf,
   decision: journeyDecisionsById.get(jf.journeyId) ?? null,
 }));
+const manifoldSummary = existsSync(manifoldSummaryPath)
+  ? JSON.parse(readFileSync(manifoldSummaryPath, "utf8"))
+  : null;
 
 function countFacetNodes(node) {
   if (!node) return 0;
@@ -309,6 +313,7 @@ const clientPayload = {
   calibration,
   triage: uniqueTriage,
   journeyTriadTraces,
+  manifoldSummary,
   packSummary: pack
     ? {
         version: pack.version,
@@ -1365,6 +1370,64 @@ const html = `<!DOCTYPE html>
       );
     }
 
+    function renderContinuousDynamicsHtml(cd, q) {
+      if (!cd) return "";
+      var vars = cd.stateVariables || [];
+      var eqs = cd.differentialEquations || [];
+      var invs = cd.scaleInvariants || [];
+
+      var filteredVars = vars.filter(function (v) {
+        return !q || matchesQuery(v.id, q) || matchesQuery(v.symbol, q) || matchesQuery(v.domain, q) || matchesQuery(v.description, q);
+      });
+      var filteredEqs = eqs.filter(function (e) {
+        return !q || matchesQuery(e.id, q) || matchesQuery(e.name, q) || matchesQuery(e.formula, q) || matchesQuery(e.interpretation, q);
+      });
+      if (q && filteredVars.length === 0 && filteredEqs.length === 0) return "";
+
+      var varsHtml = (filteredVars.length ? filteredVars : vars).map(function (v) {
+        return (
+          '<div class="term-item">' +
+            '<div class="term-head">' +
+              '<code>' + escHtml(v.symbol) + '</code>' +
+              '<span>' + escHtml(v.id) + '</span>' +
+              '<span class="tag-chip">' + escHtml(v.domain) + '</span>' +
+              (v.unit ? '<span class="tag-chip">' + escHtml(v.unit) + '</span>' : '') +
+            '</div>' +
+            '<div class="muted" style="margin-top:2px;">' + escHtml(v.description) + '</div>' +
+          '</div>'
+        );
+      }).join("");
+
+      var eqsHtml = (filteredEqs.length ? filteredEqs : eqs).map(function (e) {
+        return (
+          '<div class="term-item">' +
+            '<div class="term-head"><span>' + escHtml(e.name) + '</span><code>' + escHtml(e.id) + '</code></div>' +
+            '<div style="margin:4px 0;padding:5px 8px;background:var(--bg);border-radius:4px;font-family:ui-monospace,monospace;font-size:0.78rem;color:var(--ok);">' + escHtml(e.formula) + '</div>' +
+            '<div class="muted" style="font-size:0.8rem;">' + escHtml(e.interpretation) + '</div>' +
+          '</div>'
+        );
+      }).join("");
+
+      var invsHtml = invs.map(function (inv) {
+        return "<li>" + escHtml(inv) + "</li>";
+      }).join("");
+
+      return (
+        '<div class="sub-box" style="grid-column: 1 / -1; border-color: #2e437a;">' +
+          '<h4>' +
+            '<span>Continuous Dynamical Manifold (R^' + Number(cd.stateSpaceDimension || 16) + ' State Space)</span>' +
+            '<span>' + vars.length + ' State Variables &middot; ' + eqs.length + ' Differential Equations</span>' +
+          '</h4>' +
+          '<div class="tax-cols">' +
+            '<div><strong style="font-size:0.78rem;color:var(--code);">State Space Variables</strong>' + varsHtml + '</div>' +
+            '<div><strong style="font-size:0.78rem;color:var(--code);">Governing Differential &amp; Field Equations</strong>' + eqsHtml +
+              '<div style="margin-top:8px;"><strong style="font-size:0.78rem;color:var(--code);">Massive-Scale Invariants</strong><ul class="payload-list" style="margin-top:4px;">' + invsHtml + '</ul></div>' +
+            '</div>' +
+          '</div>' +
+        '</div>'
+      );
+    }
+
     function renderDeepDive() {
       var container = document.getElementById("taxonomy-deep-dive-container");
       var countLabel = document.getElementById("search-count-label");
@@ -1430,13 +1493,15 @@ const html = `<!DOCTYPE html>
         });
 
         var scoringHtml = renderScoringModelHtml(t.scoringModel, taxMetaMatch ? "" : q);
+        var continuousHtml = renderContinuousDynamicsHtml(t.continuousDynamics, taxMetaMatch ? "" : q);
 
         var hasAnyMatch =
           glossary.length > 0 ||
           facets.length > 0 ||
           metrics.length > 0 ||
           failures.length > 0 ||
-          Boolean(scoringHtml);
+          Boolean(scoringHtml) ||
+          Boolean(continuousHtml);
 
         if (!hasAnyMatch) continue;
 
@@ -1532,6 +1597,7 @@ const html = `<!DOCTYPE html>
                 (failuresHtml || '<span class="muted">No matching failure modes</span>') +
               '</div>' +
               scoringHtml +
+              continuousHtml +
             '</div>' +
           '</article>';
       }
@@ -1601,6 +1667,56 @@ const html = `<!DOCTYPE html>
       var triad = (DATA.ontology.core && DATA.ontology.core.journeyTriad) || null;
       var envSpec = (DATA.ontology.core && DATA.ontology.core.contextEnvelopeSpec) || null;
       var traces = DATA.journeyTriadTraces || [];
+      var mf = DATA.manifoldSummary || null;
+
+      var manifoldBannerHtml = "";
+      if (mf && mf.benchmark && mf.continuousFieldMetrics) {
+        var bm = mf.benchmark;
+        var cfm = mf.continuousFieldMetrics;
+        var ctrlRows = (mf.controlActionSummary || []).map(function (c) {
+          var pct = Math.round((c.meanContinuousWeight || 0) * 100);
+          return (
+            '<div style="margin-bottom:6px;">' +
+              '<div style="display:flex;justify-content:space-between;font-size:0.76rem;">' +
+                '<code>' + escHtml(c.action) + '</code>' +
+                '<span>mean=' + Number(c.meanContinuousWeight).toFixed(3) + ' &middot; dom=' + Number(c.dominantSharePercent).toFixed(1) + '%</span>' +
+              '</div>' +
+              '<div class="bar-track"><div class="bar-fill" style="width:' + pct + '%;background:var(--accent);"></div></div>' +
+            '</div>'
+          );
+        }).join("");
+
+        var agentRows = (mf.a2aAgentFieldSummary || []).slice(0, 8).map(function (ag) {
+          var pct = Math.min(100, Math.round((ag.meanBoltzmannWeight || 0) * 400));
+          return (
+            '<div style="margin-bottom:5px;">' +
+              '<div style="display:flex;justify-content:space-between;font-size:0.75rem;">' +
+                '<code>' + escHtml(ag.agentId) + '</code>' +
+                '<span>mass=' + Number(ag.meanBoltzmannWeight).toFixed(3) + ' &middot; top1=' + Number(ag.top1AssignmentShare).toFixed(1) + '%</span>' +
+              '</div>' +
+              '<div class="bar-track"><div class="bar-fill" style="width:' + pct + '%;background:var(--ok);"></div></div>' +
+            '</div>'
+          );
+        }).join("");
+
+        manifoldBannerHtml =
+          '<div class="sub-box" style="margin-bottom:16px;border-color:#3dd68c;">' +
+            '<h4>' +
+              '<span>Continuous R^' + bm.dimensions + ' Manifold &amp; A2A Spectral Field Benchmark (' + Number(bm.scaleJourneys).toLocaleString() + ' Trajectories / ' + Number(bm.totalEventsProcessed).toLocaleString() + ' Events)</span>' +
+              '<code>' + Number(bm.throughputJourneysPerSec).toLocaleString() + ' journeys/sec &middot; ' + Number(bm.throughputEventsPerSec).toLocaleString() + ' events/sec (' + bm.elapsedMilliseconds + ' ms)</code>' +
+            '</h4>' +
+            '<div class="tax-cols">' +
+              '<div>' +
+                '<div class="term-item"><strong>Plane 2 Mahalanobis Drift D_M:</strong> mean <code>' + cfm.mahalanobisDrift.mean + '</code> &middot; p50 <code>' + cfm.mahalanobisDrift.p50 + '</code> &middot; p95 <code>' + cfm.mahalanobisDrift.p95 + '</code> &middot; Wasserstein-2 <code>' + cfm.wassersteinTransportCostMean + '</code></div>' +
+                '<div class="term-item"><strong>Lyapunov Stability Regimes:</strong> <span class="ok">Convergent ' + cfm.lyapunovStability.convergentSharePercent + '%</span> &middot; <span class="urg-med">Orbital ' + cfm.lyapunovStability.orbitalSharePercent + '%</span> &middot; <span class="urg-high">Divergent ' + cfm.lyapunovStability.divergentSharePercent + '%</span></div>' +
+                '<div class="term-item"><strong>Omnichannel Context Fidelity I(X_0;X_t)/H(X_0):</strong> mean <code>' + cfm.omnichannelContextField.meanMutualInfoRetention + '</code> (p50 <code>' + cfm.omnichannelContextField.p50Fidelity + '</code>, p90 <code>' + cfm.omnichannelContextField.p90Fidelity + '</code>) &middot; Entropy <code>' + cfm.omnichannelContextField.meanShannonContextEntropy + '</code></div>' +
+                '<div class="term-item"><strong>A2A Spectral Field:</strong> Boltzmann Entropy <code>' + cfm.a2aSpectralField.meanBoltzmannEntropy + '</code> &middot; Spectral Loop Energy <code>' + cfm.a2aSpectralField.meanSpectralLoopEnergy + '</code></div>' +
+              '</div>' +
+              '<div><strong style="font-size:0.78rem;color:var(--code);">Plane 3 Continuous Hamiltonian Control Vector u*(t) in [0,1]^6</strong><div style="margin-top:6px;">' + ctrlRows + '</div></div>' +
+              '<div><strong style="font-size:0.78rem;color:var(--code);">A2A Continuous Boltzmann Routing Field P(a | z_t)</strong><div style="margin-top:6px;">' + agentRows + '</div></div>' +
+            '</div>' +
+          '</div>';
+      }
 
       var planeColors = ["#38bdf8", "#f5a524", "#3dd68c"];
       var planesHtml = "";
@@ -1679,6 +1795,7 @@ const html = `<!DOCTYPE html>
       }).join("");
 
       container.innerHTML =
+        manifoldBannerHtml +
         '<div class="tax-cols" style="margin-bottom:16px;">' +
           planesHtml +
         '</div>' +

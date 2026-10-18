@@ -574,5 +574,80 @@
         "QA calibration findings and critic rejection patterns fed back to refine Agent Card constraints and prompt guardrails"
       ]
     }
-  ]
+  ],
+  "continuousDynamics": {
+    "stateSpaceDimension": 16,
+    "manifoldCoordinates": [
+      "domain_skill_affinity",
+      "semantic_grounding_precision",
+      "tool_authority_clearance",
+      "calibrated_epistemic_confidence",
+      "turn_latency_headroom",
+      "token_budget_elasticity",
+      "critic_safety_margin",
+      "queue_backpressure_conductance"
+    ],
+    "stateVariables": [
+      {
+        "id": "agent_capability_embedding",
+        "symbol": "u_a",
+        "domain": "R^16",
+        "unit": "manifold_vector",
+        "description": "Continuous 16-dimensional capability, latency, cost, and authority embedding vector representing an autonomous specialist agent or human skill pool on the shared CXOS manifold"
+      },
+      {
+        "id": "boltzmann_routing_field",
+        "symbol": "P(a | z_t)",
+        "domain": "[0, 1]",
+        "unit": "probability_density",
+        "description": "Continuous Gibbs-Boltzmann routing probability distribution assigning live journey state z_t across candidate specialist agents based on manifold energy alignment and queue backpressure"
+      },
+      {
+        "id": "spectral_oscillation_energy",
+        "symbol": "L_spec(t)",
+        "domain": "[0, 1]",
+        "unit": "energy_ratio",
+        "description": "Continuous spectral oscillation energy over the recent K-step agent transition trajectory detecting cyclic ping-pong delegation loops before discrete hop ceilings are hit"
+      },
+      {
+        "id": "dynamic_authority_radius",
+        "symbol": "rho_a(t)",
+        "domain": "[0, 1]",
+        "unit": "trust_radius",
+        "description": "Time-varying autonomous execution authority radius contracted by epistemic uncertainty or critic risk signals and expanded by verified OBO authentication assurance"
+      },
+      {
+        "id": "swarm_backpressure_potential",
+        "symbol": "Phi_load(a, t)",
+        "domain": "R_+",
+        "unit": "potential_units",
+        "description": "Continuous congestion and token-throughput potential governing fluid load balancing across thousands of concurrent specialist agent instances"
+      }
+    ],
+    "differentialEquations": [
+      {
+        "id": "boltzmann_manifold_routing_field",
+        "name": "Continuous Boltzmann Capability Routing Field",
+        "formula": "P(a | z_t) = Z(z_t)^(-1) * exp( -beta * ( d_M(z_t, u_a)^2 + alpha_lat * tau_a(t) + alpha_load * Phi_load(a, t) ) )",
+        "interpretation": "Routes sub-tasks smoothly across the 16-D capability manifold by minimizing Mahalanobis skill distance d_M(z_t, u_a), predicted turn latency tau_a(t), and live swarm backpressure Phi_load(a, t) under inverse temperature beta"
+      },
+      {
+        "id": "spectral_ping_pong_damping_ode",
+        "name": "Spectral Oscillation Energy & Loop Damping Dynamics",
+        "formula": "dL_spec(t) * inv(dt) = omega_cycle * norm( u_a(t) - u_a(t - 2*Delta_t) )^(-1) - zeta_damp * u_esc(t) * L_spec(t)",
+        "interpretation": "Accumulates spectral energy L_spec(t) whenever agent capability trajectories revisit prior manifold neighborhoods within two steps, triggering continuous critic damping or human advocate escalation u_esc(t) before infinite ping-pong occurs"
+      },
+      {
+        "id": "authority_radius_contraction_law",
+        "name": "Epistemic Uncertainty Authority Contraction Law",
+        "formula": "drho_a(t) * inv(dt) = -kappa_unc * H_epistemic(z_t) * rho_a(t) + kappa_auth * AAL_verified(t) * (rho_max - rho_a(t))",
+        "interpretation": "Continuously contracts an agent's autonomous financial and tool mutation radius rho_a(t) as epistemic entropy H_epistemic(z_t) rises, smoothly shifting execution from autonomous commit to critic-gated or human-in-the-loop verification"
+      }
+    ],
+    "scaleInvariants": [
+      "Sub-5ms ANN HNSW capability matchmaking across 10,000+ registered specialist Agent Cards and millions of concurrent sub-task delegations",
+      "Lyapunov loop stability invariant: spectral damping guarantees finite cumulative delegation energy integral_0^T L_spec(t) dt < C_max across arbitrary multi-agent topologies",
+      "Zero-trust OBO authority conservation: a child sub-agent authority radius rho_child(t) can never exceed its parent delegator radius rho_parent(t) along any delegation chain"
+    ]
+  }
 }

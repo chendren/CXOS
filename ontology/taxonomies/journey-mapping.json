@@ -438,5 +438,80 @@
         "Staffing constraints and intraday shrinkage boundaries incorporated into graceful degradation branch designs"
       ]
     }
-  ]
+  ],
+  "continuousDynamics": {
+    "stateSpaceDimension": 16,
+    "manifoldCoordinates": [
+      "normalized_journey_progress",
+      "target_progress_velocity",
+      "normative_sentiment_valence",
+      "cumulative_effort_budget",
+      "auth_assurance_target",
+      "context_continuity_floor",
+      "containment_probability_prior",
+      "moment_of_truth_criticality"
+    ],
+    "stateVariables": [
+      {
+        "id": "normalized_journey_progress",
+        "symbol": "tau",
+        "domain": "[0, 1]",
+        "unit": "progress_fraction",
+        "description": "Continuous intrinsic journey progress parameter mapping initial customer JTBD trigger (tau = 0.0) to verified true resolution closure (tau = 1.0)"
+      },
+      {
+        "id": "golden_attractor_mean_curve",
+        "symbol": "mu_star(tau)",
+        "domain": "R^16",
+        "unit": "manifold_vector",
+        "description": "Smooth C^2 normative reference trajectory in the 16-dimensional CXOS state space defining the ideal Golden Path evolution of effort, sentiment, latency, and context fidelity"
+      },
+      {
+        "id": "golden_attractor_covariance_tube",
+        "symbol": "Sigma_star(tau)",
+        "domain": "S_+^16",
+        "unit": "covariance_matrix",
+        "description": "Positive-definite covariance tensor around mu_star(tau) specifying the allowable normative tolerance envelope (Golden Attractor Tube) before Plane 2 flags conformance drift"
+      },
+      {
+        "id": "target_progress_velocity_field",
+        "symbol": "v_star(tau)",
+        "domain": "R_+",
+        "unit": "progress_per_sec",
+        "description": "Prescriptive stage advancement velocity field d_tau_dt derived from stage SLA latency budgets and planned backstage fulfillment rates"
+      },
+      {
+        "id": "normative_effort_emotion_potential",
+        "symbol": "U_star(tau)",
+        "domain": "R^1",
+        "unit": "potential_score",
+        "description": "Designed scalar potential surface combining cumulative customer friction ceiling and expected emotional reassurance trajectory across Moments of Truth"
+      }
+    ],
+    "differentialEquations": [
+      {
+        "id": "golden_path_geodesic_flow",
+        "name": "Normative Golden Path Geodesic Evolution",
+        "formula": "dmu_star(tau) * inv(dtau) = F_blueprint(mu_star(tau), u_planned(tau))",
+        "interpretation": "Defines the Plane 1 prescriptive blueprint not as rigid discrete boxes, but as a continuous geodesic vector field F_blueprint transporting customer state from entry precondition to JTBD resolution with minimal cumulative effort"
+      },
+      {
+        "id": "normative_effort_sla_accumulation_law",
+        "name": "Stage SLA & Friction Budget Accumulation Law",
+        "formula": "dE_budget(tau) * inv(dtau) = c_wait(tau) * inv(v_star(tau)) + c_switch * delta_swimlane(tau) <= E_max'(tau)",
+        "interpretation": "Bounds the instantaneous rate of customer effort accumulation per unit of journey progress by balancing planned wait time against modality switch overhead delta_swimlane(tau)"
+      },
+      {
+        "id": "expected_emotion_recovery_ode",
+        "name": "Target Moment-of-Truth Sentiment Inflection ODE",
+        "formula": "dS_star(tau) * inv(dtau) = kappa_reassure(tau) * (S_target(tau) - S_star(tau)) - xi_anxiety(tau)",
+        "interpretation": "Models the planned emotional inflection curve where empathetic frontstage design and Moment-of-Truth reassurance gain kappa_reassure(tau) overcome initial issue anxiety xi_anxiety(tau)"
+      }
+    ],
+    "scaleInvariants": [
+      "Reparameterization invariance over normalized progress tau in [0, 1], allowing identical mathematical comparison between 30-second self-service flows and 14-day asynchronous claims journeys",
+      "Hierarchical diffeomorphism: macro-lifecycle phases and micro-stage graphs compose smoothly into a single continuous Riemannian manifold without boundary discontinuities",
+      "Vectorized blueprint tensor compilation enabling Plane 2 and Plane 3 engines to evaluate Golden Tube membership in O(1) SIMD operations across millions of active journeys"
+    ]
+  }
 }

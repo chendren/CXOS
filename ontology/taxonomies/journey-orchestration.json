@@ -456,5 +456,80 @@
         "Agent action disposition and offer response captured in real time"
       ]
     }
-  ]
+  ],
+  "continuousDynamics": {
+    "stateSpaceDimension": 16,
+    "manifoldCoordinates": [
+      "mpc_priority_boost_gain",
+      "modality_steering_conductance",
+      "a2a_specialist_dispatch_weight",
+      "context_hydration_impulse",
+      "proactive_nudge_intensity",
+      "commercial_suppression_dampener",
+      "calibrated_confidence_posterior",
+      "hamiltonian_value_to_go"
+    ],
+    "stateVariables": [
+      {
+        "id": "continuous_control_action_vector",
+        "symbol": "u_ctrl(t)",
+        "domain": "[0, 1]^6",
+        "unit": "control_vector",
+        "description": "Continuous 6-dimensional Plane 3 intervention vector governing queue priority boost, wait-aware modality steering, A2A specialist delegation, JIT context hydration, proactive nudge dispatch, and human advocate escalation"
+      },
+      {
+        "id": "hamilton_jacobi_cost_to_go",
+        "symbol": "J_star(z, t)",
+        "domain": "R^1",
+        "unit": "cost_potential",
+        "description": "Optimal Hamilton-Jacobi-Bellman value-to-go functional quantifying expected cumulative drift penalty, customer effort, SLA breach risk, and churn hazard from state z(t) to journey closure"
+      },
+      {
+        "id": "calibrated_system_one_confidence",
+        "symbol": "c_cal(t)",
+        "domain": "[0, 1]",
+        "unit": "probability",
+        "description": "Continuous temperature-scaled Strands 2B System-One epistemic confidence posterior governing autonomous execution versus verification or human escalation"
+      },
+      {
+        "id": "outbound_fatigue_hazard_state",
+        "symbol": "eta_fatigue(t)",
+        "domain": "[0, 1]",
+        "unit": "saturation_ratio",
+        "description": "Continuous contact-fatigue and escalation-suppression state variable with leaky-integrator recovery that dampens commercial or redundant proactive outreach"
+      },
+      {
+        "id": "queue_capacity_shadow_price",
+        "symbol": "lambda_wfm(t)",
+        "domain": "R_+",
+        "unit": "shadow_cost",
+        "description": "Real-time Lagrangian shadow price of live ACD queue wait and WFM staffing scarcity used to continuously balance assisted escalation against digital or A2A steering"
+      }
+    ],
+    "differentialEquations": [
+      {
+        "id": "hamilton_jacobi_bellman_mpc_law",
+        "name": "Hamilton-Jacobi-Bellman (HJB) Drift-Correction Control Law",
+        "formula": "u_star(t) = argmin_u ( L_drift(z(t), mu_star(tau_t)) + 0.5 * norm(u)_R^2 + grad_z J_star(z, t)^T * f_dyn(z(t), u) )",
+        "interpretation": "Computes the exact real-time Plane 3 intervention vector u_star(t) by descending the cost-to-go gradient grad_z J_star to pull a drifting Plane 2 trajectory z(t) back into the Plane 1 Golden Attractor Tube"
+      },
+      {
+        "id": "continuous_suppression_leaky_integrator",
+        "name": "Contact Fatigue & Escalation Suppression Leaky Integrator",
+        "formula": "d_eta_fatigue(t) = -alpha_recover * eta_fatigue(t) * dt + beta_touch * dN_outreach(t) + gamma_incident * I_escalation(t) * dt",
+        "interpretation": "Continuously integrates outbound touch impulses dN_outreach(t) and active service escalation indicators I_escalation(t), exponentially muting commercial NBA weights via exp(-kappa * eta_fatigue(t))"
+      },
+      {
+        "id": "strands_confidence_boundary_gating",
+        "name": "Two-Tier Entropy-Gated System-One Boundary Arbitration",
+        "formula": "pi_exec(u_star | c_cal) = sigma_gate((c_cal - 0.70) * inv(T_gate)) * u_auto + sigma_gate((0.40 - c_cal) * inv(T_gate)) * u_hitl",
+        "interpretation": "Smoothly arbitrates execution across calibrated confidence bands (high >= 0.70 autonomous execution, medium 0.40 to 0.69 critic or customer verification, low < 0.40 warm human advocate escalation) while triggering Tier-2 2B boundary checks only inside high-entropy transition zones"
+      }
+    ],
+    "scaleInvariants": [
+      "Two-tier decision cascade: 92%+ of routine events resolve in <50 microseconds via deterministic vector algebra, invoking the 2B System-One model only near confidence or drift regime boundaries",
+      "Global Lyapunov closed-loop stability: under HJB feedback control u_star(t), expected Mahalanobis drift D_M(z(t)) is strictly supermartingale-decreasing outside the Golden Tube",
+      "Horizontally stateless actor evaluation over partitioned 16-D state vectors enabling 1,000,000+ real-time NBA and drift-save decisions per second with zero lock contention"
+    ]
+  }
 }

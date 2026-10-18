@@ -1,0 +1,541 @@
+{
+  "kind": "cxContinuousScaleSpec",
+  "id": "cx_continuous_manifold_engine_spec",
+  "version": "2026.10.0",
+  "title": "Continuous Journey Manifold, Context Fidelity Decay & A2A Spectral Field Specification",
+  "description": "Continuous mathematical state-space formulation replacing discrete journey enums, static A2A routing buckets, and binary context flags with a 16-dimensional Riemannian/Euclidean latent manifold R^16, continuous exponential/entropy context fidelity tensors, Boltzmann capability fields, continuous-time Kalman trajectory assimilation, Mahalanobis/Wasserstein conformance integrals, Lyapunov stability exponents, and Hamiltonian Model Predictive Control (MPC) steering vectors.",
+  "dimensions": 16,
+  "latentManifoldAxes": [
+    {
+      "index": 0,
+      "id": "intent_clarity",
+      "name": "Semantic Intent Clarity",
+      "range": [0.0, 1.0],
+      "direction": "higher_is_better",
+      "description": "Continuous posterior concentration (1 - normalized Shannon entropy) over the customer's functional Job-to-be-Done in latent intent space"
+    },
+    {
+      "index": 1,
+      "id": "urgency_gradient",
+      "name": "Temporal Urgency Gradient",
+      "range": [0.0, 1.0],
+      "direction": "context_dependent",
+      "description": "Instantaneous time-sensitivity and SLA hazard pressure driving required service velocity d(tau)/dt"
+    },
+    {
+      "index": 2,
+      "id": "sentiment_valence",
+      "name": "Affective Sentiment Valence",
+      "range": [0.0, 1.0],
+      "direction": "higher_is_better",
+      "description": "Continuous acoustic and lexical valence normalized from [-1, +1] onto [0, 1], where 0 is extreme distress/anger, 0.5 is neutral, and 1.0 is delighted relief"
+    },
+    {
+      "index": 3,
+      "id": "arousal_intensity",
+      "name": "Emotional Arousal & Stress Intensity",
+      "range": [0.0, 1.0],
+      "direction": "lower_is_better",
+      "description": "Sympathetic activation, prosodic pitch/rate volatility, and lexical escalation energy"
+    },
+    {
+      "index": 4,
+      "id": "customer_ltv_density",
+      "name": "Customer Lifetime Value Density",
+      "range": [0.0, 1.0],
+      "direction": "higher_is_better",
+      "description": "Continuous quantile-normalized economic margin and strategic relationship density of the customer entity"
+    },
+    {
+      "index": 5,
+      "id": "churn_hazard_rate",
+      "name": "Instantaneous Churn Hazard Rate",
+      "range": [0.0, 1.0],
+      "direction": "lower_is_better",
+      "description": "Continuous Cox proportional hazard intensity lambda_churn(t) conditioned on accumulated friction and unresolved repeat window"
+    },
+    {
+      "index": 6,
+      "id": "containment_feasibility",
+      "name": "Autonomous Containment Feasibility",
+      "range": [0.0, 1.0],
+      "direction": "higher_is_better",
+      "description": "Continuous probability density that the active sub-goal can be completed via automated CAI and A2A tool execution without human intervention"
+    },
+    {
+      "index": 7,
+      "id": "compliance_exposure",
+      "name": "Regulatory & Safety Compliance Exposure",
+      "range": [0.0, 1.0],
+      "direction": "context_dependent",
+      "description": "Continuous regulatory, life-safety, HIPAA/PCI/Reg-E, and mandatory disclosure gravity of the active state"
+    },
+    {
+      "index": 8,
+      "id": "technical_complexity",
+      "name": "Domain & Technical Diagnostic Complexity",
+      "range": [0.0, 1.0],
+      "direction": "context_dependent",
+      "description": "Depth of multi-system causal reasoning, telemetry correlation, and schema complexity required to resolve the underlying issue"
+    },
+    {
+      "index": 9,
+      "id": "billing_exposure",
+      "name": "Financial & Ledger Dispute Exposure",
+      "range": [0.0, 1.0],
+      "direction": "context_dependent",
+      "description": "Normalized monetary dispute magnitude, ledger adjustment sensitivity, and credit ceiling pressure"
+    },
+    {
+      "index": 10,
+      "id": "fraud_risk_density",
+      "name": "Fraud & Account Takeover Risk Density",
+      "range": [0.0, 1.0],
+      "direction": "lower_is_better",
+      "description": "Continuous anomaly density across SIM-swap signals, behavioral biometrics, velocity checks, and device reputation"
+    },
+    {
+      "index": 11,
+      "id": "auth_assurance_level",
+      "name": "Cryptographic Authentication Assurance Level",
+      "range": [0.0, 1.0],
+      "direction": "higher_is_better",
+      "description": "Continuous time-decaying trust assurance (IAL/AAL) carried in the Context Envelope from passkey, biometric, OAuth, or KBA verification"
+    },
+    {
+      "index": 12,
+      "id": "channel_synchronicity",
+      "name": "Modality Synchronicity & Bandwidth",
+      "range": [0.0, 1.0],
+      "direction": "context_dependent",
+      "description": "Continuous coupling bandwidth of the active modality (from store-and-forward email near 0.15, async messaging 0.45, web/app 0.70, to live voice/co-browse near 0.95)"
+    },
+    {
+      "index": 13,
+      "id": "latency_pressure",
+      "name": "Cumulative SLA Latency Pressure",
+      "range": [0.0, 1.0],
+      "direction": "lower_is_better",
+      "description": "Smooth logistic saturation of elapsed waiting and handling time relative to the Plane-1 normative SLA velocity budget"
+    },
+    {
+      "index": 14,
+      "id": "cognitive_effort_load",
+      "name": "Customer Cognitive & Repetition Effort Load",
+      "range": [0.0, 1.0],
+      "direction": "lower_is_better",
+      "description": "Accumulated customer friction integral from slot re-prompting, modality switches, menu loops, and unhydrated transfers"
+    },
+    {
+      "index": 15,
+      "id": "resolution_momentum",
+      "name": "Goal Resolution Momentum",
+      "range": [0.0, 1.0],
+      "direction": "higher_is_better",
+      "description": "Forward kinematic velocity d(tau)/dt along the Plane-1 Golden Attractor toward verified Job-to-be-Done closure"
+    }
+  ],
+  "continuousFormulations": {
+    "omnichannelContextField": {
+      "taxonomyId": "omnichannel_context",
+      "name": "Continuous Context Fidelity Tensor & Information Decay Field",
+      "stateSpace": "F(t) in [0, 1]^K with K = 6 canonical context sub-fields (identity_binding, auth_assurance, intent_embedding, slot_ledger, provenance_digest, consent_vector)",
+      "equations": {
+        "componentFidelityDecay": "f_k(t) = f_k(t_0) * exp(-lambda_k * delta_t) * (1 - eta_mod(c_prev, c_curr)) * (1 - eta_carrier)",
+        "mutualInformationRetention": "I_norm(t) = I(X_origin; X_hat_active(t)) / H(X_origin) = sum_k w_k * f_k(t)",
+        "shannonContextEntropy": "H(C_t) = -sum_{k=1}^K (p_k * ln(p_k) + (1 - p_k) * ln(1 - p_k)) / K",
+        "repetitionHazardIntegral": "R_rep(t) = integral_0^t (1 - I_norm(s)) * ||dz(s)/ds|| ds"
+      },
+      "halfLifeDecayConstantsPerSecond": {
+        "identity_binding": 0.00002,
+        "auth_assurance": 0.00055,
+        "intent_embedding": 0.00018,
+        "slot_ledger": 0.00012,
+        "provenance_digest": 0.00025,
+        "consent_vector": 0.00001
+      },
+      "modalityDistanceMatrix": {
+        "modalities": ["mobile_app", "web_portal", "async_sms_whatsapp", "web_chat_cai", "ivr_voicebot", "voice_pstn_acd", "video_cobrowse"],
+        "lossCoefficients": {
+          "mobile_app_to_voice_pstn_acd": 0.28,
+          "mobile_app_to_ivr_voicebot": 0.22,
+          "web_portal_to_ivr_voicebot": 0.31,
+          "web_portal_to_voice_pstn_acd": 0.35,
+          "ivr_voicebot_to_voice_pstn_acd": 0.14,
+          "ivr_voicebot_to_async_sms_whatsapp": 0.11,
+          "web_chat_cai_to_voice_pstn_acd": 0.18,
+          "async_sms_whatsapp_to_voice_pstn_acd": 0.16,
+          "same_modality_continuation": 0.01,
+          "sip_uui_stripped_penalty": 0.48
+        }
+      }
+    },
+    "a2aContinuousField": {
+      "taxonomyId": "a2a_protocol",
+      "name": "Continuous A2A Capability Manifold, Boltzmann Routing Kernel & Spectral Loop Energy",
+      "stateSpace": "Each agent a in A embeds at u_a in R^16 with authority radius rho_a in [0, 1], latency hazard tau_a in [0, 1], and instantaneous load l_a(t) in [0, 1]",
+      "equations": {
+        "cosineCapabilityAlignment": "sim(z_t, u_a) = (z_t . u_a) / (||z_t||_2 * ||u_a||_2)",
+        "authorityFeasibilityGate": "g_auth(z_t, a) = sigmoid(kappa * (rho_a - max(z_t[compliance_exposure], z_t[billing_exposure], z_t[fraud_risk_density])))",
+        "boltzmannRoutingKernel": "P(a | z_t) = exp(beta * (sim(z_t, u_a) * g_auth(z_t, a) - gamma * l_a(t) - eta * tau_a)) / Z(z_t)",
+        "routingShannonEntropy": "H_a2a(z_t) = -sum_{a in A} P(a | z_t) * ln(P(a | z_t)) / ln(|A|)",
+        "spectralLoopOscillationEnergy": "L_spec(t) = (1 / (M - 1)) * sum_{m=2}^M ((1 - cos(v_m, v_{m-1})) / 2) * exp(-alpha * (t - t_m))"
+      },
+      "hyperparameters": {
+        "inverseTemperatureBeta": 8.5,
+        "loadPenaltyGamma": 0.35,
+        "latencyPenaltyEta": 0.25,
+        "authoritySlopeKappa": 10.0,
+        "spectralMemoryDecayAlpha": 0.004
+      }
+    },
+    "plane1PrescriptiveManifold": {
+      "taxonomyId": "journey_mapping",
+      "name": "Plane 1 Continuous Golden Attractor Tube (What We HOPE & Plan)",
+      "stateSpace": "Parameterized tube T*(tau) = (mu*(tau), Sigma*(tau)) in R^16 x R^{16x16} over continuous progress tau in [0, 1]",
+      "equations": {
+        "splineAttractorMean": "mu*(tau) = (1 - s) * mu_knot[i] + s * mu_knot[i+1] + 0.5 * s * (1 - s) * curvature_correction(tau)",
+        "normativeVelocityField": "v*(tau) = d(tau)/dt = (1 / T_sla_budget) * (1 + 0.3 * sin(pi * tau))",
+        "targetEmotionPotential": "U*(tau) = -w_val * mu*(tau)[sentiment_valence] + w_aro * mu*(tau)[arousal_intensity] + w_eff * mu*(tau)[cognitive_effort_load]"
+      }
+    },
+    "plane2EmpiricalTrajectory": {
+      "taxonomyId": "journey_tracking",
+      "name": "Plane 2 Continuous Trajectory Assimilation, Conformance Drift & Lyapunov Divergence (What DID Happen)",
+      "stateSpace": "Continuous stitched trajectory z(t) in R^16 assimilated from asynchronous event streams via exponential Kalman gain",
+      "equations": {
+        "continuousKalmanAssimilation": "z(t_n) = (1 - K_n) * (A(delta_t) * z(t_{n-1})) + K_n * y_obs(t_n)",
+        "mahalanobisConformanceDrift": "D_drift(t) = sqrt((z(t) - mu*(tau_t))^T * Sigma*(tau_t)^{-1} * (z(t) - mu*(tau_t))) / sqrt(16)",
+        "wassersteinTubeTransportCost": "W_2^2(P_emp, P_plan) = ||z(t) - mu*(tau_t)||_2^2 + trace(Sigma_emp(t) + Sigma*(tau_t) - 2 * (Sigma*(tau_t)^{1/2} * Sigma_emp(t) * Sigma*(tau_t)^{1/2})^{1/2})",
+        "lyapunovDivergenceExponent": "lambda_Lyap(t) = (1 / max(delta_t_total, 1)) * ln((D_drift(t) + eps) / (D_drift(t_0) + eps))"
+      },
+      "stabilityRegimes": {
+        "asymptoticallyConvergent": "lambda_Lyap < -0.0015 (trajectory actively converging into the Golden Attractor tube)",
+        "marginallyOrbital": "-0.0015 <= lambda_Lyap <= 0.0015 (trajectory riding tube boundary)",
+        "chaoticDivergent": "lambda_Lyap > 0.0015 (trajectory diverging toward abandonment, ping-pong oscillation, or SLA collapse)"
+      }
+    },
+    "plane3ControlField": {
+      "taxonomyId": "journey_orchestration",
+      "name": "Plane 3 Continuous Hamiltonian / MPC Control Field (What IS Happening & SHOULD Happen)",
+      "stateSpace": "Continuous control vector u*(t) in [0, 1]^6 over action basis [autonomous_progression, context_rehydration_impulse, a2a_specialist_blend, modality_fluid_shift, human_advocate_blend, outreach_damping_factor]",
+      "equations": {
+        "hamiltonianCostFunctional": "J(z(t), u(t)) = 0.5 * D_drift(t)^2 + c_ctx * (1 - F(t)) + c_loop * L_spec(t) + c_lyap * max(0, lambda_Lyap(t)) + 0.5 * u(t)^T * R * u(t)",
+        "optimalSteeringGradient": "u*(t) = softmax_or_project(-R^{-1} * B^T * grad_z J(z(t), mu*(tau_t)))",
+        "systemOneCalibratedFusion": "u_fused(t) = (1 - alpha_gate(H_a2a)) * u_fast(t) + alpha_gate(H_a2a) * u_strands_2b(t)"
+      },
+      "controlActionBasis": [
+        {
+          "index": 0,
+          "id": "autonomous_progression",
+          "mapsToDiscreteAction": "continue_golden_path",
+          "description": "Continuous gain maintaining autonomous CAI/digital velocity along the Golden Attractor tube"
+        },
+        {
+          "index": 1,
+          "id": "context_rehydration_impulse",
+          "mapsToDiscreteAction": "hydrate_context_and_resume",
+          "description": "Continuous state-injection gain restoring decayed Context Envelope slots, auth claims, and SIP UUI continuity"
+        },
+        {
+          "index": 2,
+          "id": "a2a_specialist_blend",
+          "mapsToDiscreteAction": "delegate_a2a_specialist",
+          "description": "Continuous multi-agent delegation weight blending domain specialist A2A capabilities into the active conversation"
+        },
+        {
+          "index": 3,
+          "id": "modality_fluid_shift",
+          "mapsToDiscreteAction": "steer_to_async_digital",
+          "description": "Continuous cross-modality steering force shifting between high-wait voice and visual/asynchronous digital lanes"
+        },
+        {
+          "index": 4,
+          "id": "human_advocate_blend",
+          "mapsToDiscreteAction": "escalate_warm_human_advocate",
+          "description": "Continuous warm human-in-the-loop elevation gain triggered by positive Lyapunov divergence, spectral loop energy, or compliance ceiling"
+        },
+        {
+          "index": 5,
+          "id": "outreach_damping_factor",
+          "mapsToDiscreteAction": "suppress_outreach_and_close",
+          "description": "Continuous suppression and cooldown attenuation damping outbound nudges and closing already-resolved trajectories"
+        }
+      ]
+    }
+  },
+  "a2aContinuousAgents": [
+    {
+      "id": "cai_concierge",
+      "name": "Frontline Conversational AI Concierge",
+      "role": "supervisor_and_frontline",
+      "authorityRadius": 0.62,
+      "latencyHazard": 0.08,
+      "baseLoad": 0.22,
+      "capabilityVector16D": [0.92, 0.45, 0.78, 0.25, 0.55, 0.25, 0.96, 0.30, 0.35, 0.30, 0.15, 0.70, 0.75, 0.20, 0.15, 0.90]
+    },
+    {
+      "id": "billing_specialist_agent",
+      "name": "Autonomous Billing & Ledger Dispute Specialist",
+      "role": "domain_specialist",
+      "authorityRadius": 0.78,
+      "latencyHazard": 0.14,
+      "baseLoad": 0.31,
+      "capabilityVector16D": [0.88, 0.58, 0.62, 0.42, 0.72, 0.48, 0.85, 0.65, 0.45, 0.98, 0.28, 0.82, 0.68, 0.32, 0.28, 0.84]
+    },
+    {
+      "id": "tech_diagnostics_agent",
+      "name": "Autonomous Telemetry & API Diagnostics Specialist",
+      "role": "domain_specialist",
+      "authorityRadius": 0.74,
+      "latencyHazard": 0.19,
+      "baseLoad": 0.28,
+      "capabilityVector16D": [0.86, 0.64, 0.60, 0.45, 0.68, 0.42, 0.82, 0.40, 0.98, 0.20, 0.22, 0.78, 0.72, 0.38, 0.34, 0.82]
+    },
+    {
+      "id": "fraud_trust_agent",
+      "name": "Zero-Trust Fraud, Biometric & ATO Security Agent",
+      "role": "domain_specialist",
+      "authorityRadius": 0.92,
+      "latencyHazard": 0.12,
+      "baseLoad": 0.19,
+      "capabilityVector16D": [0.90, 0.88, 0.48, 0.72, 0.80, 0.55, 0.78, 0.95, 0.65, 0.60, 0.99, 0.96, 0.82, 0.25, 0.30, 0.80]
+    },
+    {
+      "id": "retention_negotiator_agent",
+      "name": "High-LTV Churn Save & Contract Renewal Specialist",
+      "role": "domain_specialist",
+      "authorityRadius": 0.84,
+      "latencyHazard": 0.16,
+      "baseLoad": 0.26,
+      "capabilityVector16D": [0.85, 0.70, 0.55, 0.58, 0.96, 0.95, 0.76, 0.58, 0.40, 0.82, 0.20, 0.80, 0.78, 0.35, 0.32, 0.83]
+    },
+    {
+      "id": "context_hydration_fabric_agent",
+      "name": "Omnichannel Context Re-Hydration & SIP Bridge Agent",
+      "role": "continuity_specialist",
+      "authorityRadius": 0.80,
+      "latencyHazard": 0.06,
+      "baseLoad": 0.18,
+      "capabilityVector16D": [0.78, 0.68, 0.52, 0.60, 0.70, 0.52, 0.84, 0.55, 0.62, 0.48, 0.35, 0.92, 0.88, 0.65, 0.88, 0.86]
+    },
+    {
+      "id": "async_modality_shifter_agent",
+      "name": "Wait-Aware Visual & Async Messaging Shifter Agent",
+      "role": "modality_specialist",
+      "authorityRadius": 0.68,
+      "latencyHazard": 0.09,
+      "baseLoad": 0.20,
+      "capabilityVector16D": [0.84, 0.52, 0.66, 0.38, 0.58, 0.36, 0.91, 0.35, 0.52, 0.42, 0.18, 0.74, 0.42, 0.86, 0.55, 0.85]
+    },
+    {
+      "id": "order_logistics_fulfillment_agent",
+      "name": "Supply-Chain, Carrier & Order Replacement Specialist",
+      "role": "domain_specialist",
+      "authorityRadius": 0.76,
+      "latencyHazard": 0.15,
+      "baseLoad": 0.29,
+      "capabilityVector16D": [0.89, 0.66, 0.64, 0.44, 0.65, 0.46, 0.88, 0.42, 0.55, 0.62, 0.24, 0.76, 0.64, 0.42, 0.30, 0.87]
+    },
+    {
+      "id": "critic_policy_verifier_agent",
+      "name": "Constitutional Policy Critic & Compliance Verifier",
+      "role": "critic_guardrail",
+      "authorityRadius": 0.95,
+      "latencyHazard": 0.11,
+      "baseLoad": 0.17,
+      "capabilityVector16D": [0.91, 0.74, 0.58, 0.52, 0.78, 0.50, 0.72, 0.98, 0.70, 0.80, 0.85, 0.94, 0.70, 0.30, 0.26, 0.79]
+    },
+    {
+      "id": "outreach_suppression_governor",
+      "name": "Proactive Fatigue & Cooldown Suppression Governor",
+      "role": "governance_specialist",
+      "authorityRadius": 0.88,
+      "latencyHazard": 0.05,
+      "baseLoad": 0.12,
+      "capabilityVector16D": [0.94, 0.25, 0.74, 0.22, 0.62, 0.30, 0.95, 0.72, 0.30, 0.45, 0.15, 0.75, 0.35, 0.18, 0.20, 0.94]
+    },
+    {
+      "id": "tier2_human_specialist_copilot",
+      "name": "Tier-2 Hybrid Human Specialist + AI Co-Pilot Pod",
+      "role": "human_hybrid",
+      "authorityRadius": 0.96,
+      "latencyHazard": 0.34,
+      "baseLoad": 0.44,
+      "capabilityVector16D": [0.76, 0.82, 0.38, 0.78, 0.86, 0.82, 0.35, 0.88, 0.88, 0.86, 0.76, 0.88, 0.92, 0.72, 0.76, 0.78]
+    },
+    {
+      "id": "senior_human_advocate",
+      "name": "Senior Executive & Life-Safety Human Advocate",
+      "role": "human_advocate",
+      "authorityRadius": 1.0,
+      "latencyHazard": 0.42,
+      "baseLoad": 0.38,
+      "capabilityVector16D": [0.72, 0.96, 0.22, 0.94, 0.95, 0.94, 0.18, 0.99, 0.86, 0.92, 0.84, 0.92, 0.98, 0.84, 0.90, 0.82]
+    }
+  ],
+  "goldenAttractorTubes": [
+    {
+      "blueprintId": "bp_billing_dispute_golden_v4",
+      "name": "Autonomous Billing Dispute & Ledger Credit Attractor",
+      "domain": "billing",
+      "slaBudgetSeconds": 180,
+      "momentOfTruthTau": 0.65,
+      "knots": [
+        {
+          "tau": 0.0,
+          "stageName": "app_bill_shock_entry",
+          "mu": [0.72, 0.58, 0.42, 0.56, 0.68, 0.48, 0.82, 0.52, 0.35, 0.88, 0.18, 0.86, 0.72, 0.12, 0.22, 0.55],
+          "sigmaDiag": [0.12, 0.15, 0.16, 0.16, 0.18, 0.15, 0.14, 0.14, 0.14, 0.12, 0.10, 0.12, 0.14, 0.10, 0.12, 0.14]
+        },
+        {
+          "tau": 0.5,
+          "stageName": "a2a_ledger_variance_explanation",
+          "mu": [0.88, 0.52, 0.62, 0.40, 0.68, 0.36, 0.88, 0.58, 0.42, 0.84, 0.15, 0.90, 0.74, 0.24, 0.18, 0.78],
+          "sigmaDiag": [0.10, 0.14, 0.14, 0.14, 0.18, 0.14, 0.12, 0.12, 0.12, 0.12, 0.10, 0.10, 0.12, 0.12, 0.10, 0.12]
+        },
+        {
+          "tau": 1.0,
+          "stageName": "instant_credit_and_ledger_closure",
+          "mu": [0.96, 0.24, 0.84, 0.20, 0.70, 0.18, 0.94, 0.48, 0.30, 0.60, 0.12, 0.92, 0.74, 0.28, 0.12, 0.96],
+          "sigmaDiag": [0.08, 0.12, 0.12, 0.12, 0.18, 0.12, 0.10, 0.12, 0.12, 0.14, 0.08, 0.10, 0.12, 0.14, 0.10, 0.08]
+        }
+      ]
+    },
+    {
+      "blueprintId": "bp_card_replace_golden_v3",
+      "name": "Zero-Trust Fraud Lock & Expedited Card Replacement Attractor",
+      "domain": "fraud_and_cards",
+      "slaBudgetSeconds": 150,
+      "momentOfTruthTau": 0.55,
+      "knots": [
+        {
+          "tau": 0.0,
+          "stageName": "travel_decline_anomaly_entry",
+          "mu": [0.76, 0.84, 0.38, 0.68, 0.78, 0.52, 0.76, 0.86, 0.48, 0.54, 0.82, 0.84, 0.78, 0.14, 0.24, 0.52],
+          "sigmaDiag": [0.12, 0.14, 0.16, 0.16, 0.16, 0.15, 0.14, 0.12, 0.14, 0.14, 0.14, 0.14, 0.14, 0.10, 0.12, 0.14]
+        },
+        {
+          "tau": 0.5,
+          "stageName": "biometric_a2a_step_up_verification",
+          "mu": [0.90, 0.76, 0.58, 0.48, 0.78, 0.38, 0.84, 0.90, 0.52, 0.50, 0.74, 0.96, 0.82, 0.25, 0.20, 0.78],
+          "sigmaDiag": [0.10, 0.12, 0.14, 0.14, 0.16, 0.14, 0.12, 0.10, 0.12, 0.12, 0.12, 0.08, 0.12, 0.12, 0.10, 0.12]
+        },
+        {
+          "tau": 1.0,
+          "stageName": "digital_wallet_push_and_courier_dispatch",
+          "mu": [0.96, 0.35, 0.86, 0.22, 0.80, 0.16, 0.92, 0.82, 0.40, 0.42, 0.35, 0.96, 0.80, 0.30, 0.14, 0.96],
+          "sigmaDiag": [0.08, 0.12, 0.12, 0.12, 0.16, 0.12, 0.10, 0.10, 0.12, 0.12, 0.12, 0.08, 0.12, 0.12, 0.10, 0.08]
+        }
+      ]
+    },
+    {
+      "blueprintId": "bp_enterprise_api_onboarding_v2",
+      "name": "Enterprise Webhook & Technical Telemetry Triage Attractor",
+      "domain": "technical_support",
+      "slaBudgetSeconds": 300,
+      "momentOfTruthTau": 0.60,
+      "knots": [
+        {
+          "tau": 0.0,
+          "stageName": "docs_portal_error_telemetry_entry",
+          "mu": [0.68, 0.62, 0.54, 0.48, 0.82, 0.44, 0.78, 0.42, 0.92, 0.24, 0.18, 0.82, 0.72, 0.15, 0.28, 0.50],
+          "sigmaDiag": [0.14, 0.14, 0.14, 0.14, 0.15, 0.14, 0.14, 0.12, 0.10, 0.12, 0.10, 0.12, 0.14, 0.10, 0.14, 0.14]
+        },
+        {
+          "tau": 0.5,
+          "stageName": "a2a_log_correlation_and_hmac_diff",
+          "mu": [0.86, 0.58, 0.68, 0.36, 0.82, 0.32, 0.86, 0.44, 0.90, 0.22, 0.16, 0.86, 0.76, 0.28, 0.22, 0.76],
+          "sigmaDiag": [0.10, 0.12, 0.12, 0.12, 0.15, 0.12, 0.12, 0.12, 0.10, 0.12, 0.10, 0.10, 0.12, 0.12, 0.12, 0.12]
+        },
+        {
+          "tau": 1.0,
+          "stageName": "verified_200_ok_webhook_handshake",
+          "mu": [0.95, 0.30, 0.85, 0.20, 0.84, 0.15, 0.92, 0.40, 0.78, 0.20, 0.14, 0.88, 0.76, 0.32, 0.15, 0.95],
+          "sigmaDiag": [0.08, 0.12, 0.12, 0.12, 0.15, 0.10, 0.10, 0.12, 0.12, 0.10, 0.08, 0.10, 0.12, 0.12, 0.10, 0.08]
+        }
+      ]
+    },
+    {
+      "blueprintId": "bp_vip_renewal_retention_v5",
+      "name": "High-LTV Churn Prevention & Dynamic Retention Attractor",
+      "domain": "retention",
+      "slaBudgetSeconds": 240,
+      "momentOfTruthTau": 0.70,
+      "knots": [
+        {
+          "tau": 0.0,
+          "stageName": "pricing_comparison_churn_signal_entry",
+          "mu": [0.74, 0.66, 0.44, 0.54, 0.92, 0.86, 0.74, 0.54, 0.42, 0.78, 0.16, 0.82, 0.74, 0.16, 0.26, 0.48],
+          "sigmaDiag": [0.12, 0.14, 0.15, 0.15, 0.10, 0.12, 0.14, 0.14, 0.14, 0.14, 0.10, 0.12, 0.14, 0.10, 0.12, 0.14]
+        },
+        {
+          "tau": 0.5,
+          "stageName": "a2a_margin_model_and_loyalty_bundle_synthesis",
+          "mu": [0.88, 0.60, 0.64, 0.42, 0.92, 0.62, 0.82, 0.58, 0.45, 0.80, 0.15, 0.88, 0.78, 0.28, 0.20, 0.76],
+          "sigmaDiag": [0.10, 0.12, 0.14, 0.14, 0.10, 0.14, 0.12, 0.12, 0.12, 0.12, 0.10, 0.10, 0.12, 0.12, 0.10, 0.12]
+        },
+        {
+          "tau": 1.0,
+          "stageName": "committed_renewal_acceptance",
+          "mu": [0.95, 0.28, 0.86, 0.22, 0.94, 0.22, 0.90, 0.52, 0.36, 0.68, 0.12, 0.90, 0.78, 0.32, 0.14, 0.95],
+          "sigmaDiag": [0.08, 0.12, 0.12, 0.12, 0.10, 0.12, 0.10, 0.12, 0.12, 0.12, 0.08, 0.10, 0.12, 0.12, 0.10, 0.08]
+        }
+      ]
+    },
+    {
+      "blueprintId": "bp_async_claim_submission_v2",
+      "name": "Multimodal Voice-to-Visual Claim & Logistics Fulfillment Attractor",
+      "domain": "claims_and_logistics",
+      "slaBudgetSeconds": 210,
+      "momentOfTruthTau": 0.50,
+      "knots": [
+        {
+          "tau": 0.0,
+          "stageName": "inbound_claim_arrival_and_slot_capture",
+          "mu": [0.80, 0.54, 0.58, 0.42, 0.60, 0.34, 0.88, 0.44, 0.48, 0.56, 0.20, 0.76, 0.68, 0.18, 0.22, 0.58],
+          "sigmaDiag": [0.12, 0.14, 0.14, 0.14, 0.16, 0.14, 0.12, 0.12, 0.14, 0.14, 0.10, 0.14, 0.16, 0.12, 0.12, 0.14]
+        },
+        {
+          "tau": 0.5,
+          "stageName": "visual_card_photo_and_ai_damage_appraisal",
+          "mu": [0.90, 0.46, 0.70, 0.32, 0.60, 0.26, 0.92, 0.46, 0.52, 0.58, 0.18, 0.86, 0.54, 0.26, 0.18, 0.82],
+          "sigmaDiag": [0.10, 0.12, 0.12, 0.12, 0.16, 0.12, 0.10, 0.12, 0.12, 0.12, 0.10, 0.12, 0.14, 0.12, 0.10, 0.12]
+        },
+        {
+          "tau": 1.0,
+          "stageName": "instant_payout_or_replacement_dispatched",
+          "mu": [0.96, 0.22, 0.86, 0.18, 0.62, 0.16, 0.95, 0.42, 0.38, 0.48, 0.14, 0.88, 0.52, 0.28, 0.12, 0.96],
+          "sigmaDiag": [0.08, 0.12, 0.12, 0.12, 0.16, 0.10, 0.08, 0.12, 0.12, 0.12, 0.08, 0.10, 0.14, 0.12, 0.10, 0.08]
+        }
+      ]
+    },
+    {
+      "blueprintId": "bp_critical_outage_life_safety_v4",
+      "name": "Life-Safety Medical & Critical Outage Priority Recovery Attractor",
+      "domain": "critical_resilience",
+      "slaBudgetSeconds": 90,
+      "momentOfTruthTau": 0.35,
+      "knots": [
+        {
+          "tau": 0.0,
+          "stageName": "outage_telemetry_and_vulnerability_detection",
+          "mu": [0.84, 0.92, 0.32, 0.82, 0.76, 0.64, 0.42, 0.96, 0.78, 0.38, 0.20, 0.84, 0.88, 0.22, 0.32, 0.48],
+          "sigmaDiag": [0.12, 0.10, 0.16, 0.14, 0.16, 0.14, 0.16, 0.08, 0.14, 0.14, 0.10, 0.12, 0.12, 0.12, 0.14, 0.14]
+        },
+        {
+          "tau": 0.5,
+          "stageName": "priority_advocate_and_dispatch_coordination",
+          "mu": [0.90, 0.86, 0.56, 0.60, 0.76, 0.44, 0.48, 0.96, 0.74, 0.36, 0.16, 0.92, 0.94, 0.30, 0.22, 0.78],
+          "sigmaDiag": [0.10, 0.10, 0.14, 0.14, 0.16, 0.12, 0.14, 0.08, 0.12, 0.12, 0.10, 0.10, 0.10, 0.12, 0.12, 0.12]
+        },
+        {
+          "tau": 1.0,
+          "stageName": "verified_backup_power_and_restoration_lock",
+          "mu": [0.96, 0.48, 0.82, 0.30, 0.78, 0.20, 0.62, 0.92, 0.60, 0.30, 0.12, 0.94, 0.92, 0.34, 0.16, 0.95],
+          "sigmaDiag": [0.08, 0.12, 0.12, 0.12, 0.16, 0.10, 0.14, 0.08, 0.12, 0.12, 0.08, 0.10, 0.10, 0.12, 0.10, 0.08]
+        }
+      ]
+    }
+  ]
+}

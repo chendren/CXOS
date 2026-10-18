@@ -185,7 +185,16 @@ function uniqIds(items, file, label) {
 
 /* ---------- main ---------- */
 
-const summary = { taxonomies: 0, terms: 0, facetNodes: 0, metricLinks: 0, failureModes: 0, integrations: 0 };
+const summary = {
+  taxonomies: 0,
+  terms: 0,
+  facetNodes: 0,
+  metricLinks: 0,
+  failureModes: 0,
+  integrations: 0,
+  continuousModels: 0,
+  stateVariables: 0,
+};
 
 // 1. Root ontology must parse and be shaped correctly
 const rootPath = join(ONTOLOGY_DIR, 'cx-ontology.json');
@@ -277,6 +286,15 @@ for (const entry of registry) {
     }
   }
 
+  if (tax.continuousDynamics) {
+    summary.continuousModels += 1;
+    const sv = tax.continuousDynamics.stateVariables ?? [];
+    const de = tax.continuousDynamics.differentialEquations ?? [];
+    summary.stateVariables += sv.length;
+    uniqIds(sv, file, 'continuousDynamics.stateVariables');
+    uniqIds(de, file, 'continuousDynamics.differentialEquations');
+  }
+
   summary.taxonomies += 1;
   summary.terms += (tax.glossary ?? []).length;
   summary.failureModes += (tax.failureModes ?? []).length;
@@ -323,7 +341,8 @@ if (errors.length > 0) {
 console.log(`\nCXOS ontology valid:
   ${summary.taxonomies} taxonomies, ${summary.terms} glossary terms,
   ${summary.facetNodes} facet nodes, ${summary.metricLinks} KPI-linked metrics,
-  ${summary.failureModes} failure modes, ${summary.integrations} cross-taxonomy integrations.
+  ${summary.failureModes} failure modes, ${summary.integrations} cross-taxonomy integrations,
+  ${summary.continuousModels} continuous dynamical models (${summary.stateVariables} state variables).
 Engine alignment: ${kpiIds.length} KPI ids, ${ontology.engineAlignment.actionTypes?.length ?? 0} action types, ${ontology.engineAlignment.channels?.length ?? 0} channels.
 Closed world: registry = filesystem; all mapsToKpi / seeAlso / integration references resolve.
 `);

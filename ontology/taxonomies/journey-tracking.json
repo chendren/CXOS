@@ -447,5 +447,80 @@
         "Silent drop-off cohorts and high-friction trace segments exported to trigger targeted recovery outreach"
       ]
     }
-  ]
+  ],
+  "continuousDynamics": {
+    "stateSpaceDimension": 16,
+    "manifoldCoordinates": [
+      "empirical_progress_coordinate",
+      "instantaneous_progress_velocity",
+      "observed_sentiment_valence",
+      "sentiment_degradation_velocity",
+      "mahalanobis_conformance_drift",
+      "cumulative_customer_effort",
+      "loop_oscillation_intensity",
+      "abandonment_hazard_rate"
+    ],
+    "stateVariables": [
+      {
+        "id": "empirical_journey_state_vector",
+        "symbol": "z(t)",
+        "domain": "R^16",
+        "unit": "manifold_vector",
+        "description": "Real-time 16-dimensional empirical state vector reconstructed via streaming Kalman-Bucy filtering over raw omnichannel clickstreams, voice acoustics, ACD queues, and A2A spans"
+      },
+      {
+        "id": "mahalanobis_conformance_drift",
+        "symbol": "D_M(z(t))",
+        "domain": "R_+",
+        "unit": "std_deviations",
+        "description": "Instantaneous Riemannian Mahalanobis distance between the live empirical trajectory z(t) and the Plane 1 Golden Attractor Tube (mu_star(tau_t), Sigma_star(tau_t))"
+      },
+      {
+        "id": "local_lyapunov_divergence_exponent",
+        "symbol": "lambda_Lyap(t)",
+        "domain": "R^1",
+        "unit": "per_second",
+        "description": "Continuous local Lyapunov exponent measuring whether the customer trajectory is converging toward resolution (lambda_Lyap < 0) or diverging into chaotic ping-pong and abandonment (lambda_Lyap > 0)"
+      },
+      {
+        "id": "churn_abandonment_hazard_intensity",
+        "symbol": "h_drop(t)",
+        "domain": "R_+",
+        "unit": "hazard_per_sec",
+        "description": "Instantaneous Cox proportional hazard intensity of silent mid-journey drop-off or 7-day repeat relapse conditioned on accumulated drift, wait time, and sentiment slope"
+      },
+      {
+        "id": "cohort_wasserstein_divergence",
+        "symbol": "W_2(rho_emp, rho_star)",
+        "domain": "R_+",
+        "unit": "transport_cost",
+        "description": "Continuous 2-Wasserstein optimal transport distance between the empirical population density rho_emp(z, t) and the normative Plane 1 blueprint density rho_star(z, t)"
+      }
+    ],
+    "differentialEquations": [
+      {
+        "id": "empirical_langevin_trajectory_sde",
+        "name": "Empirical Journey Trajectory Ito-Langevin SDE",
+        "formula": "dz(t) = f_emp(z(t), u(t)) * dt + Sigma_noise(z(t)) * dW(t) + J_jump * dN_event(t)",
+        "interpretation": "Models the live customer journey as a continuous jump-diffusion process combining deterministic stage progression f_emp, continuous sentiment and wait fluctuations dW(t), and discrete channel or transfer impulses dN_event(t)"
+      },
+      {
+        "id": "instantaneous_mahalanobis_drift_functional",
+        "name": "Continuous Golden-Tube Mahalanobis Conformance Metric",
+        "formula": "D_M(z(t), tau_t) = sqrt( (z(t) - mu_star(tau_t))^T * Sigma_star(tau_t)^(-1) * (z(t) - mu_star(tau_t)) )",
+        "interpretation": "Replaces brittle discrete token-replay checks with a smooth, differentiable conformance drift scalar evaluated at every streaming event arrival"
+      },
+      {
+        "id": "fokker_planck_cohort_density_pde",
+        "name": "Population Journey Flow Fokker-Planck Conservation PDE",
+        "formula": "d_t rho(z, t) = -div( rho(z, t) * v_flow(z, t) ) + 0.5 * Tr( D_diff * Hessian(rho(z, t)) ) - h_drop(z, t) * rho(z, t)",
+        "interpretation": "Tracks millions of concurrent journeys as a continuous Eulerian probability fluid rho(z, t), directly revealing stage bottlenecks (high density, low velocity v_flow) and silent drop-off sinks h_drop(z, t)"
+      }
+    ],
+    "scaleInvariants": [
+      "O(1) constant-memory recursive state estimation per journey (fixed 16-float state vector + sufficient statistics) scaling linearly to 5,000,000+ streaming events per second",
+      "Time-scale invariance across millisecond A2A spans, minute-scale voice queues, and multi-day asynchronous messaging pauses via continuous-time hazard integration",
+      "Fokker-Planck density aggregation eliminates O(N^2) pairwise trace alignment, computing cohort-wide conformance and bottleneck fields in single-pass streaming reductions"
+    ]
+  }
 }
