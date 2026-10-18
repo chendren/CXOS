@@ -29,6 +29,8 @@ const ontologyPath = resolve(argOf("--ontology") ?? join(ROOT, "ontology", "cx-o
 const packPath = resolve(argOf("--pack") ?? join(ROOT, "ontology", "cxos-systems-pack.json"));
 const calibrationPath = resolve(argOf("--calibration") ?? join(ROOT, ".tmp", "qa-triage", "calibration.json"));
 const historyPath = resolve(argOf("--history") ?? join(ROOT, ".tmp", "qa-triage", "history.jsonl"));
+const journeyTracesPath = resolve(argOf("--journey-traces") ?? join(ROOT, "fixtures", "journey-a2a-traces.sample.json"));
+const journeyHistoryPath = resolve(argOf("--journey-history") ?? join(ROOT, ".tmp", "qa-triage", "journey-a2a-history.jsonl"));
 
 const esc = (s) =>
   String(s ?? "")
@@ -82,6 +84,28 @@ for (const r of triageRows) {
 const uniqueTriage = [...byContact.values()].sort(
   (a, b) => (a.priority ?? 99) - (b.priority ?? 99) || (b.compliance_noul ?? 0) - (a.compliance_noul ?? 0),
 );
+
+const journeyFixtures = existsSync(journeyTracesPath)
+  ? JSON.parse(readFileSync(journeyTracesPath, "utf8"))
+  : [];
+const journeyDecisionsById = new Map();
+if (existsSync(journeyHistoryPath)) {
+  for (const line of readFileSync(journeyHistoryPath, "utf8").split("\n")) {
+    const trimmed = line.trim();
+    if (!trimmed) continue;
+    try {
+      const parsed = JSON.parse(trimmed);
+      const jid = parsed.journey_id ?? parsed.journeyId;
+      if (jid) journeyDecisionsById.set(jid, parsed);
+    } catch {
+      // skip malformed line
+    }
+  }
+}
+const journeyTriadTraces = journeyFixtures.map((jf) => ({
+  ...jf,
+  decision: journeyDecisionsById.get(jf.journeyId) ?? null,
+}));
 
 function countFacetNodes(node) {
   if (!node) return 0;
@@ -284,6 +308,7 @@ const clientPayload = {
   kpiRollups,
   calibration,
   triage: uniqueTriage,
+  journeyTriadTraces,
   packSummary: pack
     ? {
         version: pack.version,
@@ -1015,10 +1040,19 @@ const html = `<!DOCTYPE html>
     <div class="kpi-matrix-grid" id="kpi-matrix-container"></div>
   </section>
 
+  <!-- 4.5 Three-Plane Customer Journey Triad, Omnichannel Context & A2A Architecture -->
+  <section class="section-panel" id="section-journey-triad">
+    <h2>
+      <span>4. Three-Plane Customer Journey Triad, Omnichannel Context &amp; A2A Orchestration</span>
+      <code>CJM (Hoped) &rarr; CJT (Tracked) &rarr; JO + OCX + A2A (Orchestrated)</code>
+    </h2>
+    <div id="journey-triad-container"></div>
+  </section>
+
   <!-- 5. Strands 2B Decider Calibration & Triage Inspector -->
   <section class="section-panel" id="section-calibration">
     <h2>
-      <span>4. Strands 2B Decider Calibration &amp; QA Triage Inspector</span>
+      <span>5. Strands 2B Decider Calibration &amp; QA Triage Inspector</span>
       <code id="decider-model-label">${esc(calibration?.model ?? "StrandsAgents/strands-decider-2B-hobson-v21")}</code>
     </h2>
     <div id="calibration-container"></div>
@@ -1559,7 +1593,116 @@ const html = `<!DOCTYPE html>
       container.innerHTML = html;
     }
 
-    // 4. Strands 2B Decider Calibration & Triage Inspector
+    // 4.5 Three-Plane Customer Journey Triad, Omnichannel Context & A2A Inspector
+    function renderJourneyTriad() {
+      var container = document.getElementById("journey-triad-container");
+      if (!container) return;
+
+      var triad = (DATA.ontology.core && DATA.ontology.core.journeyTriad) || null;
+      var envSpec = (DATA.ontology.core && DATA.ontology.core.contextEnvelopeSpec) || null;
+      var traces = DATA.journeyTriadTraces || [];
+
+      var planeColors = ["#38bdf8", "#f5a524", "#3dd68c"];
+      var planesHtml = "";
+      if (triad && triad.planes) {
+        planesHtml = triad.planes.map(function (p, idx) {
+          var col = planeColors[idx % planeColors.length];
+          var artifactsHtml = (p.artifacts || []).map(function (a) {
+            return '<span class="tag-chip">' + escHtml(a) + "</span>";
+          }).join(" ");
+          return (
+            '<div class="sub-box" style="border-top: 3px solid ' + col + ';">' +
+              '<h4><span>' + escHtml(p.name) + '</span><code>' + escHtml(p.taxonomyId) + '</code></h4>' +
+              '<div style="font-size:0.9rem;font-weight:600;color:' + col + ';margin-bottom:6px;">' + escHtml(p.question) + '</div>' +
+              '<div class="muted" style="font-size:0.78rem;margin-bottom:8px;">Temporal focus: <code>' + escHtml(p.temporalFocus) + '</code></div>' +
+              '<div style="display:flex;flex-wrap:wrap;gap:5px;">' + artifactsHtml + '</div>' +
+            '</div>'
+          );
+        }).join("");
+      }
+
+      var envFieldsHtml = "";
+      if (envSpec && envSpec.requiredFields) {
+        envFieldsHtml = envSpec.requiredFields.map(function (f) {
+          return '<span class="tag-chip" style="padding:3px 8px;font-family:ui-monospace,monospace;">' + escHtml(f) + "</span>";
+        }).join(" ");
+      }
+
+      var tracesRowsHtml = traces.map(function (tr) {
+        var bp = tr.hopedBlueprint || {};
+        var act = tr.actualTrace || {};
+        var env = tr.contextEnvelope || {};
+        var dec = tr.decision || {};
+
+        var plannedStages = (bp.goldenPathStages || []).join(" &rarr; ");
+        var actualStages = (act.observedStages || []).join(" &rarr; ");
+        var channels = (act.channelsTouched || []).join(" &rarr; ");
+        var a2aHops = (env.a2aChain || []).map(function (h) {
+          return escHtml(h.from) + "&rarr;" + escHtml(h.to) + " (" + escHtml(h.status) + ")";
+        }).join("; ");
+
+        var driftLabel = dec.drift_severity || dec.conformance_drift || "pending";
+        var driftCls = driftLabel === "critical_path_break" ? "urg-high" : driftLabel === "minor_deviation" ? "urg-med" : "ok";
+        var hydrateNoul = dec.context_hydration_noul != null ? Number(dec.context_hydration_noul).toFixed(3) : "—";
+        var orchAction = dec.orchestration_action || "—";
+        var targetOwner = dec.target_a2a_owner || "—";
+        var confVal = dec.action_confidence != null ? Number(dec.action_confidence).toFixed(3) : "—";
+
+        return (
+          "<tr>" +
+            "<td>" +
+              "<strong>" + escHtml(tr.journeyId) + "</strong><br/>" +
+              '<span class="tag-chip">' + escHtml(tr.customerTier) + "</span>" +
+            "</td>" +
+            "<td>" +
+              "<code>" + escHtml(bp.blueprintId) + "</code><br/>" +
+              '<div class="muted" style="font-size:0.77rem;margin-top:3px;"><strong>Golden Path:</strong> ' + plannedStages + "</div>" +
+              '<div class="muted" style="font-size:0.76rem;"><strong>MoT:</strong> ' + escHtml(bp.momentOfTruth) + " (SLA " + escHtml(bp.slaBudgetSeconds) + "s)</div>" +
+            "</td>" +
+            "<td>" +
+              '<div style="font-size:0.78rem;"><strong>Observed:</strong> ' + actualStages + "</div>" +
+              '<div class="muted" style="font-size:0.76rem;margin-top:2px;"><strong>Channels:</strong> <code>' + channels + "</code> &middot; Loops: <b>" + Number(act.loopCount || 0) + "</b> &middot; Elapsed: " + Number(act.elapsedSeconds || 0) + "s</div>" +
+              '<div class="muted" style="font-size:0.76rem;margin-top:2px;">' + escHtml(act.driftSummary) + "</div>" +
+            "</td>" +
+            "<td>" +
+              '<div>Auth Carryover: <b>' + (env.authCarriedOver ? '<span class="ok">YES</span>' : '<span class="urg-high">NO</span>') + '</b> &middot; Slots: <b>' + (env.extractedSlotsPreserved ? '<span class="ok">OK</span>' : '<span class="urg-high">DROPPED</span>') + "</b></div>" +
+              '<div class="muted" style="font-size:0.75rem;margin-top:2px;"><strong>A2A Chain:</strong> ' + (a2aHops || "none") + "</div>" +
+              '<div style="font-size:0.76rem;margin-top:2px;">Hydrate Noul: <code>' + hydrateNoul + "</code></div>" +
+            "</td>" +
+            "<td>" +
+              '<div class="' + driftCls + '">' + escHtml(driftLabel) + "</div>" +
+              '<div style="margin-top:3px;">Action: <code>' + escHtml(orchAction) + "</code></div>" +
+              '<div style="margin-top:2px;">Owner: <code>' + escHtml(targetOwner) + "</code> (conf <code>" + confVal + "</code>)</div>" +
+            "</td>" +
+          "</tr>"
+        );
+      }).join("");
+
+      container.innerHTML =
+        '<div class="tax-cols" style="margin-bottom:16px;">' +
+          planesHtml +
+        '</div>' +
+        '<div class="sub-box" style="margin-bottom:16px;">' +
+          '<h4><span>Canonical Omnichannel &amp; A2A Context Envelope (<code>ocx</code> + <code>a2a_protocol</code>)</span><span>' + ((envSpec && envSpec.requiredFields && envSpec.requiredFields.length) || 0) + ' Required Envelope Fields</span></h4>' +
+          '<p class="muted" style="font-size:0.82rem;margin:0 0 8px;">' + escHtml((envSpec && envSpec.description) || "") + '</p>' +
+          '<div style="display:flex;flex-wrap:wrap;gap:6px;">' + envFieldsHtml + '</div>' +
+        '</div>' +
+        '<div class="sub-box">' +
+          '<h4><span>Live 3-Plane Journey &amp; A2A Decision Matrix (' + traces.length + ' Multi-Step Traces Evaluated by Strands 2B)</span><span>Plane 1 (Hoped) vs. Plane 2 (Actual) vs. Plane 3 (Orchestrated)</span></h4>' +
+          '<table>' +
+            '<thead>' +
+              '<tr>' +
+                '<th>Journey</th>' +
+                '<th>Plane 1: Hoped Blueprint (CJM)</th>' +
+                '<th>Plane 2: Tracked Reality &amp; Drift (CJT)</th>' +
+                '<th>Omnichannel &amp; A2A Envelope (OCX/A2A)</th>' +
+                '<th>Plane 3: Strands 2B Orchestration (JO)</th>' +
+              '</tr>' +
+            '</thead>' +
+            '<tbody>' + (tracesRowsHtml || '<tr><td colspan="5">No journey traces loaded</td></tr>') + '</tbody>' +
+          '</table>' +
+        '</div>';
+    }
     function renderCalibration() {
       var container = document.getElementById("calibration-container");
       var cal = DATA.calibration;
@@ -1708,6 +1851,7 @@ const html = `<!DOCTYPE html>
     updateTopologyView();
     renderDeepDive();
     renderKpiMatrix();
+    renderJourneyTriad();
     renderCalibration();
   })();
   </script>

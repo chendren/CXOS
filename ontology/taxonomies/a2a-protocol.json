@@ -1,0 +1,578 @@
+{
+  "kind": "cxTaxonomy",
+  "id": "a2a_protocol",
+  "acronym": "A2A",
+  "name": "Agent-to-Agent (A2A) & Multi-Agent Facets",
+  "category": "self_service",
+  "version": "2026.10.0",
+  "description": "Standardized Agent-to-Agent (A2A) interoperability and multi-agent orchestration framework governing AI-to-AI and AI-to-Human coordination facets, Agent Cards and semantic capability discovery, structured task delegation lifecycles (submitted, working, input_required, completed, failed, escalated), multi-agent topologies (supervisor-router, specialist swarm, critic-verifier guard, human advocate escalation), scoped shared memory and cryptographic provenance chains, confidence-band gating, and semantic safety handshakes.",
+  "roleInCenter": "Multi-agent coordination protocol: enables frontline conversational agents, domain-specialist AI agents, policy verifier agents, and human advocates to discover capabilities, delegate sub-tasks safely, verify outputs, and escalate with auditable provenance.",
+  "glossary": [
+    {
+      "id": "a2a_agent_card",
+      "term": "A2A Agent Card & Capability Manifest",
+      "definition": "Machine-readable JSON metadata manifest published by an autonomous agent declaring its unique identifier, natural-language skill descriptions, supported input and output schemas, authentication requirements, tool authority scopes, latency SLAs, and cost tiers",
+      "tags": ["a2a", "discovery", "core", "governance"],
+      "aliases": ["Agent Card", "Agent Capability Manifest"],
+      "seeAlso": ["cai", "km", "omnichannel_context"]
+    },
+    {
+      "id": "a2a_task_lifecycle",
+      "term": "A2A Task Delegation Lifecycle",
+      "definition": "Deterministic state machine governing an inter-agent delegated task across canonical states (submitted, working, input_required, completed, failed, canceled, and escalated) with idempotent state transition events and streaming artifact emission",
+      "tags": ["a2a", "state", "protocol", "core"],
+      "aliases": ["A2A Task State Machine", "Delegated Task Lifecycle"],
+      "seeAlso": ["cai", "journey_orchestration", "omnichannel_context"]
+    },
+    {
+      "id": "capability_negotiation",
+      "term": "Semantic Capability Discovery & Negotiation",
+      "definition": "Runtime matchmaking handshake in which a client or supervisor agent queries the A2A registry for candidate specialist agents, evaluates their Agent Cards against task constraints, and negotiates schema, budget, and assurance terms before delegation",
+      "tags": ["a2a", "discovery", "routing"],
+      "aliases": ["Agent Capability Matchmaking", "A2A Handshake"],
+      "seeAlso": ["acd", "cai", "a2a_agent_card"]
+    },
+    {
+      "id": "supervisor_orchestrator_agent",
+      "term": "Supervisor Router & Orchestrator Agent",
+      "definition": "Coordinating control-plane agent that decomposes complex, multi-intent customer requests into atomic sub-tasks, routes each sub-task to qualified domain specialist agents, monitors progress, and synthesizes unified responses",
+      "tags": ["topology", "orchestration", "core"],
+      "aliases": ["Orchestrator Agent", "Planner-Router Agent"],
+      "seeAlso": ["cai", "journey_orchestration", "acd"]
+    },
+    {
+      "id": "domain_specialist_agent",
+      "term": "Bounded Domain Specialist Agent",
+      "definition": "Purpose-built autonomous agent scoped to a narrow vertical domain (such as billing dispute adjudication, technical diagnostics, or travel rebooking) with dedicated RAG corpora, fine-tuned reasoning, and least-privilege API tool access",
+      "tags": ["topology", "specialist", "self_service"],
+      "aliases": ["Specialist Sub-Agent", "Vertical Worker Agent"],
+      "seeAlso": ["cai", "km", "crm"]
+    },
+    {
+      "id": "critic_verifier_agent",
+      "term": "Policy Critic & Constitutional Verifier Agent",
+      "definition": "Independent guardrail agent that inspects proposed specialist agent actions, tool payloads, and customer-facing drafts prior to execution to verify factual grounding, regulatory compliance, financial ceiling adherence, and absence of prompt injection",
+      "tags": ["guardrails", "compliance", "topology"],
+      "aliases": ["Verifier Agent", "Constitutional Judge Agent"],
+      "seeAlso": ["qa", "fraud_auth", "cai"]
+    },
+    {
+      "id": "a2a_handoff_envelope",
+      "term": "A2A Delegation & Handoff Envelope",
+      "definition": "Structured inter-agent message payload encapsulating the delegated goal, scoped subset of the Omnichannel Context Envelope, parent task lineage, security delegation token, recursion depth counter, and deadline budget",
+      "tags": ["a2a", "context", "handoff", "core"],
+      "aliases": ["Inter-Agent Task Envelope", "A2A Context Payload"],
+      "seeAlso": ["omnichannel_context", "omnichannel_context_envelope", "desktop_assist"]
+    },
+    {
+      "id": "provenance_and_trace_ledger",
+      "term": "Multi-Agent Provenance & Reasoning Ledger",
+      "definition": "Immutable, append-only audit trail recording every agent invocation, Agent Card version, retrieved knowledge citation, tool call input and output, critic verdict, and confidence score across a multi-agent interaction",
+      "tags": ["governance", "audit", "provenance"],
+      "aliases": ["A2A Trace Ledger", "Reasoning Provenance Chain"],
+      "seeAlso": ["qa", "journey_tracking", "omnichannel_context"]
+    },
+    {
+      "id": "confidence_gated_escalation",
+      "term": "Calibrated Confidence-Gated Escalation",
+      "definition": "Decision policy aligned with engine confidence bands that allows autonomous execution in the high band, requires critic verification or customer confirmation in the medium band, and triggers warm escalation to a human advocate in the low band",
+      "tags": ["decisioning", "guardrails", "escalation"],
+      "aliases": ["Confidence Band Gate", "Uncertainty Escalation Policy"],
+      "seeAlso": ["cai", "acd", "desktop_assist"]
+    },
+    {
+      "id": "shared_episodic_scratchpad",
+      "term": "Scoped Shared Episodic Scratchpad",
+      "definition": "Short-lived, permission-scoped collaborative memory workspace where cooperating agents read and write intermediate findings, resolved slots, and sub-task artifacts without exposing raw cross-domain PII or unverified chain-of-thought noise",
+      "tags": ["memory", "state", "a2a"],
+      "aliases": ["Blackboard Memory", "Multi-Agent Scratchpad"],
+      "seeAlso": ["omnichannel_context", "crm", "cai"]
+    },
+    {
+      "id": "tool_authority_boundary",
+      "term": "Delegated Tool & Scope Authority Boundary",
+      "definition": "Zero-trust authorization envelope restricting a specialist agent to only the specific CRM mutations, refund limits, and external API scopes explicitly delegated by the customer session and parent orchestrator",
+      "tags": ["security", "governance", "compliance"],
+      "aliases": ["Least-Privilege Agent Scope", "On-Behalf-Of Agent Token"],
+      "seeAlso": ["fraud_auth", "crm", "a2a_agent_card"]
+    },
+    {
+      "id": "human_in_the_loop_advocate",
+      "term": "Human-in-the-Loop Escalation Contract",
+      "definition": "Structured AI-to-Human elevation protocol that packages the Multi-Agent Provenance Ledger, unresolved sub-task state, critic rejection reason, and recommended next action into an interactive co-pilot briefing for a live agent or supervisor",
+      "tags": ["handoff", "escalation", "human_in_loop"],
+      "aliases": ["HITL Escalation Contract", "Human Advocate Handoff"],
+      "seeAlso": ["desktop_assist", "acd", "omnichannel_context", "warm_handoff_state_contract"]
+    }
+  ],
+  "facets": [
+    {
+      "id": "a2a_discovery_and_contracts",
+      "name": "Agent Discovery, Cards & Capability Contracts",
+      "description": "Metadata schemas, capability declarations, and authorization boundaries enabling dynamic agent matchmaking",
+      "root": {
+        "id": "discovery_contracts_root",
+        "name": "A2A Discovery & Contract Primitives",
+        "children": [
+          {
+            "id": "agent_card_metadata_schema",
+            "name": "Agent Card Metadata & Skill Declarations",
+            "description": "Standardized self-description published by every participating agent in the CXOS fabric",
+            "children": [
+              {
+                "id": "semantic_skill_taxonomy_tags",
+                "name": "Semantic Skill & Intent Coverage Tags",
+                "description": "Structured declarations of supported customer intents, domain entities, and resolution capabilities",
+                "seeAlso": ["a2a_agent_card", "cai"]
+              },
+              {
+                "id": "io_modality_and_schema_contract",
+                "name": "Input & Output JSON Schema & Modality Contract",
+                "description": "Strict input slot requirements, output artifact schemas, and supported streaming modalities (text, structured cards, audio)",
+                "seeAlso": ["omnichannel_context"]
+              },
+              {
+                "id": "agent_version_and_model_lineage",
+                "name": "Agent Version, Model & Prompt Lineage",
+                "description": "Immutable version pin identifying underlying foundation model, system prompt hash, and evaluation benchmark score",
+                "seeAlso": ["qa", "provenance_and_trace_ledger"]
+              }
+            ]
+          },
+          {
+            "id": "authority_and_security_scopes",
+            "name": "Authority, Security & RBAC Scopes",
+            "description": "Cryptographic identity and least-privilege execution boundaries for autonomous agents",
+            "children": [
+              {
+                "id": "obo_delegated_auth_token",
+                "name": "On-Behalf-Of (OBO) Customer Scoped Token",
+                "description": "Binds agent tool execution strictly to the authenticated customer party ID and verified assurance level",
+                "seeAlso": ["fraud_auth", "tool_authority_boundary", "omnichannel_context"]
+              },
+              {
+                "id": "financial_and_policy_action_ceiling",
+                "name": "Autonomous Financial & Policy Ceiling",
+                "description": "Hard dollar and policy thresholds (such as maximum autonomous credit or fee waiver) above which human or critic approval is mandatory",
+                "seeAlso": ["critic_verifier_agent", "crm"]
+              }
+            ]
+          },
+          {
+            "id": "sla_latency_and_cost_budgets",
+            "name": "Operational SLA, Latency & Token Budgets",
+            "description": "Runtime resource envelopes negotiated prior to sub-task delegation",
+            "children": [
+              {
+                "id": "subtask_deadline_budget_ms",
+                "name": "Sub-Task Turn Latency Budget",
+                "description": "Maximum millisecond deadline allocated to a specialist agent before the orchestrator triggers a fallback or async continuation",
+                "seeAlso": ["cai"]
+              },
+              {
+                "id": "recursion_and_hop_ceiling",
+                "name": "Maximum Delegation Hop & Token Ceiling",
+                "description": "Hard cap on agent-to-agent delegation depth and cumulative token spend per contact turn",
+                "seeAlso": ["a2a_handoff_envelope"]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "a2a_orchestration_topologies",
+      "name": "Multi-Agent Coordination Topologies",
+      "description": "Structural execution patterns for coordinating frontline, specialist, verifier, and human agents",
+      "root": {
+        "id": "orchestration_topologies_root",
+        "name": "Multi-Agent Execution Topologies",
+        "children": [
+          {
+            "id": "hub_and_spoke_supervisor_topology",
+            "name": "Hub-and-Spoke Supervisor Orchestration",
+            "description": "Central frontline orchestrator retains customer conversation ownership while dispatching bounded tasks to domain specialists",
+            "children": [
+              {
+                "id": "intent_decomposition_planner",
+                "name": "Multi-Intent Decomposition Planner",
+                "description": "Splits compound customer utterances (such as 'dispute my bill and update my shipping address') into dependency-ordered sub-tasks",
+                "seeAlso": ["supervisor_orchestrator_agent", "cai"]
+              },
+              {
+                "id": "unified_persona_response_weaver",
+                "name": "Unified Brand Persona Response Weaver",
+                "description": "Synthesizes outputs from multiple specialist agents into a single coherent voice or chat turn so the customer experiences one unified assistant",
+                "seeAlso": ["cai"]
+              }
+            ]
+          },
+          {
+            "id": "sequential_and_parallel_swarms",
+            "name": "Sequential Pipeline & Parallel Fan-Out Topologies",
+            "description": "Chained and concurrent execution graphs across multiple specialist agents",
+            "children": [
+              {
+                "id": "parallel_diagnostic_fan_out",
+                "name": "Parallel Specialist Fan-Out & Scatter-Gather",
+                "description": "Concurrently queries outage telemetry, billing ledger, and device diagnostics agents to assemble a holistic root-cause view in sub-second time",
+                "seeAlso": ["domain_specialist_agent", "crm"]
+              },
+              {
+                "id": "sequential_stage_relay_pipeline",
+                "name": "Sequential Stage Relay Pipeline",
+                "description": "Ordered handoff chain where triage agent passes structured findings to adjudication agent and then to fulfillment agent",
+                "seeAlso": ["journey_orchestration", "a2a_handoff_envelope"]
+              }
+            ]
+          },
+          {
+            "id": "critic_and_human_escalation_topologies",
+            "name": "Critic-Verifier Gate & Human Advocate Topologies",
+            "description": "Safety verification rings and warm human-in-the-loop transitions",
+            "children": [
+              {
+                "id": "pre_commit_critic_verification_gate",
+                "name": "Pre-Commit Critic & Policy Gate",
+                "description": "Synchronous constitutional verifier step that audits high-impact specialist proposals before any external API mutation or customer promise is committed",
+                "seeAlso": ["critic_verifier_agent", "qa"]
+              },
+              {
+                "id": "human_advocate_collaborative_escalation",
+                "name": "AI-to-Human Warm Advocate Escalation",
+                "description": "Transitions control to a skilled live agent via ACD while keeping specialist agents attached in co-pilot shadow mode to assist the human",
+                "seeAlso": ["human_in_the_loop_advocate", "acd", "desktop_assist"]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "a2a_task_state_and_protocol",
+      "name": "Task Lifecycle & Message Protocol",
+      "description": "State transitions, streaming artifact exchange, clarification sub-dialogs, and rollback semantics across A2A tasks",
+      "root": {
+        "id": "task_protocol_root",
+        "name": "A2A Task State & Messaging Mechanics",
+        "children": [
+          {
+            "id": "canonical_task_lifecycle_states",
+            "name": "Canonical Task Lifecycle State Transitions",
+            "description": "Standardized state progression from initial delegation to terminal resolution or escalation",
+            "children": [
+              {
+                "id": "task_submitted_and_working_states",
+                "name": "Submitted & Active Working States",
+                "description": "Acknowledges task acceptance, locks idempotency key, and streams incremental progress heartbeats to the parent orchestrator",
+                "seeAlso": ["a2a_task_lifecycle"]
+              },
+              {
+                "id": "task_input_required_subdialog",
+                "name": "Input-Required Clarification State",
+                "description": "Suspends specialist execution and bubbles a typed slot-clarification request back through the orchestrator to the customer or upstream context",
+                "seeAlso": ["cai", "omnichannel_context"]
+              },
+              {
+                "id": "task_completed_failed_escalated_terminal",
+                "name": "Completed, Failed & Escalated Terminal States",
+                "description": "Emits final validated artifacts and provenance trace on completion, or structured error codes and escalation context on failure",
+                "seeAlso": ["a2a_task_lifecycle", "human_in_the_loop_advocate"]
+              }
+            ]
+          },
+          {
+            "id": "artifact_streaming_and_cancellation",
+            "name": "Streaming Artifacts & Compensating Rollback",
+            "description": "Real-time partial output delivery and transactional safety across distributed agent steps",
+            "children": [
+              {
+                "id": "streaming_partial_artifact_chunks",
+                "name": "Streaming Artifact & Progress Chunks",
+                "description": "Server-sent event stream delivering partial answers, latency filler cues, and UI cards while deep tool calls complete",
+                "seeAlso": ["cai", "desktop_assist"]
+              },
+              {
+                "id": "idempotent_cancellation_and_saga_rollback",
+                "name": "Idempotent Task Cancellation & Saga Rollback",
+                "description": "Aborts in-flight specialist tasks upon customer barge-in or intent pivot and executes compensating rollbacks for partial reservations",
+                "seeAlso": ["crm", "cai"]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "a2a_memory_and_guardrails",
+      "name": "Shared Memory, Provenance & Safety Guardrails",
+      "description": "Context scoping, cryptographic auditability, loop prevention, and cross-agent hallucination controls",
+      "root": {
+        "id": "memory_guardrails_root",
+        "name": "Multi-Agent Memory & Safety Controls",
+        "children": [
+          {
+            "id": "scoped_memory_and_context_hygiene",
+            "name": "Scoped Memory & Context Hygiene",
+            "description": "Controlling what state is shared across agent boundaries to prevent data leakage and prompt bloat",
+            "children": [
+              {
+                "id": "minimum_necessary_context_projection",
+                "name": "Minimum-Necessary Context Projection",
+                "description": "Filters the Omnichannel Context Envelope so each specialist receives only the verified slots and claims required for its declared Agent Card scope",
+                "seeAlso": ["omnichannel_context", "shared_episodic_scratchpad"]
+              },
+              {
+                "id": "cross_agent_pii_tokenization_vault",
+                "name": "Cross-Agent PII Tokenization & Vaulting",
+                "description": "Replaces sensitive PCI, HIPAA, and SSN values with opaque vault references during inter-agent message transit",
+                "seeAlso": ["fraud_auth", "ccaas"]
+              }
+            ]
+          },
+          {
+            "id": "provenance_and_loop_circuit_breakers",
+            "name": "Provenance Chain & Loop Circuit Breakers",
+            "description": "Runtime stability and auditability controls across autonomous agent networks",
+            "children": [
+              {
+                "id": "cryptographic_provenance_attestation",
+                "name": "Cryptographic Provenance & Citation Chain",
+                "description": "Links every synthesized claim or CRM mutation to the exact specialist agent ID, KM chunk ID, and tool call response",
+                "seeAlso": ["provenance_and_trace_ledger", "km", "qa"]
+              },
+              {
+                "id": "ping_pong_and_cycle_circuit_breaker",
+                "name": "Agent Ping-Pong & Cycle Circuit Breaker",
+                "description": "Detects cyclic delegation loops or repeated sub-task rejections between agents and forces immediate deterministic fallback or human escalation",
+                "seeAlso": ["confidence_gated_escalation", "acd"]
+              },
+              {
+                "id": "inter_agent_prompt_injection_firewall",
+                "name": "Inter-Agent Indirect Prompt Injection Firewall",
+                "description": "Sanitizes untrusted external data and sub-agent free-text outputs before ingestion by peer or supervisor agents",
+                "seeAlso": ["critic_verifier_agent", "cai"]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "metrics": [
+    {
+      "id": "multi_agent_autonomous_containment_rate",
+      "name": "Multi-Agent Autonomous Containment Rate",
+      "unit": "percent",
+      "direction": "higher_is_better",
+      "definition": "Percentage of complex, multi-domain customer contacts coordinated across two or more A2A agents that resolve end-to-end without human intervention or 24-hour repeat contact",
+      "mapsToKpi": "deflection_rate"
+    },
+    {
+      "id": "a2a_delegated_task_fcr_rate",
+      "name": "A2A Coordinated First Contact Resolution",
+      "unit": "percent",
+      "direction": "higher_is_better",
+      "definition": "Share of customer journeys involving specialist agent delegation (either fully autonomous or via warm human advocate handoff) closed on the first contact",
+      "mapsToKpi": "fcr_rate"
+    },
+    {
+      "id": "p95_inter_agent_coordination_latency_seconds",
+      "name": "P95 Multi-Agent Orchestration Turn Overhead",
+      "unit": "seconds",
+      "direction": "lower_is_better",
+      "definition": "95th percentile cumulative latency added by supervisor planning, specialist sub-task execution, and critic verification within a single customer turn",
+      "mapsToKpi": "avg_wait_time"
+    },
+    {
+      "id": "critic_verified_policy_compliance_rate",
+      "name": "Critic-Verified Action & Policy Compliance Rate",
+      "unit": "percent",
+      "direction": "higher_is_better",
+      "definition": "Percentage of autonomous specialist actions and customer commitments passing pre-commit critic verification and downstream QA audit with zero policy or grounding defects",
+      "mapsToKpi": "sla_compliance_rate"
+    },
+    {
+      "id": "a2a_human_advocate_handoff_aht_seconds",
+      "name": "A2A-Briefed Human Escalation Handle Time",
+      "unit": "seconds",
+      "direction": "lower_is_better",
+      "definition": "Average live-agent handle time on complex contacts escalated from the A2A mesh with a populated provenance ledger, pre-executed diagnostics, and recommended resolution",
+      "mapsToKpi": "aht_seconds"
+    },
+    {
+      "id": "multi_agent_experience_csat",
+      "name": "Multi-Agent Coordinated Interaction CSAT",
+      "unit": "score_1_to_5",
+      "direction": "higher_is_better",
+      "definition": "Customer satisfaction score on interactions handled across orchestrated specialist agents, measuring perceived coherence, speed, and accuracy",
+      "mapsToKpi": "csat"
+    }
+  ],
+  "failureModes": [
+    {
+      "id": "infinite_agent_ping_pong_loop",
+      "name": "Infinite Inter-Agent Delegation Ping-Pong Loop",
+      "signal": "Billing specialist agent delegates back to account triage agent which re-delegates to billing; recursion depth spikes, turn latency exceeds timeout, and customer hangs up",
+      "mitigation": "Enforce strict DAG cycle detection and a hard max_delegation_hops ceiling (such as 3 hops) in the A2A Handoff Envelope that immediately routes to a human advocate when breached"
+    },
+    {
+      "id": "confused_deputy_privilege_escalation",
+      "name": "Confused Deputy Cross-Agent Privilege Escalation",
+      "signal": "Low-trust informational bot tricks a high-privilege billing specialist agent into issuing an unauthorized refund or exposing restricted account fields via crafted task prompts",
+      "mitigation": "Bind every A2A delegation to cryptographic On-Behalf-Of (OBO) tokens scoped to the verified customer assurance level and enforce deterministic tool authority boundaries independent of natural-language prompts"
+    },
+    {
+      "id": "multi_hop_telephone_game_drift",
+      "name": "Multi-Hop Context Pollution & Semantic Drift",
+      "signal": "Each agent in a sequential relay re-summarizes the customer request in free text, subtly distorting constraints or dropping negation until the final specialist executes the wrong action",
+      "mitigation": "Propagate immutable typed slots and canonical customer utterances inside the Shared Episodic Scratchpad rather than relying on lossy free-text re-summarization across hops"
+    },
+    {
+      "id": "zombie_async_subtask_mutation",
+      "name": "Orphaned Zombie Sub-Task Late Mutation",
+      "signal": "Customer barges in and cancels a request or switches intent, but a slow background specialist agent finishes seconds later and commits an unwanted order cancellation or CRM write",
+      "mitigation": "Enforce idempotent task cancellation propagation and pre-commit parent-task state validation before any specialist agent executes an external write tool"
+    },
+    {
+      "id": "unverified_specialist_hallucinated_commit",
+      "name": "Unverified Specialist Action or Policy Hallucination",
+      "signal": "Domain specialist agent misinterprets an edge-case policy and executes an irreversible account modification or promises an invalid SLA without oversight",
+      "mitigation": "Route all state-mutating tool calls and financial commitments through a synchronous Critic-Verifier Agent gate and require high-band confidence calibration"
+    },
+    {
+      "id": "opaque_ai_to_human_trace_dump",
+      "name": "Opaque Multi-Agent Log Dump on Human Escalation",
+      "signal": "Live agents receiving an escalated A2A contact are overwhelmed by raw JSON reasoning traces from four sub-agents, increasing AHT and forcing them to ask the customer what happened",
+      "mitigation": "Transform the Multi-Agent Provenance Ledger into a structured 3-line Human-in-the-Loop Advocate Card showing verified customer goal, completed specialist checks, and the exact blocker requiring human judgment"
+    }
+  ],
+  "scoringModel": {
+    "id": "a2a_coordination_integrity_rubric",
+    "name": "A2A Multi-Agent Coordination & Safety Scorecard",
+    "scaleType": "weighted_rubric",
+    "maxPoints": 100,
+    "autoFailItems": [
+      "unauthorized_tool_scope_execution",
+      "unverified_high_risk_mutation_committed",
+      "cross_customer_scratchpad_contamination",
+      "infinite_delegation_loop_unhandled"
+    ],
+    "note": "Evaluates multi-agent A2A interactions across capability routing accuracy, least-privilege tool governance, critic-verified factual grounding, orchestration latency discipline, and human escalation briefing clarity.",
+    "dimensions": [
+      {
+        "id": "capability_routing_and_decomposition",
+        "name": "Intent Decomposition & Specialist Selection Accuracy",
+        "weightPercent": 20,
+        "description": "Precision with which the supervisor agent decomposes multi-part customer goals and matches each sub-task to the optimal specialist Agent Card",
+        "sampleCriteria": [
+          "Compound customer intents decomposed into non-overlapping atomic sub-tasks",
+          "Selected specialist Agent Cards match required domain skills and assurance levels",
+          "Parallelizable diagnostic sub-tasks fanned out concurrently rather than serialized"
+        ]
+      },
+      {
+        "id": "authority_scope_and_context_hygiene",
+        "name": "Tool Authority Boundary & Context Scoping",
+        "weightPercent": 25,
+        "description": "Strict adherence to least-privilege On-Behalf-Of authorization scopes, minimum-necessary context projection, and PII vaulting across agent boundaries",
+        "sampleCriteria": [
+          "Every delegated task carries a valid customer-scoped OBO token and recursion hop counter",
+          "Specialists receive only the envelope slots required by their Agent Card input schema",
+          "All tool invocations respect autonomous financial and policy ceilings"
+        ]
+      },
+      {
+        "id": "critic_verification_and_grounding",
+        "name": "Critic Verification & Provenance Grounding",
+        "weightPercent": 25,
+        "description": "Factual entailment, policy compliance, and complete cryptographic provenance attribution across all specialist outputs and synthesized customer responses",
+        "sampleCriteria": [
+          "High-impact actions and policy claims audited by the Critic-Verifier Agent prior to commit",
+          "Every factual assertion links to a verified KM chunk ID or CRM tool response in the provenance ledger",
+          "Unified response weaver presents a single coherent persona without internal agent jargon"
+        ]
+      },
+      {
+        "id": "orchestration_latency_and_lifecycle",
+        "name": "Task Lifecycle & Latency Budget Discipline",
+        "weightPercent": 15,
+        "description": "Adherence to A2A task state machine semantics, sub-second turn latency budgets, and clean cancellation or rollback when customer intent pivots",
+        "sampleCriteria": [
+          "End-to-end multi-agent turn overhead stays within P95 latency budget",
+          "Input-required states surface concise, non-repetitive clarification prompts",
+          "Customer barge-in or pivot cleanly cancels in-flight sub-tasks with zero zombie writes"
+        ]
+      },
+      {
+        "id": "human_advocate_escalation_readiness",
+        "name": "Confidence-Gated Human Escalation Clarity",
+        "weightPercent": 15,
+        "description": "Timely confidence-band bailout when autonomous resolution is uncertain and delivery of an actionable, digestible briefing to the receiving human advocate",
+        "sampleCriteria": [
+          "Low-confidence or critic-rejected tasks escalate immediately without frustrating retry loops",
+          "Human advocate receives a concise summary of completed specialist checks and exact escalation reason",
+          "Specialist agents remain available in co-pilot shadow mode to assist the live agent"
+        ]
+      }
+    ]
+  },
+  "integrations": [
+    {
+      "with": "cai",
+      "exchanges": [
+        "Frontline virtual agent acts as the conversational host and supervisor orchestrator dispatching complex sub-tasks over A2A",
+        "Synthesized multi-agent responses and clarification prompts streamed back through the active voicebot or chat turn"
+      ]
+    },
+    {
+      "with": "omnichannel_context",
+      "exchanges": [
+        "Scoped projections of the Canonical Context Envelope embedded into A2A Delegation Envelopes for specialist hydration",
+        "Multi-agent provenance chains and newly extracted specialist slots written back to the master Context Envelope"
+      ]
+    },
+    {
+      "with": "desktop_assist",
+      "exchanges": [
+        "Human-in-the-Loop Advocate Card and condensed multi-agent provenance trace rendered in the agent co-pilot on escalation",
+        "Live agents invoke domain specialist A2A agents directly from their desktop as on-demand background research assistants"
+      ]
+    },
+    {
+      "with": "journey_orchestration",
+      "exchanges": [
+        "Real-time Next-Best-Action arbitration delegates autonomous service recovery or retention sub-tasks to specialist A2A agents",
+        "A2A task lifecycle outcomes (completed, failed, escalated) update the customer journey state machine in real time"
+      ]
+    },
+    {
+      "with": "acd",
+      "exchanges": [
+        "Confidence-gated A2A escalations pass required specialist skill tags, urgency, and handoff envelopes to ACD queue routing",
+        "Real-time human queue wait times queried by the supervisor agent to calibrate autonomous retry budgets versus immediate transfer"
+      ]
+    },
+    {
+      "with": "fraud_auth",
+      "exchanges": [
+        "Customer authentication assurance claims and step-up MFA status validated before issuing On-Behalf-Of tool authority tokens to agents",
+        "Anomaly and indirect prompt-injection signals from the A2A mesh routed to security monitoring"
+      ]
+    },
+    {
+      "with": "km",
+      "exchanges": [
+        "Domain specialist agents retrieve vertical-scoped knowledge chunks and attach immutable citation IDs to the provenance ledger",
+        "Critic-Verifier agent cross-checks specialist claims against canonical policy rules in the knowledge base"
+      ]
+    },
+    {
+      "with": "qa",
+      "exchanges": [
+        "Multi-Agent Provenance & Reasoning Ledgers ingested by Auto-QA to score agent decomposition, tool safety, and grounding fidelity",
+        "QA calibration findings and critic rejection patterns fed back to refine Agent Card constraints and prompt guardrails"
+      ]
+    }
+  ]
+}

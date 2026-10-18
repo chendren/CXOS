@@ -1,8 +1,10 @@
 #!/usr/bin/env node
 /**
- * Build Engine Pack — compiles the CXOS workspace taxonomies (IVR, ACD, WFM, QA,
- * CRM, KM, Speech Analytics, Outbound, VOC) into a Coxswain-compatible
- * CxOntologyCatalog extension pack at ontology/cxos-systems-pack.json.
+ * Build Engine Pack — compiles all 19 CXOS workspace taxonomies (IVR, ACD, WFM, QA,
+ * CRM, KM, Speech Analytics, Outbound, VOC, CCaaS, CAI, WFO, Journey Orchestration,
+ * Fraud & Auth, Desktop Assist, Omnichannel Context, A2A Protocol, Journey Mapping,
+ * Journey Tracking) into a Coxswain-compatible CxOntologyCatalog extension pack at
+ * ontology/cxos-systems-pack.json.
  *
  * The resulting pack can be loaded via @cox/cx-core:
  *   const pack = loadOntologyFromCatalog(cxosSystemsPackJson);
@@ -26,10 +28,12 @@ const OUT_FILE = join(ONTOLOGY_DIR, "cxos-systems-pack.json");
 const readJson = (p) => JSON.parse(readFileSync(p, "utf8"));
 
 const rootOntology = readJson(join(ONTOLOGY_DIR, "cx-ontology.json"));
-const taxonomies = rootOntology.taxonomies.map((entry) => ({
-  entry,
-  tax: readJson(join(ONTOLOGY_DIR, entry.path)),
-}));
+const taxonomies = rootOntology.taxonomies
+  .filter((entry) => existsSync(join(ONTOLOGY_DIR, entry.path)))
+  .map((entry) => ({
+    entry,
+    tax: readJson(join(ONTOLOGY_DIR, entry.path)),
+  }));
 
 // 1. Convert each system taxonomy into a CxDomain where failure modes and key
 //    operational capabilities become addressable intents (`<taxonomy_id>.<intent_id>`).
@@ -65,12 +69,23 @@ const domains = taxonomies.map(({ tax }) => {
   };
 });
 
-// 2. Build deterministic operational journeys from core.interactionLifecycle and QA triage
+const allIntentIds = new Set();
+for (const d of domains) {
+  for (const intent of d.intents) {
+    allIntentIds.add(`${d.id}.${intent.id}`);
+  }
+}
+
+// 2. Build deterministic operational journeys from core.interactionLifecycle, QA triage,
+//    Three-Plane Journey Loop, and Omnichannel & A2A Warm Handoff Protocol
 const lifecycleStages = rootOntology.core.interactionLifecycle;
 const interactionSpineJourney = {
   id: "cxos_interaction_lifecycle",
   name: "CXOS End-to-End Interaction Lifecycle",
-  triggerIntents: ["sys_ivr.ops_ivr_service_types", "sys_acd.ops_acd_routing_strategies"],
+  triggerIntents: [
+    "sys_ivr.ops_ivr_service_types",
+    "sys_acd.ops_acd_routing_strategies",
+  ].filter((id) => allIntentIds.has(id)),
   stages: lifecycleStages.map((s, idx) => ({
     id: s.id,
     name: s.name,
@@ -86,7 +101,7 @@ const qaTriageJourney = {
     "sys_qa.failure_gotcha_qa",
     "sys_qa.failure_calibration_drift",
     "sys_qa.ops_qa_evaluation_scopes",
-  ],
+  ].filter((id) => allIntentIds.has(id)),
   stages: [
     { id: "sampled", name: "Contact Sampled", nextStages: ["decider_triaged"] },
     {
@@ -103,7 +118,93 @@ const qaTriageJourney = {
   terminalStages: ["calibrated"],
 };
 
-// 3. Deterministic NBA rules for system-side operational telemetry & QA triage
+const threePlaneJourneyLoop = {
+  id: "cxos_three_plane_journey_loop",
+  name: "Three-Plane Journey Loop (Map -> Track -> Orchestrate)",
+  description:
+    "Closed-loop journey governance connecting Plane 1 prescriptive blueprint mapping, Plane 2 empirical trace & conformance drift tracking, and Plane 3 real-time NBA & A2A intervention",
+  triggerIntents: [
+    "sys_journey_mapping.ops_cjm_blueprint_anatomy",
+    "sys_journey_mapping.ops_cjm_path_classifications",
+    "sys_journey_mapping.failure_happy_path_delusion",
+    "sys_journey_mapping.failure_missing_handoff_contracts",
+    "sys_journey_tracking.ops_cjt_telemetry_reconstruction",
+    "sys_journey_tracking.ops_cjt_conformance_and_drift",
+    "sys_journey_tracking.ops_cjt_path_pathology_taxonomy",
+    "sys_journey_tracking.failure_siloed_channel_myopia",
+    "sys_journey_orchestration.ops_jo_triggers_state",
+    "sys_journey_orchestration.ops_jo_nba_arbitration_matrix",
+    "sys_journey_orchestration.failure_omnichannel_context_drop",
+  ].filter((id) => allIntentIds.has(id)),
+  stages: [
+    { id: "blueprint_mapped", name: "Plane 1: Blueprint Mapped", nextStages: ["telemetry_tracked"] },
+    { id: "telemetry_tracked", name: "Plane 2: Telemetry Tracked", nextStages: ["conformance_evaluated"] },
+    {
+      id: "conformance_evaluated",
+      name: "Plane 2: Conformance Evaluated",
+      nextStages: ["on_golden_path", "drift_intercepted"],
+    },
+    { id: "on_golden_path", name: "On Golden Path (Conformant)", nextStages: [] },
+    { id: "drift_intercepted", name: "Plane 3: Conformance Drift Intercepted", nextStages: ["context_hydrated"] },
+    { id: "context_hydrated", name: "Omnichannel Context Envelope Hydrated", nextStages: ["a2a_or_human_routed"] },
+    {
+      id: "a2a_or_human_routed",
+      name: "A2A Specialist or Warm Human Routed",
+      nextStages: ["resolved_and_recalibrated"],
+    },
+    { id: "resolved_and_recalibrated", name: "Resolved & Blueprint Recalibrated", nextStages: [] },
+  ],
+  terminalStages: ["on_golden_path", "resolved_and_recalibrated"],
+};
+
+const a2aOmnichannelHandoffJourney = {
+  id: "cxos_a2a_omnichannel_handoff",
+  name: "Omnichannel & A2A Warm Handoff Protocol",
+  description:
+    "End-to-end context envelope preservation across channel modality switches, AI-to-AI specialist delegation, critic verification, and warm human advocate escalation",
+  triggerIntents: [
+    "sys_omnichannel_context.ops_ocx_context_envelope_architecture",
+    "sys_omnichannel_context.ops_ocx_modality_transitions",
+    "sys_omnichannel_context.ops_ocx_handoff_execution_modes",
+    "sys_omnichannel_context.failure_handoff_context_amnesia",
+    "sys_omnichannel_context.failure_sip_trunk_uui_header_stripping",
+    "sys_a2a_protocol.ops_a2a_discovery_and_contracts",
+    "sys_a2a_protocol.ops_a2a_orchestration_topologies",
+    "sys_a2a_protocol.ops_a2a_task_state_and_protocol",
+    "sys_a2a_protocol.failure_infinite_agent_ping_pong_loop",
+    "sys_a2a_protocol.failure_unverified_specialist_hallucinated_commit",
+  ].filter((id) => allIntentIds.has(id)),
+  stages: [
+    { id: "channel_arrival", name: "Omnichannel Arrival & Identity Stitch", nextStages: ["context_envelope_sealed"] },
+    {
+      id: "context_envelope_sealed",
+      name: "Context Envelope Sealed & Hydrated",
+      nextStages: ["a2a_capability_matched"],
+    },
+    { id: "a2a_capability_matched", name: "A2A Agent Card Capability Matched", nextStages: ["specialist_working"] },
+    {
+      id: "specialist_working",
+      name: "Specialist Agent Working",
+      nextStages: ["critic_verified", "human_advocate_escalated"],
+    },
+    { id: "critic_verified", name: "Critic / Policy Verifier Approved", nextStages: ["handoff_completed"] },
+    { id: "human_advocate_escalated", name: "Warm Human Advocate Escalated", nextStages: ["handoff_completed"] },
+    { id: "handoff_completed", name: "Handoff & Resolution Completed", nextStages: [] },
+  ],
+  terminalStages: ["handoff_completed"],
+};
+
+const ocxFailureIntents = [
+  "sys_omnichannel_context.failure_handoff_context_amnesia",
+  "sys_omnichannel_context.failure_redundant_reauthentication_friction",
+  "sys_omnichannel_context.failure_sip_trunk_uui_header_stripping",
+  "sys_omnichannel_context.failure_stale_slot_ledger_overwrite",
+  "sys_omnichannel_context.failure_split_brain_async_thread_collision",
+  "sys_omnichannel_context.failure_dead_end_modality_deflection",
+].filter((id) => allIntentIds.has(id));
+
+// 3. Deterministic NBA rules for system-side operational telemetry, QA triage,
+//    Omnichannel Context Recovery, A2A Circuit Breaking, and 3-Plane Journey Drift
 const nbaRules = [
   {
     id: "QA_COMPLIANCE_HIGH_RISK",
@@ -119,6 +220,53 @@ const nbaRules = [
     urgency: "critical",
   },
   {
+    id: "A2A_PING_PONG_CIRCUIT_BREAKER",
+    name: "Halt Multi-Agent Delegation Loop & Warm Transfer to Senior Advocate",
+    priority: 97,
+    conditions: [
+      { field: "journey", op: "eq", value: "cxos_a2a_omnichannel_handoff" },
+      { field: "stage", op: "eq", value: "human_advocate_escalated" },
+    ],
+    logic: "AND",
+    action: "halt_agent_delegation_loop_and_warm_transfer_senior_advocate",
+    actionType: "escalation",
+    urgency: "critical",
+  },
+  {
+    id: "OMNICHANNEL_CONTEXT_DROP_RECOVERY",
+    name: "Hydrate Omnichannel Context Envelope & Bypass IVR Menus",
+    priority: 96,
+    conditions: [
+      {
+        field: "intent",
+        op: "in",
+        value:
+          ocxFailureIntents.length > 0
+            ? ocxFailureIntents
+            : ["sys_journey_orchestration.failure_omnichannel_context_drop"],
+      },
+      { field: "journey", op: "eq", value: "cxos_three_plane_journey_loop" },
+      { field: "stage", op: "eq", value: "drift_intercepted" },
+    ],
+    logic: "OR",
+    action: "hydrate_context_envelope_and_bypass_ivr_menus",
+    actionType: "protocol",
+    urgency: "high",
+  },
+  {
+    id: "JOURNEY_CONFORMANCE_DRIFT_INTERCEPT",
+    name: "Intercept Plane 2 Conformance Drift with Plane 3 NBA or Dynamic Steering",
+    priority: 91,
+    conditions: [
+      { field: "journey", op: "eq", value: "cxos_three_plane_journey_loop" },
+      { field: "stage", op: "eq", value: "conformance_evaluated" },
+    ],
+    logic: "AND",
+    action: "arbitrate_plane3_nba_or_dynamic_channel_steering",
+    actionType: "routing",
+    urgency: "high",
+  },
+  {
     id: "WFM_OCCUPANCY_BURNOUT_GUARD",
     name: "Mitigate High Occupancy Burnout Risk",
     priority: 90,
@@ -131,18 +279,6 @@ const nbaRules = [
     urgency: "high",
   },
   {
-    id: "IVR_CONTAINMENT_DROP_GUARD",
-    name: "Mitigate IVR Menu Maze / Zero-Out Spike",
-    priority: 85,
-    conditions: [
-      { field: "intent", op: "in", value: ["sys_ivr.failure_menu_maze", "sys_ivr.failure_prompt_ambiguity"] },
-    ],
-    logic: "OR",
-    action: "enable_open_phrase_routing_and_callback_offer",
-    actionType: "deflection",
-    urgency: "high",
-  },
-  {
     id: "KM_POISONED_KNOWLEDGE_ALERT",
     name: "Quarantine Stale or Contradictory KM Article",
     priority: 88,
@@ -152,6 +288,18 @@ const nbaRules = [
     logic: "AND",
     action: "flag_km_article_urgent_review_and_sync_ivr_prompts",
     actionType: "protocol",
+    urgency: "high",
+  },
+  {
+    id: "IVR_CONTAINMENT_DROP_GUARD",
+    name: "Mitigate IVR Menu Maze / Zero-Out Spike",
+    priority: 85,
+    conditions: [
+      { field: "intent", op: "in", value: ["sys_ivr.failure_menu_maze", "sys_ivr.failure_prompt_ambiguity"] },
+    ],
+    logic: "OR",
+    action: "enable_open_phrase_routing_and_callback_offer",
+    actionType: "deflection",
     urgency: "high",
   },
 ];
@@ -196,13 +344,19 @@ const catalogPack = {
   version: rootOntology.version,
   source: "cxos-systems-ontology",
   domains,
-  journeys: [interactionSpineJourney, qaTriageJourney],
+  journeys: [
+    interactionSpineJourney,
+    qaTriageJourney,
+    threePlaneJourneyLoop,
+    a2aOmnichannelHandoffJourney,
+  ],
   nbaRules,
   actionPolicies: {
     confidenceBands: rootOntology.engineAlignment.confidenceBands,
     escalationChains: {
       qa_compliance_breach: ["qa_specialist", "compliance_officer", "center_director"],
       wfm_sla_breach: ["intraday_analyst", "wfm_duty_manager", "ops_lead"],
+      a2a_delegation_exhaustion: ["specialist_agent", "critic_verifier_agent", "senior_human_advocate"],
     },
     actionSequenceTemplates: {
       qa_auto_fail_remediation: {
@@ -213,6 +367,15 @@ const catalogPack = {
           "update_km_article_if_gap",
         ],
         applicableWhen: "compliance_noul >= 0.70 or auto_fail item triggered",
+      },
+      three_plane_drift_remediation: {
+        steps: [
+          "hydrate_omnichannel_context_envelope",
+          "arbitrate_plane3_nba_or_a2a_specialist",
+          "execute_critic_or_human_warm_handoff",
+          "recalibrate_plane1_blueprint_from_trace",
+        ],
+        applicableWhen: "conformance_drift_delta > 0.35 or loop_count >= 2",
       },
     },
     resolutionFactors: {

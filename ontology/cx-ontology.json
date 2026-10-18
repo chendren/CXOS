@@ -76,10 +76,57 @@
         "values": {
           "automated": "Resolved by machine: IVR, bot, notification broadcast",
           "assisted": "Human-held with system support: agent + KM/CRM",
-          "unattended": "No live resource at delivery time: voicemail drops, automated sms"
+          "unattended": "No live resource at delivery time: voicemail drops, automated sms",
+          "multi_agent_a2a": "Coordinated across multiple autonomous and specialist agents via A2A protocol with human-in-the-loop escalation"
         }
       }
     ],
+    "journeyTriad": {
+      "description": "Three-plane closed-loop architecture unifying prescriptive design, empirical telemetry, and real-time intervention across customer journeys.",
+      "planes": [
+        {
+          "id": "prescriptive_mapping",
+          "taxonomyId": "journey_mapping",
+          "temporalFocus": "what_we_hope_and_plan",
+          "name": "Plane 1: Customer Journey Mapping (Prescriptive Blueprint)",
+          "question": "What do we HOPE will happen and plan for?",
+          "artifacts": ["golden_path_blueprint", "stage_sla_budget", "moment_of_truth_contract", "planned_fallback_branch", "expected_emotion_curve"]
+        },
+        {
+          "id": "descriptive_tracking",
+          "taxonomyId": "journey_tracking",
+          "temporalFocus": "what_did_happen",
+          "name": "Plane 2: Customer Journey Tracking & Process Mining (Empirical Reality)",
+          "question": "What DID actually happen across channels and agents?",
+          "artifacts": ["stitched_event_trace", "discovered_process_graph", "conformance_drift_delta", "channel_ping_pong_loop", "silent_dropoff_attribution"]
+        },
+        {
+          "id": "interventionist_orchestration",
+          "taxonomyId": "journey_orchestration",
+          "temporalFocus": "what_is_happening_and_should_happen",
+          "name": "Plane 3: Real-Time Journey Orchestration (Active Intervention)",
+          "question": "What IS happening right now and what SHOULD happen next?",
+          "artifacts": ["live_conformance_Check", "nba_arbitration_decision", "dynamic_channel_steering", "a2a_specialist_handoff", "suppression_ledger_gate"]
+        }
+      ]
+    },
+    "contextEnvelopeSpec": {
+      "description": "Canonical Omnichannel & A2A Context Envelope propagated across channel switches, bot-to-bot (A2A) delegations, and bot-to-human escalations.",
+      "requiredFields": [
+        "envelope_id",
+        "journey_instance_id",
+        "blueprint_id",
+        "customer_identity_ref",
+        "origin_channel",
+        "active_channel",
+        "intent_stack",
+        "verified_auth_level",
+        "extracted_slots",
+        "a2a_provenance_chain",
+        "conformance_status",
+        "suppression_and_consent_flags"
+      ]
+    },
     "crossCuttingConcerns": [
       "compliance_pci",
       "compliance_hipaa",
@@ -104,8 +151,12 @@
     { "id": "ccaas", "acronym": "CCaaS", "name": "Contact Center as a Service & Telephony Fabric", "category": "routing", "path": "taxonomies/ccaas.json", "summary": "SIP trunks, SBC, WebRTC endpoints, media recording, carrier failover, region resilience" },
     { "id": "cai", "acronym": "CAI", "name": "Conversational AI & Virtual Agents", "category": "self_service", "path": "taxonomies/cai.json", "summary": "Intent NLU, slot filling, LLM RAG grounding, hallucination guardrails, containment handoff, turn latency" },
     { "id": "wfo", "acronym": "WFO", "name": "Workforce Optimization & Engagement", "category": "workforce", "path": "taxonomies/wfo.json", "summary": "Coaching workflows, gamification, skill progression matrices, agent attrition risk, desktop analytics" },
-    { "id": "journey_orchestration", "acronym": "JO", "name": "Journey Orchestration & Next-Best-Action", "category": "routing", "path": "taxonomies/journey-orchestration.json", "summary": "Journey state machine, event triggers, NBA arbitration, channel suppression, proactive nudges" },
+    { "id": "journey_orchestration", "acronym": "JO", "name": "Real-Time Journey Orchestration & NBA", "category": "routing", "path": "taxonomies/journey-orchestration.json", "summary": "Plane 3 (What IS/SHOULD happen): live state estimation, conformance-drift intervention, NBA arbitration, suppression, dynamic steering" },
     { "id": "fraud_auth", "acronym": "FA", "name": "Fraud Detection & Caller Authentication", "category": "customer_data", "path": "taxonomies/fraud-auth.json", "summary": "ANI spoofing detection, voice biometrics, KBA threat mitigation, step-up MFA, ATO prevention" },
-    { "id": "desktop_assist", "acronym": "DA", "name": "Agent Desktop & Real-Time Co-Pilot", "category": "knowledge", "path": "taxonomies/desktop-assist.json", "summary": "Unified agent desktop, real-time call summarization, next-best-response cards, ACW automation, swivel-chair elimination" }
+    { "id": "desktop_assist", "acronym": "DA", "name": "Agent Desktop & Real-Time Co-Pilot", "category": "knowledge", "path": "taxonomies/desktop-assist.json", "summary": "Unified agent desktop, real-time call summarization, next-best-response cards, ACW automation, swivel-chair elimination" },
+    { "id": "omnichannel_context", "acronym": "OCX", "name": "Omnichannel Orchestration & Context Sharing", "category": "routing", "path": "taxonomies/omnichannel-context.json", "summary": "Cross-channel context envelopes, identity stitching, modality switching (web/app/chat/voice), SIP UUI & token hydration, warm handoff continuity" },
+    { "id": "a2a_protocol", "acronym": "A2A", "name": "Agent-to-Agent (A2A) & Multi-Agent Facets", "category": "self_service", "path": "taxonomies/a2a-protocol.json", "summary": "Agent Cards, capability discovery, AI-to-AI task delegation, supervisor/specialist topologies, shared memory provenance, confidence-gated human handoff" },
+    { "id": "journey_mapping", "acronym": "CJM", "name": "Customer Journey Mapping (Prescriptive Blueprint)", "category": "analytics", "path": "taxonomies/journey-mapping.json", "summary": "Plane 1 (What we HOPE & plan): Golden Path blueprints, persona JTBD stages, Moments of Truth, stage SLA budgets, planned fallback branches" },
+    { "id": "journey_tracking", "acronym": "CJT", "name": "Customer Journey Tracking & Process Mining", "category": "analytics", "path": "taxonomies/journey-tracking.json", "summary": "Plane 2 (What DID happen): cross-channel event reconstruction, actual path discovery, planned-vs-actual conformance drift, loop & drop-off attribution" }
   ]
 }

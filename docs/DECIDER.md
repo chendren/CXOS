@@ -72,6 +72,9 @@ npm run wfm-decide -- --file fixtures/wfm-intervals.sample.json
 # IVR Containment Decider: failure mode choice + zero-out risk noul + friction score
 npm run ivr-decide -- --file fixtures/ivr-sessions.sample.json
 
+# 3-Plane Journey & A2A Orchestration Decider: conformance drift score + context hydration noul + Plane 3 action choice + A2A target owner choice
+npm run journey-decide -- --file fixtures/journey-a2a-traces.sample.json --out .tmp/qa-triage/journey-a2a-history.jsonl
+
 # Wire ontology + triage + calibration into cxos-dashboard.html
 npm run dashboard:ontology
 ```

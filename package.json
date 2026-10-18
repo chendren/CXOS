@@ -49,6 +49,7 @@
     "routing-decide": "node ./scripts/routing-decide.mjs",
     "wfm-decide": "node ./scripts/wfm-intraday-decide.mjs",
     "ivr-decide": "node ./scripts/ivr-containment-decide.mjs",
+    "journey-decide": "node ./scripts/journey-a2a-decide.mjs",
     "dashboard:ontology": "node ./scripts/update-dashboard.mjs",
     "validate": "node ./scripts/validate-ontology.mjs && python3 -m json.tool board-sync.json > /dev/null && echo 'board-sync.json valid' && cfn-lint cx-export/**/template.yaml || echo 'cfn-lint warnings'"
   },

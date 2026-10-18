@@ -2,72 +2,130 @@
   "kind": "cxTaxonomy",
   "id": "journey_orchestration",
   "acronym": "JO",
-  "name": "Journey Orchestration & Next-Best-Action",
+  "name": "Real-Time Journey Orchestration & NBA",
   "category": "routing",
   "version": "2026.10.0",
-  "description": "Real-time cross-channel state engine that tracks customer lifecycle context, evaluates business and propensity rules to arbitrate the Next-Best-Action (NBA), triggers proactive nudges, and suppresses redundant outreach.",
-  "roleInCenter": "Cross-channel brain: maintains persistent journey state across time and channels so every inbound or proactive touchpoint advances the customer's goal without repetition.",
+  "description": "Plane 3 of the CXOS Journey Triad — real-time, interventionist decision engine governing what IS happening right now and what SHOULD happen next: live conformance-drift interception between Plane 1 blueprints and Plane 2 telemetry, Next-Best-Action (NBA) and Next-Best-Experience (NBX) arbitration, wait-aware dynamic channel steering, orchestrated A2A specialist delegation, omnichannel context hydration, and cross-channel suppression governance.",
+  "roleInCenter": "Real-time interventionist brain: continuously compares the live customer state (Plane 2) against the normative blueprint (Plane 1) and executes the single best action, channel switch, A2A specialist delegation, or suppression gate to steer the journey to resolution.",
   "glossary": [
     {
       "id": "journey_state_machine",
       "term": "Customer Journey State Machine",
-      "definition": "Persistent graph tracking a customer's current lifecycle stage, open issues, prior channel touches, and pending commitments across sessions",
-      "tags": ["core", "state"],
-      "seeAlso": ["crm"]
+      "definition": "Persistent real-time state graph tracking a customer's active blueprint stage, open issues, prior channel touches, and pending commitments across sessions",
+      "tags": ["core", "state", "plane_3"],
+      "aliases": ["Live Journey State Graph"],
+      "seeAlso": ["crm", "journey_mapping", "journey_tracking"]
     },
     {
       "id": "event_stream_trigger",
       "term": "Real-Time Journey Event Trigger",
-      "definition": "Streaming business or telemetry event such as a failed payment, shipment delay, or repeated app error that initiates or transitions a journey state",
-      "tags": ["events", "core"]
+      "definition": "Streaming business or telemetry event such as a failed payment, shipment delay, or repeated app error that initiates or transitions a live journey state",
+      "tags": ["events", "core", "plane_3"],
+      "aliases": ["Streaming Cep Trigger"],
+      "seeAlso": ["journey_tracking"]
     },
     {
       "id": "nba_arbitration",
       "term": "Next-Best-Action (NBA) Arbitration",
-      "definition": "Decisioning matrix that ranks competing retention, service recovery, protocol, and sales actions by customer value, urgency, and eligibility",
-      "tags": ["decisioning", "core"],
-      "aliases": ["NBA"]
+      "definition": "Real-time decisioning matrix that ranks competing retention, service recovery, protocol, and sales actions by customer value, urgency, confidence band, and eligibility",
+      "tags": ["decisioning", "core", "plane_3"],
+      "aliases": ["NBA"],
+      "seeAlso": ["crm", "desktop_assist"]
     },
     {
       "id": "channel_suppression",
       "term": "Cross-Channel Suppression Rule",
-      "definition": "Governance control that halts marketing or automated outbound campaigns when an active service escalation, dispute, or recent contact exists",
+      "definition": "Governance control that halts marketing or automated outbound campaigns when an active service escalation, dispute, or recent inbound resolution exists",
       "tags": ["governance", "outreach"],
-      "seeAlso": ["outbound"]
+      "aliases": ["Promotional Mute Gate"],
+      "seeAlso": ["outbound", "crm"]
     },
     {
       "id": "proactive_nudge",
       "term": "Proactive Contextual Nudge",
-      "definition": "Timely push notification, SMS, or in-app card sent ahead of a predicted inbound call to resolve an issue or confirm status effortlessly",
-      "tags": ["self_service", "outreach"],
-      "seeAlso": ["cai"]
+      "definition": "Timely push notification, SMS, or in-app card dispatched ahead of a predicted inbound call to resolve an issue or confirm status along the Plane 1 proactive path",
+      "tags": ["self_service", "outreach", "proactive"],
+      "aliases": ["Pre-Emptive Resolution Push"],
+      "seeAlso": ["cai", "outbound", "journey_mapping"]
     },
     {
       "id": "contact_fatigue_cap",
       "term": "Contact Frequency & Fatigue Cap",
       "definition": "Rolling window ceiling limiting total proactive notifications and outbound touches across all channels per customer",
       "tags": ["governance", "compliance"],
+      "aliases": ["Outreach Frequency Ceiling"],
       "seeAlso": ["outbound"]
     },
     {
       "id": "journey_continuity_token",
       "term": "Omnichannel Continuity Context",
       "definition": "Shared context payload linking a digital web failure or mobile app flow directly to an inbound voice or chat session within the same journey",
-      "tags": ["state", "routing"],
-      "seeAlso": ["acd", "ivr"]
+      "tags": ["state", "routing", "omnichannel"],
+      "aliases": ["Continuity Session Token"],
+      "seeAlso": ["acd", "ivr", "omnichannel_context"]
     },
     {
       "id": "abandon_recovery_flow",
       "term": "Digital & Queue Abandon Recovery",
-      "definition": "Automated orchestration step that follows up on high-value cart, application, or queue abandons via preferred asynchronous channel",
-      "tags": ["outcome", "retention"]
+      "definition": "Automated orchestration step that follows up on high-value cart, application, or queue abandons via preferred asynchronous channel within the SLA recovery window",
+      "tags": ["outcome", "retention", "recovery"],
+      "aliases": ["Abandon Save Workflow"],
+      "seeAlso": ["acd", "outbound", "journey_tracking"]
+    },
+    {
+      "id": "live_conformance_interceptor",
+      "term": "Real-Time Conformance Drift Interceptor",
+      "definition": "Runtime guard that compares a customer's live Plane 2 trace against their Plane 1 Golden Path blueprint and triggers immediate corrective intervention when stage SLA budgets, loop thresholds, or sentiment floors are breached",
+      "tags": ["conformance", "intervention", "plane_3"],
+      "aliases": ["Drift Save Interceptor", "In-Flight Journey Corrector"],
+      "seeAlso": ["journey_mapping", "journey_tracking", "acd"]
+    },
+    {
+      "id": "next_best_experience_nbx",
+      "term": "Next-Best-Experience Trajectory Synthesis",
+      "definition": "Multi-step orchestration policy that selects not just a single isolated offer (NBA) but the optimal downstream sequence of channel modality, agent skill, empathy posture, and follow-up cadence to restore the Golden Path",
+      "tags": ["decisioning", "blueprint", "plane_3"],
+      "aliases": ["NBX", "Trajectory Arbitration"],
+      "seeAlso": ["journey_mapping", "omnichannel_context", "voc"]
+    },
+    {
+      "id": "dynamic_channel_steering",
+      "term": "Wait-Aware Dynamic Channel Steering",
+      "definition": "Real-time deflection and modality-switching control that inspects live ACD queue wait telemetry and WFM capacity before steering a customer between voice, asynchronous messaging, visual web cards, or scheduled callback",
+      "tags": ["routing", "omnichannel", "capacity"],
+      "aliases": ["Modality Steering", "Capacity-Aware Deflection"],
+      "seeAlso": ["acd", "wfm", "omnichannel_context", "ivr"]
+    },
+    {
+      "id": "a2a_delegation_trigger",
+      "term": "Orchestrated A2A Specialist Delegation Trigger",
+      "definition": "Plane 3 invocation that dispatches a bounded sub-task with a signed context envelope to a specialist AI agent over the A2A protocol and merges the verified artifact back into the live customer journey",
+      "tags": ["a2a", "automation", "plane_3"],
+      "aliases": ["Multi-Agent Task Dispatch"],
+      "seeAlso": ["a2a_protocol", "cai", "omnichannel_context"]
+    },
+    {
+      "id": "contextual_hydration_inject",
+      "term": "Just-in-Time Context Envelope Hydration",
+      "definition": "Sub-second assembly and injection of the canonical omnichannel context envelope (intent stack, verified auth level, extracted slots, A2A provenance, and Plane 2 drift status) into ACD SIP headers and agent co-pilot desktops at the moment of handoff",
+      "tags": ["omnichannel", "state", "handoff"],
+      "aliases": ["JIT Context Injection", "Zero-Repetition Hydration"],
+      "seeAlso": ["omnichannel_context", "desktop_assist", "ccaas", "acd"]
+    },
+    {
+      "id": "strands_system_one_gate",
+      "term": "Calibrated System-One Decision Gate",
+      "definition": "Sub-10ms calibrated confidence gate evaluating proposal reliability into high (act immediately), medium (act with customer or supervisor verification), or low (gather more context or escalate) execution bands",
+      "tags": ["decisioning", "governance", "confidence"],
+      "aliases": ["Confidence-Banded Execution Gate"],
+      "seeAlso": ["a2a_protocol", "cai", "qa"]
     }
   ],
   "facets": [
     {
       "id": "jo_triggers_state",
       "name": "Journey Event Triggers & State Management",
-      "description": "Signals and state transitions that drive real-time journey progression",
+      "description": "Streaming signals and persistent state transitions that drive real-time journey progression across channels",
       "root": {
         "id": "journey_triggers_root",
         "name": "Journey Signals & States",
@@ -76,18 +134,18 @@
             "id": "operational_event_triggers",
             "name": "Operational & Product Event Triggers",
             "children": [
-              { "id": "fulfillment_exception_event", "name": "Service or Fulfillment Exception", "description": "Order delay, outage impact, or appointment reschedule event" },
-              { "id": "billing_anomaly_event", "name": "Billing Shock or Declined Payment", "description": "Unusual bill spike or renewal failure likely to drive an inbound contact" },
-              { "id": "digital_struggle_signal", "name": "Digital Friction & Rage-Click Signal", "description": "Repeated form errors, failed login attempts, or help-page looping in web or app" }
+              { "id": "fulfillment_exception_event", "name": "Service or Fulfillment Exception", "description": "Order delay, outage impact, or appointment reschedule event", "seeAlso": ["journey_mapping"] },
+              { "id": "billing_anomaly_event", "name": "Billing Shock or Declined Payment", "description": "Unusual bill spike or renewal failure likely to drive an inbound contact", "seeAlso": ["crm"] },
+              { "id": "digital_struggle_signal", "name": "Digital Friction & Rage-Click Signal", "description": "Repeated form errors, failed login attempts, or help-page looping in web or app", "seeAlso": ["journey_tracking", "omnichannel_context"] }
             ]
           },
           {
             "id": "lifecycle_journey_stages",
             "name": "Customer Lifecycle Journey Stages",
             "children": [
-              { "id": "onboarding_activation_stage", "name": "Onboarding & First-Value Stage", "description": "Guided setup and early adoption milestones", "seeAlso": ["crm"] },
-              { "id": "active_issue_resolution_stage", "name": "Active Case & Recovery Stage", "description": "Open support ticket or SLA breach recovery state" },
-              { "id": "renewal_retention_stage", "name": "Churn Risk & Retention Stage", "description": "Contract maturity or downgrade signal requiring retention arbitration" }
+              { "id": "onboarding_activation_stage", "name": "Onboarding & First-Value Stage", "description": "Guided setup and early adoption milestones", "seeAlso": ["crm", "journey_mapping"] },
+              { "id": "active_issue_resolution_stage", "name": "Active Case & Recovery Stage", "description": "Open support ticket or SLA breach recovery state", "seeAlso": ["acd"] },
+              { "id": "renewal_retention_stage", "name": "Churn Risk & Retention Stage", "description": "Contract maturity or downgrade signal requiring retention arbitration", "seeAlso": ["voc"] }
             ]
           }
         ]
@@ -96,7 +154,7 @@
     {
       "id": "jo_nba_arbitration_matrix",
       "name": "Next-Best-Action Arbitration & Policy",
-      "description": "Scoring and prioritization logic selecting the single best action for a customer moment",
+      "description": "Scoring and prioritization logic selecting the single best action and trajectory for a live customer moment",
       "root": {
         "id": "nba_arbitration_root",
         "name": "NBA Decisioning Hierarchy",
@@ -105,10 +163,10 @@
             "id": "priority_override_tiers",
             "name": "Action Priority Override Tiers",
             "children": [
-              { "id": "safety_compliance_tier", "name": "Regulatory, Fraud & Safety Override", "description": "Mandatory security verification or regulatory disclosure preempts all other actions", "seeAlso": ["fraud_auth"] },
-              { "id": "service_recovery_tier", "name": "Urgent Service Recovery & SLA Save", "description": "Proactive apology, fee credit, or priority routing when service failure occurred", "seeAlso": ["acd"] },
-              { "id": "retention_save_tier", "name": "Churn Prevention & Retention Offer", "description": "Targeted loyalty intervention for high-LTV customers exhibiting churn signals" },
-              { "id": "value_expansion_tier", "name": "Contextual Cross-Sell & Onboarding", "description": "Eligible plan optimization or feature adoption offer only when sentiment is positive" }
+              { "id": "safety_compliance_tier", "name": "Regulatory, Fraud & Safety Override", "description": "Mandatory security verification or regulatory disclosure preempts all other actions", "seeAlso": ["fraud_auth", "qa"] },
+              { "id": "service_recovery_tier", "name": "Urgent Service Recovery & SLA Save", "description": "Proactive apology, fee credit, or priority routing when service failure or conformance drift occurred", "seeAlso": ["acd", "journey_tracking"] },
+              { "id": "retention_save_tier", "name": "Churn Prevention & Retention Offer", "description": "Targeted loyalty intervention for high-LTV customers exhibiting churn signals", "seeAlso": ["crm"] },
+              { "id": "value_expansion_tier", "name": "Contextual Cross-Sell & Onboarding", "description": "Eligible plan optimization or feature adoption offer only when sentiment is positive and primary intent is resolved" }
             ]
           },
           {
@@ -116,7 +174,8 @@
             "name": "Channel & Timing Selection",
             "children": [
               { "id": "in_session_agent_prompt", "name": "Live Agent Co-Pilot NBA Card", "description": "Surfaces arbitrated action directly inside an active voice or chat handling session", "seeAlso": ["desktop_assist"] },
-              { "id": "proactive_async_push", "name": "Proactive SMS or In-App Notification", "description": "Low-friction digital nudge honoring customer channel preference and quiet hours", "seeAlso": ["outbound"] }
+              { "id": "proactive_async_push", "name": "Proactive SMS or In-App Notification", "description": "Low-friction digital nudge honoring customer channel preference and quiet hours", "seeAlso": ["outbound"] },
+              { "id": "wait_aware_modality_pivot", "name": "Wait-Aware Modality Pivot", "description": "Dynamically offers visual messaging or scheduled callback when voice queue EWT exceeds the Plane 1 stage SLA budget", "seeAlso": ["acd", "wfm", "omnichannel_context"] }
             ]
           }
         ]
@@ -125,14 +184,45 @@
     {
       "id": "jo_suppression_governance",
       "name": "Channel Suppression & Contact Governance",
-      "description": "Guardrails preventing conflicting messages, over-contacting, and tone-deaf outreach",
+      "description": "Guardrails preventing conflicting messages, over-contacting, and tone-deaf outreach across autonomous and human channels",
       "root": {
         "id": "suppression_governance_root",
         "name": "Suppression & Fatigue Guardrails",
         "children": [
-          { "id": "open_escalation_mute", "name": "Open Escalation Promotional Mute", "description": "Suppresses all sales and marketing outreach while an unresolved complaint or high-priority ticket is open" },
-          { "id": "recent_inbound_cooldown", "name": "Post-Contact Outbound Cooldown", "description": "Cancels scheduled outbound reminders if the customer resolved the issue inbound minutes earlier", "seeAlso": ["outbound"] },
-          { "id": "cross_channel_deduplication", "name": "Multi-Channel Alert Deduplication", "description": "Ensures a single disruption event sends one preferred notification rather than simultaneous email, SMS, and voice blasts" }
+          { "id": "open_escalation_mute", "name": "Open Escalation Promotional Mute", "description": "Suppresses all sales and marketing outreach while an unresolved complaint or high-priority ticket is open", "seeAlso": ["crm", "outbound"] },
+          { "id": "recent_inbound_cooldown", "name": "Post-Contact Outbound Cooldown", "description": "Cancels scheduled outbound reminders if the customer resolved the issue inbound minutes earlier", "seeAlso": ["outbound", "journey_tracking"] },
+          { "id": "cross_channel_deduplication", "name": "Multi-Channel Alert Deduplication", "description": "Ensures a single disruption event sends one preferred notification rather than simultaneous email, SMS, and voice blasts", "seeAlso": ["omnichannel_context"] }
+        ]
+      }
+    },
+    {
+      "id": "jo_conformance_and_a2a_interventions",
+      "name": "Real-Time Conformance Drift & A2A Interventions",
+      "description": "Active Plane 3 closed-loop controls that intercept Plane 2 drift from Plane 1 blueprints, delegate tasks to A2A specialist agents, rescue omnichannel context, and gate execution by calibrated confidence",
+      "root": {
+        "id": "jo_conformance_a2a_root",
+        "name": "Closed-Loop Drift & Multi-Agent Interventions",
+        "children": [
+          {
+            "id": "real_time_drift_correction",
+            "name": "Real-Time Blueprint Drift Interception",
+            "description": "In-flight remedies triggered when a live customer trace diverges from its Plane 1 Golden Path",
+            "children": [
+              { "id": "loop_breaker_escalation_save", "name": "Bot & IVR Loop-Breaker Save", "description": "Intercepts a customer on their second consecutive self-service loop and fast-tracks to a priority specialist queue", "seeAlso": ["journey_tracking", "ivr", "cai", "acd"] },
+              { "id": "sla_breach_priority_boost", "name": "Stage SLA Breach Priority Boost", "description": "Dynamically elevates ACD queue priority or triggers instant callback offer when cumulative journey wait approaches the Plane 1 ceiling", "seeAlso": ["journey_mapping", "acd", "wfm"] },
+              { "id": "repeat_relapse_concierge_route", "name": "Repeat-Relapse Concierge Routing", "description": "Detects a 7-day repeat contact at arrival and routes directly to a tier-2 resolution owner rather than standard tier-1 triage", "seeAlso": ["journey_tracking", "acd", "crm"] }
+            ]
+          },
+          {
+            "id": "a2a_and_context_rescue",
+            "name": "Dynamic A2A Delegation & Context Rescue",
+            "description": "Coordinating specialist AI agents and preserving full omnichannel state across modality and actor boundaries",
+            "children": [
+              { "id": "specialist_a2a_subtask_dispatch", "name": "Dynamic A2A Specialist Sub-Task Dispatch", "description": "Delegates domain-specific work (such as billing ledger audit or order reshipment) to an A2A specialist agent while maintaining customer dialog", "seeAlso": ["a2a_protocol", "cai"] },
+              { "id": "omnichannel_context_rescue_hydration", "name": "Omnichannel Context Rescue & Hydration", "description": "Reconstructs and injects dropped web or bot session slots into the agent desktop and SIP UUI envelope prior to call answer", "seeAlso": ["omnichannel_context", "desktop_assist", "ccaas"] },
+              { "id": "confidence_banded_human_escalation", "name": "Confidence-Banded Human-in-the-Loop Escalation", "description": "Applies Strands System-One confidence bands so high-confidence actions execute autonomously, medium verify with the customer, and low escalate warmly with full provenance", "seeAlso": ["a2a_protocol", "desktop_assist", "qa"] }
+            ]
+          }
         ]
       }
     }
@@ -151,7 +241,7 @@
       "name": "NBA-Attributed Contact Value",
       "unit": "currency_usd",
       "direction": "higher_is_better",
-      "definition": "Average retained or incremental customer value realized per interaction where the arbitrated Next-Best-Action was executed",
+      "definition": "Average retained or incremental customer value realized per interaction where the arbitrated Next-Best-Action or Next-Best-Experience was executed",
       "mapsToKpi": "avg_contact_value"
     },
     {
@@ -159,15 +249,31 @@
       "name": "End-to-End Journey Resolution Rate",
       "unit": "percent",
       "direction": "higher_is_better",
-      "definition": "Share of multi-step customer journeys resolved on the first assisted or automated touch without channel-hopping repeats",
+      "definition": "Share of multi-step customer journeys steered to full resolution on the first assisted or automated episode without channel-hopping repeats",
       "mapsToKpi": "fcr_rate"
+    },
+    {
+      "id": "drift_interception_sla_save_rate",
+      "name": "Live Conformance Drift SLA Save Rate",
+      "unit": "percent",
+      "direction": "higher_is_better",
+      "definition": "Percentage of in-flight journeys flagged for impending stage SLA breach or self-service looping that are recovered within the normative blueprint SLA budget via Plane 3 intervention",
+      "mapsToKpi": "sla_compliance_rate"
+    },
+    {
+      "id": "context_hydrated_escalation_aht",
+      "name": "Context-Hydrated Escalation Handle Time",
+      "unit": "seconds",
+      "direction": "lower_is_better",
+      "definition": "Average live agent handle time on escalated journeys where Plane 3 injected the full omnichannel and A2A context envelope prior to answer",
+      "mapsToKpi": "aht_seconds"
     },
     {
       "id": "high_priority_journey_intercepts",
       "name": "High-Priority Journey Escalation Intercepts",
       "unit": "count",
       "direction": "lower_is_better",
-      "definition": "Count of critical at-risk customer journeys requiring high-priority queue intervention",
+      "definition": "Count of critical at-risk customer journeys requiring emergency high-priority queue intervention after unmitigated drift",
       "mapsToKpi": "high_priority_contacts"
     },
     {
@@ -175,10 +281,79 @@
       "name": "Cross-Channel Journey CSAT",
       "unit": "score_1_to_5",
       "direction": "higher_is_better",
-      "definition": "Customer satisfaction score on interactions where prior digital or proactive journey state was preserved into handling",
+      "definition": "Customer satisfaction score on interactions where prior digital, A2A, or proactive journey state was preserved and orchestrated into handling",
       "mapsToKpi": "csat"
     }
   ],
+  "scoringModel": {
+    "id": "realtime_orchestration_precision_rubric",
+    "name": "Real-Time Journey Orchestration & Intervention Precision Scorecard",
+    "scaleType": "weighted_rubric",
+    "maxPoints": 100,
+    "autoFailItems": [
+      "regulatory_safety_override_ignored",
+      "promotional_pitch_during_unresolved_escalation",
+      "unhydrated_blind_escalation_handoff"
+    ],
+    "note": "Evaluates Plane 3 runtime orchestration quality across conformance drift saves, NBA priority hierarchy discipline, omnichannel context hydration, and confidence-gated A2A delegation.",
+    "dimensions": [
+      {
+        "id": "conformance_drift_responsiveness",
+        "name": "Live Conformance Drift Interception",
+        "weightPercent": 25,
+        "description": "Speed and accuracy in detecting Plane 2 divergence from Plane 1 blueprints and executing loop-breaker or SLA-save interventions",
+        "sampleCriteria": [
+          "Intercepts bot or IVR containment loops within 2 failed turns",
+          "Applies dynamic queue priority boosts when cumulative journey wait nears Plane 1 ceiling",
+          "Routes 7-day repeat-relapse arrivals directly to specialist recovery queues"
+        ]
+      },
+      {
+        "id": "nba_hierarchy_and_empathy_alignment",
+        "name": "NBA Priority Hierarchy & Sentiment Discipline",
+        "weightPercent": 25,
+        "description": "Strict enforcement of safety, compliance, and service-recovery overrides ahead of commercial or retention offers",
+        "sampleCriteria": [
+          "Preempts all commercial offers when open tickets, billing disputes, or negative sentiment exist",
+          "Matches action urgency and tone to live customer sentiment trajectory",
+          "Selects wait-aware channel steering aligned with real-time WFM and ACD capacity"
+        ]
+      },
+      {
+        "id": "omnichannel_and_a2a_context_continuity",
+        "name": "Omnichannel & A2A Context Envelope Hydration",
+        "weightPercent": 25,
+        "description": "Zero-loss propagation of identity, intent stack, extracted slots, and A2A specialist outputs across channel switches and agent handoffs",
+        "sampleCriteria": [
+          "Hydrates canonical context envelope into ACD SIP headers and agent co-pilot before call answer",
+          "Delegates bounded sub-tasks to A2A specialist agents with full provenance tracking",
+          "Eliminates customer re-authentication and slot repetition across modality switches"
+        ]
+      },
+      {
+        "id": "suppression_and_fatigue_governance",
+        "name": "Suppression Ledger & Contact Fatigue Governance",
+        "weightPercent": 15,
+        "description": "Prevention of redundant, stale, or over-frequent proactive and outbound notifications across channels",
+        "sampleCriteria": [
+          "Performs sub-second CRM and ACD resolution check immediately before message dispatch",
+          "Enforces hard rolling daily and weekly contact fatigue caps across all campaigns",
+          "Deduplicates multi-channel alerts to the customer's single preferred modality"
+        ]
+      },
+      {
+        "id": "confidence_band_calibration",
+        "name": "Calibrated Confidence-Band Execution",
+        "weightPercent": 10,
+        "description": "Adherence to System-One confidence thresholds governing autonomous execution versus verification or human escalation",
+        "sampleCriteria": [
+          "Executes autonomously only when calibrated confidence meets the high band threshold (0.70+)",
+          "Triggers explicit verification or disambiguation in the medium confidence band (0.40 to 0.69)",
+          "Escalates low-confidence (<0.40) or out-of-policy cases to human specialists with structured context"
+        ]
+      }
+    ]
+  },
   "failureModes": [
     {
       "id": "tone_deaf_upsell_collision",
@@ -190,22 +365,69 @@
       "id": "stale_event_nudge_storm",
       "name": "Delayed Event Nudge After Resolution",
       "signal": "Customers receive proactive 'issue detected' SMS hours after already calling in and resolving the problem, triggering confused repeat calls",
-      "mitigation": "Enforce sub-second CRM and ACD disposition state checks immediately prior to message dispatch"
+      "mitigation": "Enforce sub-second CRM, ACD, and Plane 2 trace disposition checks immediately prior to message dispatch"
     },
     {
       "id": "omnichannel_context_drop",
       "name": "Web-to-Voice Journey Amnesia",
       "signal": "Customer clicks 'Call Support' inside an authenticated app error flow but lands in generic IVR root menu with no context",
-      "mitigation": "Pass short-lived journey continuity tokens bindable by ANI or one-time session code to fast-track IVR and ACD routing"
+      "mitigation": "Inject canonical omnichannel continuity tokens bindable by ANI or session code to fast-track IVR and hydrate ACD and desktop co-pilot state"
     },
     {
       "id": "fatigue_cap_bypass",
       "name": "Siloed Campaign Fatigue Cap Bypass",
       "signal": "Opt-out rates and spam complaints climb because billing, collections, and marketing triggers fire independently on the same day",
       "mitigation": "Centralize all outbound and proactive triggers through a unified journey suppression ledger with hard daily and weekly caps"
+    },
+    {
+      "id": "blueprint_blind_local_optimization",
+      "name": "Blueprint-Blind Local Stage Optimization",
+      "signal": "Orchestrator aggressively deflects high-emotion Moment-of-Truth contacts to low-cost chat to save immediate voice queue wait, causing severe downstream repeat contacts and churn",
+      "mitigation": "Bind Plane 3 channel steering to Plane 1 Moment-of-Truth contracts and Plane 2 true 7-day journey FCR outcomes"
+    },
+    {
+      "id": "unbounded_a2a_ping_pong",
+      "name": "Unbounded A2A Specialist Delegation Loop",
+      "signal": "Orchestrator and specialist AI agents pass an ambiguous customer request back and forth across multiple A2A hops, spiking turn latency and token cost without resolution",
+      "mitigation": "Enforce strict hop-count TTL budgets in the context envelope and trigger confidence-banded warm human escalation when confidence remains below 0.70"
     }
   ],
   "integrations": [
+    {
+      "with": "journey_mapping",
+      "exchanges": [
+        "Normative Golden Path state graphs, Moment-of-Truth rules, stage SLA ceilings, and designed fallback branches compiled into live Plane 3 policies",
+        "Real-time intervention telemetry and A-B path variant outcomes returned to inform blueprint revisions"
+      ]
+    },
+    {
+      "with": "journey_tracking",
+      "exchanges": [
+        "In-flight stitched trace state, conformance drift deltas, repeat-relapse flags, and loop detections streamed into the Plane 3 decision engine",
+        "Arbitrated NBA decisions, channel-steering pivots, and suppression events logged back into the empirical journey trace"
+      ]
+    },
+    {
+      "with": "omnichannel_context",
+      "exchanges": [
+        "Canonical context envelopes read and mutated at every orchestration transition to preserve identity, slots, and A2A provenance",
+        "Continuity tokens issued for web-to-voice, voice-to-messaging, and bot-to-agent modality switches"
+      ]
+    },
+    {
+      "with": "a2a_protocol",
+      "exchanges": [
+        "Bounded specialist sub-tasks dispatched to domain AI agents with budget guardrails and required context envelopes",
+        "Specialist agent artifacts, confidence scores, and provenance spans returned for NBA synthesis or human handoff"
+      ]
+    },
+    {
+      "with": "cai",
+      "exchanges": [
+        "In-session dialog state, NLU confidence bands, and slot progress monitored to trigger loop-breaker escalations or multimodal pushes",
+        "Proactive nudge replies and hydrated journey context injected into virtual agent conversation state"
+      ]
+    },
     {
       "with": "crm",
       "exchanges": [
@@ -216,8 +438,8 @@
     {
       "with": "acd",
       "exchanges": [
-        "Journey continuity context, predicted intent, and dynamic priority boosts passed at call arrival",
-        "Queue wait telemetry read to decide between live routing and proactive digital deflection"
+        "Journey continuity context, predicted intent, and dynamic SLA-save priority boosts passed at call arrival",
+        "Queue wait telemetry read to decide between live routing and wait-aware digital steering"
       ]
     },
     {
@@ -230,7 +452,7 @@
     {
       "with": "desktop_assist",
       "exchanges": [
-        "Visual customer journey timeline and arbitrated Next-Best-Action card pushed to agent desktop",
+        "Visual customer journey timeline, Plane 2 drift alert, and arbitrated Next-Best-Action card pushed to agent desktop",
         "Agent action disposition and offer response captured in real time"
       ]
     }
