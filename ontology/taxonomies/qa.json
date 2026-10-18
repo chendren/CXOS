@@ -1,0 +1,195 @@
+{
+  "kind": "cxTaxonomy",
+  "id": "qa",
+  "acronym": "QA",
+  "name": "Quality Assurance",
+  "category": "quality",
+  "version": "2026.10.0",
+  "description": "Evaluation system that samples contacts, scores them against calibrated scorecards, and routes coaching and compliance findings back into WFM schedules and knowledge updates.",
+  "roleInCenter": "Quality control loop: measure what good looks like, catch compliance and coaching gaps, and make improvement actionable.",
+  "glossary": [
+    { "id": "evaluation", "term": "Evaluation", "definition": "A scored assessment of one sampled contact against a scorecard", "tags": ["core"] },
+    { "id": "scorecard", "term": "Scorecard", "definition": "The weighted rubric of sections and items defining expected behaviors", "tags": ["core"], "aliases": ["form", "evaluation form"] },
+    { "id": "auto_fail", "term": "Auto-Fail Item", "definition": "A scorecard item (e.g. skipped identity verification) that zeroes the entire evaluation", "aliases": ["fatal error"], "tags": ["compliance"] },
+    { "id": "calibration", "term": "Calibration Session", "definition": "Evaluators score the same contact(s) and reconcile variance so scores mean the same thing across people", "tags": ["consistency"] },
+    { "id": "disposition_quality", "term": "Disposition Accuracy", "definition": "Whether wrap-up codes assigned by agents match observed contact content", "tags": ["data"], "seeAlso": ["crm", "acd"] },
+    { "id": "calibrated_sample", "term": "Evaluation Sample Plan", "definition": "Which contacts get evaluated: random, targeted (speech analytics flags), or full coverage", "tags": ["coverage"] },
+    { "id": "appeal", "term": "Score Appeal", "definition": "Agent dispute workflow for contested evaluations with re-score by second evaluator", "tags": ["process"] },
+    { "id": "dual_capture", "term": "Dual Capture", "definition": "Simultaneous audio and screen recording of the interaction", "tags": ["evidence"] },
+    { "id": "coaching_plan", "term": "Coaching Plan", "definition": "Targeted development actions derived from evaluation trends", "tags": ["outcome"], "seeAlso": ["wfm"] },
+    { "id": "strategic_qa", "term": "Strategic QA", "definition": "Process-level review (drivers, root causes) beyond per-contact transactional scoring", "tags": ["method"] },
+    { "id": "auto_qa", "term": "Auto QA", "definition": "Automated evaluation of every contact via speech/text analytics rules", "tags": ["automated"], "seeAlso": ["speech_analytics"] },
+    { "id": "root_cause_tag", "term": "Root-Cause Tag", "definition": "Controlled vocabulary for the underlying driver of a quality failure (stale KM, tool gap, training gap)", "tags": ["analysis"], "seeAlso": ["km"] }
+  ],
+  "facets": [
+    {
+      "id": "qa_evaluation_scopes",
+      "name": "Evaluation Scopes",
+      "root": {
+        "id": "scopes",
+        "name": "QA Scopes",
+        "children": [
+          { "id": "transactional", "name": "Transactional QA", "description": "Per-contact rubric scoring, agent-level" },
+          {
+            "id": "strategic",
+            "name": "Strategic QA",
+            "description": "Aggregate process and driver analysis",
+            "children": [
+              { "id": "contact_driver_analysis", "name": "Contact-Driver Analysis" },
+              { "id": "process_gap_analysis", "name": "Process Gap Analysis" },
+              { "id": "policy_friction_review", "name": "Policy Friction Review" }
+            ]
+          },
+          { "id": "self_evaluation", "name": "Self-Evaluation", "description": "Agent scores own contact before evaluator view unlocks" },
+          { "id": "peer_qa", "name": "Peer QA", "description": "Team-level scoring rotations for culture and calibration" },
+          { "id": "automated_full_coverage", "name": "Automated Full Coverage", "description": "Rule-based auto QA on all contacts, human QA on flagged subsets" }
+        ]
+      }
+    },
+    {
+      "id": "qa_contact_dispositions",
+      "name": "Contact Disposition Resolution Outcomes",
+      "root": {
+        "id": "outcomes",
+        "name": "Resolution Outcomes (QA-verified)",
+        "children": [
+          { "id": "resolved_fcr", "name": "Resolved - First Contact", "description": "Need closed in one contact; maps to engine journey terminal stage", "seeAlso": ["acd"] },
+          { "id": "resolved_with_followup", "name": "Resolved - After Follow-Up", "description": "Closed across multiple touches" },
+          { "id": "escalated_resolved", "name": "Escalated and Resolved", "description": "Closed after tier-2 or supervisor escalation" },
+          { "id": "transferred_stranded", "name": "Transferred - Stranded", "description": "Never answered post-transfer; defect for routing review", "seeAlso": ["acd"] },
+          { "id": "callback_required", "name": "Callback Required", "description": "Promise made; fulfillment must be verified" },
+          { "id": "unresolved_policy", "name": "Unresolved - Policy Limit", "description": "Company policy prevents resolution; candidate for policy review" },
+          { "id": "wrong_party_disclosure", "name": "Wrong Party Issue", "description": "Authentication or disclosure error; auto-fail review" }
+        ]
+      }
+    },
+    {
+      "id": "qa_root_cause_codes",
+      "name": "Root-Cause Codes",
+      "root": {
+        "id": "root_causes",
+        "name": "Quality Root Causes",
+        "children": [
+          { "id": "knowledge_gap", "name": "Knowledge Gap", "description": "Agent lacked correct answer or used stale content", "seeAlso": ["km"] },
+          { "id": "skill_gap", "name": "Skill Gap", "description": "Coachable behavior deficiency" },
+          { "id": "tool_gap", "name": "Tool / System Friction", "description": "CRM ortelephony/tooling forced workarounds", "seeAlso": ["crm"] },
+          { "id": "policy_conflict", "name": "Policy Conflict", "description": "Rules contradict each other or customer reality" },
+          { "id": "process_design_gap", "name": "Process Design Gap", "description": "Routing or flow design misleads agent or customer", "seeAlso": ["ivr", "acd"] },
+          { "id": "volume_pressure", "name": "Volume Pressure", "description": "Occupancy or backlog forcing rushed handling", "seeAlso": ["wfm"] }
+        ]
+      }
+    }
+  ],
+  "metrics": [
+    { "id": "qa_score_avg", "name": "Average QA Score", "unit": "points", "direction": "higher_is_better", "definition": "Mean evaluation score across sampled contacts in period" },
+    { "id": "auto_fail_rate", "name": "Auto-Fail Rate", "unit": "percent", "direction": "lower_is_better", "definition": "Share of evaluations with an auto-fail item triggered" },
+    { "id": "evaluation_coverage_percent", "name": "Evaluation Coverage", "unit": "percent", "direction": "higher_is_better", "definition": "Share of contacts receiving any evaluation, human or automated" },
+    { "id": "calibration_variance", "name": "Calibration Variance", "unit": "points", "direction": "lower_is_better", "definition": "Score spread across evaluators on the same calibration contact; >10 pts signals calibration debt" },
+    { "id": "disposition_accuracy_percent", "name": "Disposition Accuracy", "unit": "percent", "direction": "higher_is_better", "definition": "Share of contacts whose wrap code matches QA-verified outcome", "mapsToKpi": "fcr_rate" },
+    { "id": "coaching_cycle_time_days", "name": "Coaching Cycle Time", "unit": "days", "direction": "lower_is_better", "definition": "Days from evaluation to completed coaching session" }
+  ],
+  "scoringModel": {
+    "id": "cxos_universal_scorecard",
+    "name": "CXOS Universal Contact Scorecard",
+    "scaleType": "weighted_rubric",
+    "maxPoints": 100,
+    "autoFailItems": ["identity_verification_skipped", "mandatory_disclosure_omitted", "regulatory_violation", "customer_harm_language"],
+    "note": "Weights set 2026-10-18 with the local Strands Decider (strands-decider-2B-hobson-v21, see docs/DECIDER.md): compliance floor of 20+ points confirmed (noul 0.858); compliance emphasis held at 'moderate', not strict (score 0.535, conf 0.494); largest-dimension question came back a statistical tie between accuracy_resolution 0.419 and compliance_security 0.422 (conf 0.278) so accuracy stays nominally largest until real QA traffic revisits it. Dimension extensions for a vertical should re-ask these questions on that vertical's traffic.",
+    "dimensions": [
+      { "id": "compliance_security", "name": "Compliance & Security", "weightPercent": 25, "description": "Identity verification strength, required disclosures, data handling, and payment security behaviors", "sampleCriteria": ["Verified identity before account changes", "Read required disclosure verbatim", "No PII exposure on recorded line"] },
+      { "id": "accuracy_resolution", "name": "Accuracy & Resolution", "weightPercent": 30, "description": "Correct substantive answer, correct process, and genuine resolution of the customer need", "sampleCriteria": ["Answer matches approved KM content", "Correct system actions taken", "Need actually closed, not deflected"] },
+      { "id": "process_efficiency", "name": "Process & Efficiency", "weightPercent": 15, "description": "Navigation, tooling, and handle-time discipline without rushing the customer", "sampleCriteria": ["Minimal dead air or redundant holds", "Correct wrap code first time", "No rework steps in CRM"] },
+      { "id": "communication_empathy", "name": "Communication & Empathy", "weightPercent": 20, "description": "Active listening, plain language, acknowledgment, and tone matched to customer sentiment", "sampleCriteria": ["Acknowledge before resolving", "No jargon without explanation", "Sentiment-appropriate pacing"] },
+      { "id": "brand_voice", "name": "Brand Experience Close", "weightPercent": 10, "description": "Recap, next steps, and closing that leave the customer confident the issue is owned", "sampleCriteria": ["Clear recap of actions and timing", "Sets expectations for follow-ups", "Ownership language, no deflecting"] }
+    ]
+  },
+  "failureModes": [
+    { "id": "gotcha_qa", "name": "Gotcha QA", "signal": "Agent trust pulse falls while scores rise; appeals spike on minor items", "mitigation": "Weighted rubric with behavior criteria, calibration, and appeal path" },
+    { "id": "calibration_drift", "name": "Calibration Drift", "signal": "Evaluator variance trending upward; scores diverge by team", "mitigation": "Monthly calibration sessions; shared anchors per scorecard item" },
+    { "id": "cherry_picked_sampling", "name": "Cherry-Picked Sampling", "signal": "Coverage stats nominal but variance of sampled AHT far below population", "mitigation": "Deterministic random sampling algorithm; audit trail on sample selection" },
+    { "id": "score_sales_disconnect", "name": "Score-Outcome Disconnect", "signal": "QA rising while CSAT and FCR fall", "mitigation": "Correlation review of qa_score_avg vs csat and fcr_rate each period" }
+  ],
+  "integrations": [
+    { "with": "speech_analytics", "exchanges": ["Auto-QA rule hits queue targeted human evaluation", "Transcripts and flags embedded in evaluation evidence"] },
+    { "with": "wfm", "exchanges": ["Coaching time scheduled as planned shrinkage", "Burnout-linked soft-skill trends shared with occupancy reviews"] },
+    { "with": "km", "exchanges": ["Root-cause knowledge gaps open KM article review tickets", "Article quality scores feed KM curation backlog"] },
+    { "with": "voc", "exchanges": ["Low-score contacts cross-referenced against survey verbatims for driver corroboration"] }
+  ],
+  "continuousDynamics": {
+    "stateSpaceDimension": 10,
+    "manifoldCoordinates": [
+      "dirichlet_rubric_concentration",
+      "inter_rater_drift_variance",
+      "system_one_brier_calibration",
+      "expected_calibration_error",
+      "risk_sampling_density_field",
+      "auto_fail_posterior_hazard",
+      "coaching_decay_half_life",
+      "disposition_concordance_rate",
+      "evaluator_anchor_bias",
+      "score_outcome_coupling"
+    ],
+    "stateVariables": [
+      {
+        "id": "beta_dirichlet_rubric_posterior",
+        "symbol": "alpha_qa(t)",
+        "domain": "(0, inf)^K",
+        "unit": "concentration_counts",
+        "description": "Continuous-time conjugate Beta-Binomial and Dirichlet concentration vector tracking posterior rubric mastery across K dimensions"
+      },
+      {
+        "id": "inter_rater_drift_variance",
+        "symbol": "V_rater(t)",
+        "domain": "[0, inf)",
+        "unit": "points^2",
+        "description": "Cross-evaluator score variance on shared anchor contacts measuring inter-rater calibration divergence"
+      },
+      {
+        "id": "strands_brier_ece_calibration",
+        "symbol": "E_cal(t)",
+        "domain": "[0, 1]",
+        "unit": "probability_error",
+        "description": "Strands 2B System-One Expected Calibration Error (ECE) and Brier residual between predicted score probabilities and human gold consensus"
+      },
+      {
+        "id": "risk_sampling_density_field",
+        "symbol": "p_sample(x, t)",
+        "domain": "[0, 1]",
+        "unit": "probability_density",
+        "description": "Risk-weighted importance sampling density over contact feature manifold x prioritizing compliance anomaly and high-uncertainty interactions"
+      },
+      {
+        "id": "coaching_retention_state",
+        "symbol": "M_coach(t)",
+        "domain": "[0, 100]",
+        "unit": "points",
+        "description": "Agent behavioral mastery state evolving under targeted coaching interventions and natural skill forgetting"
+      }
+    ],
+    "differentialEquations": [
+      {
+        "id": "dirichlet_rubric_posterior_flow",
+        "name": "Continuous Beta-Binomial & Dirichlet Rubric Posterior Flow",
+        "formula": "dalpha_qa(t) cdot dt^-1 = - lambda_forget cdot (alpha_qa(t) - alpha_prior) + p_sample(x, t) cdot y_obs(t)",
+        "interpretation": "Conjugate Dirichlet concentration parameters update continuously with importance-sampled evaluation observations y_obs while exponentially discounting stale evidence"
+      },
+      {
+        "id": "inter_rater_drift_diffusion_sde",
+        "name": "Inter-Rater Calibration Drift Diffusion",
+        "formula": "dV_rater(t) = (sigma_drift^2 - kappa_cal cdot I_session(t) cdot V_rater(t)) dt + xi_rater cdot sqrt(V_rater(t)) dW_t",
+        "interpretation": "Evaluator score variance grows linearly via natural interpretive drift sigma_drift^2 and contracts exponentially during consensus calibration sessions I_session(t)"
+      },
+      {
+        "id": "strands_system_one_calibration_ode",
+        "name": "Strands 2B System-One Brier & ECE Calibration Dynamics",
+        "formula": "dE_cal(t) cdot dt^-1 = - eta_temp cdot grad_T Brier(p_decider(t), y_gold(t)) + gamma_shift cdot D_kl(P_live(t) || P_anchor)",
+        "interpretation": "Temperature-scaled Strands 2B System-One decider drives Brier and ECE residuals down at rate eta_temp while covariate shift D_kl injects calibration pressure"
+      }
+    ],
+    "scaleInvariants": [
+      "Conjugate sufficient-statistic closure: Beta-Binomial and Dirichlet rubric posteriors update in O(1) time and memory per scored interaction",
+      "Horvitz-Thompson unbiasedness: inverse propensity weighting by p_sample(x, t)^-1 preserves unbiased center-wide QA means under 100x targeted risk oversampling",
+      "Proper scoring rule convexity: Brier score decomposition into reliability, resolution, and uncertainty remains invariant under affine scorecard rescaling"
+    ]
+  }
+}

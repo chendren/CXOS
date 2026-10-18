@@ -1,0 +1,386 @@
+{
+  "kind": "cxTaxonomy",
+  "id": "cai",
+  "acronym": "CAI",
+  "name": "Conversational AI & Virtual Agents",
+  "category": "self_service",
+  "version": "2026.10.0",
+  "description": "Natural-language voicebots and digital virtual agents combining deterministic intent NLU, structured slot filling, retrieval-augmented generation (RAG), hallucination guardrails, and warm context handoff.",
+  "roleInCenter": "Autonomous conversational resolver: understands free-form customer utterances, executes grounded self-service workflows, and hands off complex contacts with structured context.",
+  "glossary": [
+    {
+      "id": "intent_nlu",
+      "term": "Intent Classification NLU",
+      "definition": "Natural Language Understanding classifier that maps free-form customer utterances to canonical contact intents with confidence scores",
+      "tags": ["nlu", "core"],
+      "seeAlso": ["ivr"]
+    },
+    {
+      "id": "slot_filling",
+      "term": "Entity & Slot Filling",
+      "definition": "Dialog extraction mechanism that captures required parameters such as order dates, account identifiers, or amounts across multi-turn prompts",
+      "tags": ["nlu", "dialog"]
+    },
+    {
+      "id": "rag_grounding",
+      "term": "Retrieval-Augmented Generation (RAG)",
+      "definition": "Generative response architecture that restricts LLM synthesis strictly to retrieved knowledge base passages and verified CRM facts",
+      "tags": ["generative", "core"],
+      "seeAlso": ["km", "crm"]
+    },
+    {
+      "id": "hallucination_guardrail",
+      "term": "Hallucination & Policy Guardrail",
+      "definition": "Pre- and post-generation safety layer verifying factual entailment, policy compliance, and prompt-injection resistance before utterance delivery",
+      "tags": ["generative", "compliance"]
+    },
+    {
+      "id": "containment_handoff",
+      "term": "Warm Containment Handoff",
+      "definition": "Structured escalation protocol transferring verified identity, intent, extracted slots, and conversation summary to a live queue when self-service cannot complete",
+      "tags": ["routing", "outcome"],
+      "seeAlso": ["acd", "desktop_assist"]
+    },
+    {
+      "id": "turn_latency",
+      "term": "Conversational Turn Latency",
+      "definition": "End-to-end delay between end-of-speech detection and the first synthesized audio byte or chat token returned by the virtual agent",
+      "tags": ["performance", "voice"]
+    },
+    {
+      "id": "dialog_state_tracker",
+      "term": "Dialog State Tracker",
+      "definition": "Conversation memory maintaining active intent, filled slots, API transaction outcomes, and fallback retry counters across turns",
+      "tags": ["dialog", "core"]
+    },
+    {
+      "id": "disambiguation_prompt",
+      "term": "Clarification & Disambiguation Prompt",
+      "definition": "Targeted follow-up question triggered when top intent confidence falls into the medium verification band between two competing intents",
+      "tags": ["nlu", "dialog"]
+    },
+    {
+      "id": "endpointing_vad",
+      "term": "Voice Activity Detection & Endpointing",
+      "definition": "Acoustic turn-taking detector that distinguishes natural mid-sentence pauses from completed customer utterances in voicebots",
+      "tags": ["voice", "performance"],
+      "aliases": ["VAD"]
+    }
+  ],
+  "facets": [
+    {
+      "id": "cai_understanding_architecture",
+      "name": "NLU & Generative Grounding Architecture",
+      "description": "Classification, extraction, and grounded synthesis pipelines powering virtual agents",
+      "root": {
+        "id": "understanding_root",
+        "name": "Conversational Understanding Pipeline",
+        "children": [
+          {
+            "id": "deterministic_nlu_tier",
+            "name": "Deterministic Intent & Entity Tier",
+            "children": [
+              { "id": "hierarchical_intent_model", "name": "Hierarchical Intent Classifier", "description": "Domain-then-subintent classification with out-of-scope rejection thresholds" },
+              { "id": "typed_slot_extractor", "name": "Typed Entity & Slot Extractor", "description": "Constrained extraction for dates, currencies, alphanumeric codes, and products" },
+              { "id": "confidence_band_router", "name": "Confidence Band Policy", "description": "High confidence executes directly; medium disambiguates; low triggers fallback or escalation" }
+            ]
+          },
+          {
+            "id": "generative_rag_tier",
+            "name": "Generative LLM & RAG Tier",
+            "children": [
+              { "id": "hybrid_kb_retrieval", "name": "Hybrid Dense & Lexical Retrieval", "description": "Vector plus keyword chunk retrieval over approved KM articles", "seeAlso": ["km"] },
+              { "id": "tool_calling_agent", "name": "Schema-Bound Tool Execution", "description": "Read and write API invocations gated by authenticated customer session state", "seeAlso": ["crm", "fraud_auth"] },
+              { "id": "citation_synthesis", "name": "Grounded Answer Synthesis", "description": "Concise conversational response generation linked to source article passages" }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "cai_guardrails_safety",
+      "name": "Guardrails & Escalation Controls",
+      "description": "Runtime safety rails preventing ungrounded claims, policy violations, and frustrating bot loops",
+      "root": {
+        "id": "guardrails_root",
+        "name": "Safety & Escalation Guardrails",
+        "children": [
+          {
+            "id": "input_rails",
+            "name": "Input Filtering & Security Rails",
+            "children": [
+              { "id": "prompt_injection_shield", "name": "Prompt Injection & Jailbreak Detection", "description": "Blocks adversarial attempts to override system instructions or expose internal prompts" },
+              { "id": "pii_tokenization_rail", "name": "PII Redaction & Tokenization", "description": "Masks sensitive account numbers and health data prior to model inference" }
+            ]
+          },
+          {
+            "id": "output_rails",
+            "name": "Output Validation Rails",
+            "children": [
+              { "id": "faithfulness_check", "name": "Hallucination & Entailment Verifier", "description": "Rejects generated answers not directly supported by retrieved KM context" },
+              { "id": "commercial_policy_rail", "name": "Unauthorized Commitment Filter", "description": "Prevents bot from inventing discounts, fee waivers, or legal interpretations" }
+            ]
+          },
+          {
+            "id": "escalation_triggers",
+            "name": "Human Escalation Triggers",
+            "children": [
+              { "id": "sentiment_bailout", "name": "Frustration & Sentiment Bailout", "description": "Immediate transfer to live agent when customer frustration or anger is detected", "seeAlso": ["speech_analytics"] },
+              { "id": "max_reprompt_handoff", "name": "Consecutive No-Match Handoff", "description": "Escalates after two failed slot or intent turns with full transcript context", "seeAlso": ["acd"] }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "cai_turn_orchestration",
+      "name": "Voice & Digital Turn Orchestration",
+      "description": "Real-time turn-taking, latency management, and modality adaptation",
+      "root": {
+        "id": "turn_orchestration_root",
+        "name": "Turn-Taking & Modality Controls",
+        "children": [
+          { "id": "streaming_asr_tts", "name": "Streaming ASR & Neural TTS Pipeline", "description": "Sub-second incremental speech recognition and chunked voice synthesis", "seeAlso": ["ccaas"] },
+          { "id": "duplex_barge_in", "name": "Full-Duplex Barge-In Handling", "description": "Immediate TTS cancellation when caller speaks over the virtual agent" },
+          { "id": "multimodal_link_push", "name": "Voice-to-Digital Visual Card Push", "description": "Sends rich interactive cards via SMS or in-app while maintaining voice dialog", "seeAlso": ["journey_orchestration"] }
+        ]
+      }
+    }
+  ],
+  "metrics": [
+    {
+      "id": "true_ai_containment_rate",
+      "name": "True Conversational Containment Rate",
+      "unit": "percent",
+      "direction": "higher_is_better",
+      "definition": "Share of virtual agent sessions that fully resolve the customer intent without live agent transfer or repeat contact within 24 hours",
+      "mapsToKpi": "deflection_rate"
+    },
+    {
+      "id": "grounded_fcr_rate",
+      "name": "Virtual Agent First Contact Resolution",
+      "unit": "percent",
+      "direction": "higher_is_better",
+      "definition": "Percentage of bot-handled inquiries requiring no follow-up contact across any channel on the same issue",
+      "mapsToKpi": "fcr_rate"
+    },
+    {
+      "id": "p95_turn_latency_seconds",
+      "name": "P95 Conversational Turn Latency",
+      "unit": "seconds",
+      "direction": "lower_is_better",
+      "definition": "95th percentile response delay from customer end-of-turn to virtual agent response start",
+      "mapsToKpi": "avg_wait_time"
+    },
+    {
+      "id": "handoff_context_aht_reduction",
+      "name": "Escalated Contact Handle Time",
+      "unit": "seconds",
+      "direction": "lower_is_better",
+      "definition": "Average live-agent handle time on contacts escalated from the virtual agent with pre-filled slots and summary",
+      "mapsToKpi": "aht_seconds"
+    },
+    {
+      "id": "bot_interaction_csat",
+      "name": "Virtual Agent Post-Session CSAT",
+      "unit": "score_1_to_5",
+      "direction": "higher_is_better",
+      "definition": "Customer satisfaction rating captured immediately after a self-service virtual agent conversation",
+      "mapsToKpi": "csat"
+    }
+  ],
+  "failureModes": [
+    {
+      "id": "ungrounded_policy_hallucination",
+      "name": "Ungrounded Policy or Refund Hallucination",
+      "signal": "Escalated callers cite non-existent refund promises or policy rules generated by the bot; QA flags bot transcript discrepancies",
+      "mitigation": "Enforce strict RAG entailment scoring, zero-temperature decoding, and deterministic template responses for financial policies"
+    },
+    {
+      "id": "containment_trap_loop",
+      "name": "Containment Trap & Deflection Loop",
+      "signal": "High apparent containment paired with plummeting CSAT, hang-ups on turn 4+, and immediate callback spikes",
+      "mitigation": "Trigger automatic warm escalation after two disambiguation failures or rising frustration sentiment"
+    },
+    {
+      "id": "voicebot_turn_collision",
+      "name": "Premature Endpointing & Turn Collision",
+      "signal": "Voicebot interrupts callers mid-account-number or pauses over 2.5 seconds causing 'hello?' utterances",
+      "mitigation": "Tune slot-specific VAD silence thresholds and stream filler acknowledgments during slow backend tool calls"
+    },
+    {
+      "id": "amnesiac_agent_handoff",
+      "name": "Context Loss on Escalation Handoff",
+      "signal": "Live agents ask customers to repeat authentication and issue details already captured by the virtual agent",
+      "mitigation": "Bind dialog state slots and structured summary payload directly to ACD SIP headers and desktop co-pilot screen pop"
+    }
+  ],
+  "scoringModel": {
+    "id": "cai_grounding_turn_scorecard",
+    "name": "Conversational AI Grounding & Turn Performance Scorecard",
+    "scaleType": "weighted_rubric",
+    "maxPoints": 100,
+    "autoFailItems": [
+      "ungrounded_policy_or_financial_hallucination",
+      "prompt_injection_guardrail_breach",
+      "pii_leakage_in_generated_response",
+      "infinite_containment_loop_no_escalation"
+    ],
+    "note": "Evaluates virtual agent and voicebot interactions on RAG factual entailment, intent and slot precision, sub-second turn-taking latency, and warm context preservation on human handoff.",
+    "dimensions": [
+      {
+        "id": "rag_grounding_policy_faithfulness",
+        "name": "RAG Grounding & Policy Faithfulness",
+        "weightPercent": 30,
+        "description": "Strict factual entailment to retrieved knowledge base passages and verified CRM records with zero fabricated policies or unauthorized commitments",
+        "sampleCriteria": [
+          "Every substantive claim entails directly from cited KM chunk or CRM tool output",
+          "Commercial and refund guardrails block unapproved financial promises",
+          "Adversarial prompt-injection or out-of-scope probes safely deflected"
+        ]
+      },
+      {
+        "id": "intent_slot_disambiguation_precision",
+        "name": "Intent Recognition & Slot Disambiguation",
+        "weightPercent": 25,
+        "description": "Accurate multi-intent classification, constrained entity extraction, and targeted clarification when posterior entropy falls in the medium confidence band",
+        "sampleCriteria": [
+          "Correct primary intent resolved or disambiguated within one follow-up turn",
+          "Typed slots (dates, amounts, account IDs) extracted and normalized accurately",
+          "Zero repetitive reprompts for information already stated by the caller"
+        ]
+      },
+      {
+        "id": "turn_latency_barge_in_fluency",
+        "name": "Turn-to-First-Audio Latency & Duplex Fluency",
+        "weightPercent": 25,
+        "description": "Natural acoustic endpointing, sub-second streaming response initiation, and immediate full-duplex TTS cancellation on caller barge-in",
+        "sampleCriteria": [
+          "Turn-to-first-audio latency maintained below 800ms at P95",
+          "VAD endpointing avoids premature cutoff during digit or account recitation",
+          "Immediate TTS stop within 150ms when caller barges in"
+        ]
+      },
+      {
+        "id": "warm_escalation_context_continuity",
+        "name": "Warm Escalation & Context Handoff Continuity",
+        "weightPercent": 20,
+        "description": "Timely escalation on frustration or repeated no-match turns with full slot state and conversation summary hydrated onto the agent desktop",
+        "sampleCriteria": [
+          "Escalation triggered immediately upon consecutive no-match or sentiment bailout",
+          "Verified identity, intent, and extracted slots passed in ACD handoff envelope",
+          "Receiving agent greets customer with full context without asking to repeat"
+        ]
+      }
+    ]
+  },
+  "integrations": [
+    {
+      "with": "km",
+      "exchanges": [
+        "Approved knowledge chunks and embeddings retrieved for RAG grounding",
+        "Unanswered query gaps and low-confidence citations logged for content authoring"
+      ]
+    },
+    {
+      "with": "acd",
+      "exchanges": [
+        "Classified intent, extracted entity slots, and urgency passed on warm queue transfer",
+        "Real-time queue expected wait time checked before offering live transfer vs callback"
+      ]
+    },
+    {
+      "with": "desktop_assist",
+      "exchanges": [
+        "Structured bot transcript summary and verified slots rendered in agent co-pilot panel",
+        "Suggested next-best-response pre-populated from prior bot tool lookups"
+      ]
+    },
+    {
+      "with": "crm",
+      "exchanges": [
+        "Customer profile, recent orders, and tier fetched for personalized dialog turns",
+        "Self-service transaction outcomes and interaction records written to customer timeline"
+      ]
+    }
+  ],
+  "continuousDynamics": {
+    "stateSpaceDimension": 12,
+    "manifoldCoordinates": [
+      "intent_posterior_shannon_entropy",
+      "rag_cosine_grounding_margin",
+      "entailment_faithfulness_logit",
+      "hallucination_barrier_potential",
+      "slot_completion_progress",
+      "turn_to_first_audio_latency",
+      "vad_endpointing_confidence",
+      "barge_in_cancellation_gain",
+      "caller_frustration_gradient",
+      "dialog_loop_visitation_energy",
+      "tool_schema_validity_score",
+      "warm_handoff_readiness_state"
+    ],
+    "stateVariables": [
+      {
+        "id": "intent_posterior_entropy",
+        "symbol": "H(I | u_t)",
+        "domain": "[0, log(|I|)]",
+        "unit": "nats",
+        "description": "Continuous conditional Shannon entropy of the NLU intent distribution given streaming utterance prefix u_t, governing direct execution versus disambiguation or fallback"
+      },
+      {
+        "id": "rag_semantic_grounding_margin",
+        "symbol": "gamma_rag(t)",
+        "domain": "[-1, 1]",
+        "unit": "cosine_margin",
+        "description": "Continuous cosine similarity and natural-language inference entailment margin between generated response tokens and retrieved canonical KM passages"
+      },
+      {
+        "id": "hallucination_risk_barrier",
+        "symbol": "B_halluc(t)",
+        "domain": "R_+",
+        "unit": "barrier_energy",
+        "description": "Control barrier potential that diverges as grounding margin gamma_rag(t) approaches the minimum faithfulness threshold gamma_min, blocking ungrounded token emission"
+      },
+      {
+        "id": "streaming_ttfa_latency_state",
+        "symbol": "tau_ttfa(t)",
+        "domain": "R_+",
+        "unit": "seconds",
+        "description": "End-to-end streaming turn-to-first-audio latency state integrating VAD endpointing window, RAG retrieval delay, LLM time-to-first-token, and neural TTS synthesis"
+      },
+      {
+        "id": "containment_escalation_potential",
+        "symbol": "Phi_esc(t)",
+        "domain": "[0, 1]",
+        "unit": "escalation_probability",
+        "description": "Cumulative warm-handoff trigger potential driven by unresolved intent entropy, slot retry count, and caller acoustic-textual frustration gradient"
+      }
+    ],
+    "differentialEquations": [
+      {
+        "id": "streaming_intent_entropy_collapse_sde",
+        "name": "Streaming Utterance Intent Entropy Evolution SDE",
+        "formula": "dH(I | u_t) = -kappa_asr * I_info(du_t; I) * dt + eta_noise * WER_inst(t) * dt + sigma_ent * dW_t",
+        "interpretation": "Describes how conditional intent entropy H(I | u_t) contracts at rate proportional to mutual information gain I_info(du_t; I) as streaming ASR tokens arrive, counteracted by acoustic word-error noise WER_inst(t)"
+      },
+      {
+        "id": "rag_hallucination_control_barrier_law",
+        "name": "RAG Semantic Grounding & Hallucination Control Barrier Equation",
+        "formula": "B_halluc(t) = (gamma_rag(t) - gamma_min)^(-1),   dB_halluc(t) * inv(dt) <= alpha_cbf * (B_max - B_halluc(t))",
+        "interpretation": "Enforces positive invariance of the safe grounded generation set {gamma_rag(t) > gamma_min}: if candidate token decoding drives gamma_rag(t) toward gamma_min, the barrier potential B_halluc(t) clamps generation to deterministic KM templates or triggers warm escalation"
+      },
+      {
+        "id": "streaming_turn_latency_pipeline_ode",
+        "name": "Streaming Turn-to-First-Audio (TTFA) Latency Dynamics",
+        "formula": "d_tau_ttfa(t) * inv(dt) = -mu_pipe * (tau_ttfa(t) - tau_vad(t) - tau_rag_cache(t)) + beta_kv * L_context(t) * B_gpu(t)^(-1)",
+        "interpretation": "Couples VAD endpointing delay tau_vad(t), semantic cache hit time tau_rag_cache(t), and KV-cache context length L_context(t) scaled by GPU token bandwidth B_gpu(t) to keep turn-to-first-audio below the human conversational rhythm threshold"
+      }
+    ],
+    "scaleInvariants": [
+      "Zero-ungrounded-commit barrier invariant: control barrier B_halluc(t) guarantees P(gamma_rag(t) < gamma_min) = 0 for all financial, policy, and account-mutating utterances",
+      "Sub-800ms P95 conversational rhythm invariant: streaming ASR-to-RAG-to-TTS pipelining bounds tau_ttfa(t) below 0.8 seconds independent of total knowledge corpus size via HNSW vector indexing",
+      "Lossless handoff state conservation: 100% of verified entity slots and dialog state tracker variables transfer bijectively into the ACD and Desktop Assist context envelope upon escalation"
+    ]
+  }
+}

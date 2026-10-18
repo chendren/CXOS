@@ -1,0 +1,538 @@
+{
+  "kind": "cxTaxonomy",
+  "id": "wfm",
+  "acronym": "WFM",
+  "name": "Workforce Management",
+  "category": "workforce",
+  "version": "2026.10.0",
+  "description": "Planning and control loop for agent supply: contact-volume forecasting, schedule generation, intraday adherence management, and shrinkage accounting that together determine whether service levels are staffable.",
+  "roleInCenter": "Supply-side brain: predict demand and place agent hours where the ACD will need them.",
+  "glossary": [
+    {
+      "id": "forecast",
+      "term": "Forecast",
+      "definition": "Predicted contact volume and AHT per interval, feeding staffing requirements",
+      "tags": [
+        "planning"
+      ]
+    },
+    {
+      "id": "interval",
+      "term": "Interval",
+      "definition": "Planning time slice, typically 15 or 30 minutes",
+      "tags": [
+        "planning"
+      ]
+    },
+    {
+      "id": "staffing_requirement",
+      "term": "Staffing Requirement",
+      "definition": "Agents needed per interval after occupancy, shrinkage, and SL targets applied",
+      "aliases": [
+        "erlang requirement"
+      ],
+      "tags": [
+        "planning"
+      ]
+    },
+    {
+      "id": "shrinkage",
+      "term": "Shrinkage",
+      "definition": "Share of paid time agents are not available to handle contacts",
+      "tags": [
+        "planning_core"
+      ],
+      "seeAlso": [
+        "acd"
+      ]
+    },
+    {
+      "id": "schedule",
+      "term": "Schedule",
+      "definition": "Assigned shifts, breaks, and activities per agent per week",
+      "tags": [
+        "scheduling"
+      ]
+    },
+    {
+      "id": "adherence",
+      "term": "Adherence",
+      "definition": "Share of scheduled on-queue time the agent was actually available",
+      "aliases": [
+        "real-time adherence",
+        "RTA"
+      ],
+      "tags": [
+        "intraday"
+      ]
+    },
+    {
+      "id": "conformance",
+      "term": "Conformance",
+      "definition": "Schedule worked vs contracted hours regardless of timing; adherence is about timing",
+      "tags": [
+        "intraday"
+      ]
+    },
+    {
+      "id": "occupancy",
+      "term": "Occupancy",
+      "definition": "Share of available agent time spent handling/wrapping contacts; burnout risk above ~85-90%",
+      "tags": [
+        "health"
+      ]
+    },
+    {
+      "id": "intraday_management",
+      "term": "Intraday Management",
+      "definition": "Same-day rebalancing: moving aux time, lunches, or extra queues as actuals diverge from forecast",
+      "tags": [
+        "intraday"
+      ]
+    },
+    {
+      "id": "erlang_c",
+      "term": "Erlang C",
+      "definition": "Queueing model converting volume, AHT, and SL target into agent count",
+      "tags": [
+        "model"
+      ]
+    },
+    {
+      "id": "freeze_period",
+      "term": "Scheduling Freeze",
+      "definition": "Window before a schedule week when trades and time-off close so staffing is stable",
+      "tags": [
+        "scheduling"
+      ]
+    },
+    {
+      "id": "shift_bid",
+      "term": "Shift Bid",
+      "definition": "Seniority or performance-based process for assigning recurring schedules",
+      "tags": [
+        "scheduling"
+      ]
+    }
+  ],
+  "facets": [
+    {
+      "id": "wfm_planning_horizon",
+      "name": "Planning Horizon",
+      "root": {
+        "id": "horizon",
+        "name": "WFM Planning Stages",
+        "children": [
+          {
+            "id": "forecasting",
+            "name": "Forecasting",
+            "description": "Weeks-to-months-ahead volume and AHT prediction",
+            "children": [
+              {
+                "id": "long_range",
+                "name": "Long-Range (monthly+)",
+                "description": "Hiring and budget cycles"
+              },
+              {
+                "id": "tactical",
+                "name": "Tactical (weekly)",
+                "description": "Schedule build inputs"
+              }
+            ]
+          },
+          {
+            "id": "scheduling",
+            "name": "Scheduling",
+            "description": "Generate and assign schedules against requirements and constraints"
+          },
+          {
+            "id": "intraday",
+            "name": "Intraday",
+            "description": "Hour-by-hour adherence correction and surge response"
+          },
+          {
+            "id": "retrospective",
+            "name": "Retrospective",
+            "description": "Forecast accuracy, plan variance, and schedule satisfaction review"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wfm_shrinkage_classes",
+      "name": "Shrinkage Classes",
+      "root": {
+        "id": "shrinkage",
+        "name": "Shrinkage",
+        "children": [
+          {
+            "id": "planned",
+            "name": "Planned Shrinkage",
+            "children": [
+              {
+                "id": "breaks_meals",
+                "name": "Breaks & Meals"
+              },
+              {
+                "id": "training",
+                "name": "Training"
+              },
+              {
+                "id": "coaching",
+                "name": "Coaching & Huddles",
+                "seeAlso": [
+                  "qa"
+                ]
+              },
+              {
+                "id": "meetings",
+                "name": "Meetings & Project Work"
+              },
+              {
+                "id": "time_off",
+                "name": "Time Off & Holidays"
+              }
+            ]
+          },
+          {
+            "id": "unplanned",
+            "name": "Unplanned Shrinkage",
+            "children": [
+              {
+                "id": "absenteeism",
+                "name": "Absenteeism / Sick"
+              },
+              {
+                "id": "late_arrivals",
+                "name": "Late Arrivals & Early Departures"
+              },
+              {
+                "id": "system_outage",
+                "name": "System / Tooling Outage"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "wfm_schedule_states",
+      "name": "Agent Schedule States",
+      "root": {
+        "id": "states",
+        "name": "Schedule States",
+        "children": [
+          {
+            "id": "on_queue",
+            "name": "On Queue (Available)",
+            "description": "Routable by ACD"
+          },
+          {
+            "id": "handling",
+            "name": "Handling Contact",
+            "seeAlso": [
+              "acd"
+            ]
+          },
+          {
+            "id": "after_call_work",
+            "name": "After-Call Work",
+            "aliases": [
+              "ACW",
+              "wrap"
+            ],
+            "description": "Post-contact task state, demand-driven"
+          },
+          {
+            "id": "planned_aux",
+            "name": "Planned Aux (break, lunch, training)",
+            "seeAlso": [
+              "qa"
+            ]
+          },
+          {
+            "id": "offline_admin",
+            "name": "Offline Admin / Project"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wfm_shift_types",
+      "name": "Shift Types",
+      "root": {
+        "id": "shifts",
+        "name": "Shift Types",
+        "children": [
+          {
+            "id": "full_time_fixed",
+            "name": "Full-Time Fixed"
+          },
+          {
+            "id": "part_time_fixed",
+            "name": "Part-Time Fixed"
+          },
+          {
+            "id": "split_shift",
+            "name": "Split Shift",
+            "description": "Two work blocks covering peak shoulders"
+          },
+          {
+            "id": "flex_shift",
+            "name": "Flex Shift",
+            "description": "Windowed start time with core coverage hours"
+          },
+          {
+            "id": "seasonal",
+            "name": "Seasonal / Contingent"
+          }
+        ]
+      }
+    }
+  ],
+  "metrics": [
+    {
+      "id": "forecast_accuracy_percent",
+      "name": "Forecast Accuracy",
+      "unit": "percent",
+      "direction": "higher_is_better",
+      "definition": "100 minus interval MAPE between forecast and actual volume"
+    },
+    {
+      "id": "schedule_adherence_percent",
+      "name": "Schedule Adherence",
+      "unit": "percent",
+      "direction": "higher_is_better",
+      "definition": "Time in adherence over scheduled on-queue time",
+      "mapsToKpi": "sla_compliance_rate"
+    },
+    {
+      "id": "shrinkage_percent",
+      "name": "Shrinkage",
+      "unit": "percent",
+      "direction": "neutral",
+      "definition": "Unavailable share of paid agent time, planned + unplanned"
+    },
+    {
+      "id": "occupancy_percent",
+      "name": "Occupancy",
+      "unit": "percent",
+      "direction": "neutral",
+      "definition": "Handling+ACW share of available time; sustained >90% is burnout exposure"
+    },
+    {
+      "id": "staffing_variance",
+      "name": "Staffing Variance",
+      "unit": "fte",
+      "direction": "neutral",
+      "definition": "Requirement minus staffed per interval; negative means SL at risk",
+      "mapsToKpi": "sla_compliance_rate"
+    },
+    {
+      "id": "aht_seconds",
+      "name": "Actual AHT per Interval",
+      "unit": "seconds",
+      "direction": "neutral",
+      "definition": "Handle+hold+ACW mean used by forecast; a leading driver, not just an outcome",
+      "mapsToKpi": "aht_seconds"
+    }
+  ],
+  "failureModes": [
+    {
+      "id": "forecast_blind_spot",
+      "name": "Forecast Blind Spots",
+      "signal": "Campaign or outage volume arrives unbudgeted; interval requirement understated",
+      "mitigation": "Outbound and notification calendars wired into forecast inputs"
+    },
+    {
+      "id": "shrinkage_undercount",
+      "name": "Shrinkage Undercount",
+      "signal": "Planned schedule never achieves SL because shrinkage factor below actual",
+      "mitigation": "Recalculate monthly from aux actuals; separate planned vs unplanned trend lines"
+    },
+    {
+      "id": "adherence_whack_a_mole",
+      "name": "Adherence Whack-a-Mole",
+      "signal": "Intraday moves cascade breaks into coverage gaps later in day",
+      "mitigation": "Move-in-time budgets; escalate to supervisor only past concurrency threshold"
+    },
+    {
+      "id": "occupancy_burnout",
+      "name": "Occupancy Burnout",
+      "signal": "Occupancy >90% with rising absenteeism and QA soft-skill scores falling",
+      "mitigation": "Surge staffing plan, attrition-risk review, aux recovery windows"
+    }
+  ],
+  "integrations": [
+    {
+      "with": "acd",
+      "exchanges": [
+        "Interval stats (volume, SL, ASA) as forecast actuals",
+        "Aux codes used for adherence state matching"
+      ]
+    },
+    {
+      "with": "qa",
+      "exchanges": [
+        "Coaching blocks scheduled as planned shrinkage",
+        "Quality decline feeds burnout watchlist"
+      ]
+    },
+    {
+      "with": "outbound",
+      "exchanges": [
+        "Campaign calendars as forecast input events"
+      ]
+    },
+    {
+      "with": "voc",
+      "exchanges": [
+        "Schedule satisfaction items in employee pulse instruments"
+      ]
+    }
+  ],
+  "scoringModel": {
+    "id": "wfm_intraday_forecasting_occupancy_scorecard",
+    "name": "WFM Intraday Forecasting & Occupancy Health Scorecard",
+    "scaleType": "weighted_rubric",
+    "maxPoints": 100,
+    "autoFailItems": [
+      "unmitigated_sustained_occupancy_above_95_percent",
+      "missing_campaign_or_outage_forecast_overlay",
+      "regulatory_break_or_meal_compliance_breach"
+    ],
+    "note": "Evaluates interval arrival forecasting accuracy, shrinkage accounting fidelity, real-time adherence governance, and burnout-safe occupancy bands.",
+    "dimensions": [
+      {
+        "id": "interval_forecast_precision",
+        "name": "Interval Arrival & AHT Forecast Precision",
+        "weightPercent": 30,
+        "description": "Accuracy of 15-minute and 30-minute volume and AHT predictions incorporating seasonal baselines and outbound event overlays",
+        "sampleCriteria": [
+          "Interval volume MAPE stays below 7 percent across prime hours",
+          "AHT forecast variance stays within 10 percent of interval actuals",
+          "Marketing and outbound calendars ingested prior to schedule lock"
+        ]
+      },
+      {
+        "id": "shrinkage_calibration_adherence",
+        "name": "Shrinkage Calibration & Real-Time Adherence",
+        "weightPercent": 25,
+        "description": "Alignment between budgeted and observed planned and unplanned shrinkage paired with schedule adherence discipline",
+        "sampleCriteria": [
+          "Real-time schedule adherence exceeds 90 percent across skilled queues",
+          "Planned versus actual shrinkage variance stays under 2.5 percentage points",
+          "Aux state codes map cleanly between ACD telemetry and WFM rosters"
+        ]
+      },
+      {
+        "id": "occupancy_burnout_equilibrium",
+        "name": "Occupancy Health & Burnout Equilibrium",
+        "weightPercent": 20,
+        "description": "Maintenance of productive occupancy inside the sustainable 78 to 86 percent band without inducing agent fatigue spirals",
+        "sampleCriteria": [
+          "Interval occupancy remains within 78 to 86 percent target corridor",
+          "Zero teams sustain occupancy above 90 percent for 4+ consecutive intervals",
+          "Coaching and recovery aux blocks protected from routine cancellation"
+        ]
+      },
+      {
+        "id": "intraday_rebalancing_agility",
+        "name": "Intraday Surplus & Deficit Rebalancing Agility",
+        "weightPercent": 15,
+        "description": "Speed and stability of intraday flex actions when live arrival intensity diverges from tactical schedule plans",
+        "sampleCriteria": [
+          "Intraday flex or skill-rebalance triggers within 15 minutes of 2-sigma volume spike",
+          "Break adjustments preserve downstream afternoon coverage without cascade gaps",
+          "Net staffing variance stays within plus or minus 5 percent of Erlang requirement"
+        ]
+      },
+      {
+        "id": "schedule_ergonomics_conformance",
+        "name": "Schedule Ergonomics & Shift Conformance",
+        "weightPercent": 10,
+        "description": "Fairness of shift bids, adherence to freeze windows, and full conformance to labor and break regulations",
+        "sampleCriteria": [
+          "Schedule published ahead of freeze window with zero labor rule violations",
+          "Shift conformance sits between 98 and 102 percent of contracted hours",
+          "Employee pulse schedule satisfaction trends positive quarter over quarter"
+        ]
+      }
+    ]
+  },
+  "continuousDynamics": {
+    "stateSpaceDimension": 8,
+    "manifoldCoordinates": [
+      "intraday_arrival_intensity",
+      "agent_shrinkage_fraction",
+      "occupancy_fatigue_index",
+      "staffing_surplus_deficit",
+      "effective_aht_trajectory",
+      "adherence_compliance_ratio",
+      "hawkes_excitability_memory",
+      "intraday_control_flux"
+    ],
+    "stateVariables": [
+      {
+        "id": "intraday_arrival_intensity",
+        "symbol": "lambda(t)",
+        "domain": "[0, inf)",
+        "unit": "contacts cdot s^-1",
+        "description": "Continuous intraday arrival intensity driven by an inhomogeneous Poisson baseline plus self-exciting Hawkes outage and retry bursts"
+      },
+      {
+        "id": "agent_shrinkage_fraction",
+        "symbol": "s_shrink(t)",
+        "domain": "[0, 1]",
+        "unit": "ratio",
+        "description": "Instantaneous fraction of scheduled paid agent capacity unavailable due to planned and unplanned shrinkage diffusion"
+      },
+      {
+        "id": "occupancy_fatigue_index",
+        "symbol": "Phi_fat(t)",
+        "domain": "[0, 1]",
+        "unit": "fatigue_index",
+        "description": "Accumulated cognitive and physiological agent fatigue state driven by sustained high occupancy above the recovery threshold"
+      },
+      {
+        "id": "staffing_surplus_deficit",
+        "symbol": "Delta_N(t)",
+        "domain": "(-inf, inf)",
+        "unit": "fte",
+        "description": "Continuous net staffing balance equal to effective available agents minus instantaneous Erlang-A required staffing"
+      },
+      {
+        "id": "intraday_control_flux",
+        "symbol": "u_wfm(t)",
+        "domain": "(-inf, inf)",
+        "unit": "fte cdot s^-1",
+        "description": "Intraday management control flow reallocating aux windows, cross-skilled pools, and overtime to damp staffing deficits"
+      }
+    ],
+    "differentialEquations": [
+      {
+        "id": "hawkes_arrival_intensity_sde",
+        "name": "Inhomogeneous Poisson-Hawkes Intraday Arrival Intensity",
+        "formula": "dlambda(t) = kappa_lam cdot (lambda_base(t) - lambda(t)) dt + alpha_hawk cdot dN_retry(t) + sigma_lam cdot sqrt(lambda(t)) dW_t",
+        "interpretation": "Arrival rate tracks diurnal baseline lambda_base(t) while self-exciting retry and outage jumps dN_retry and Cox-Ingersoll-Ross volatility capture surge dynamics"
+      },
+      {
+        "id": "shrinkage_jacobi_diffusion_sde",
+        "name": "Continuous Agent Shrinkage Jacobi Diffusion",
+        "formula": "ds_shrink(t) = theta_shr cdot (s_plan(t) - s_shrink(t)) dt + eta_fat cdot Phi_fat(t) dt + sigma_shr cdot sqrt(s_shrink(t) cdot (1 - s_shrink(t))) dB_t",
+        "interpretation": "Shrinkage mean-reverts toward planned schedule s_plan(t) on [0, 1] while accumulated occupancy fatigue Phi_fat(t) drives upward unplanned drift"
+      },
+      {
+        "id": "occupancy_fatigue_staffing_control",
+        "name": "Occupancy Fatigue Accumulation & Staffing Control Flow",
+        "formula": "dPhi_fat(t) cdot dt^-1 = gamma_load cdot max(rho_occ(t) - rho_crit, 0) - mu_rec cdot (1 - rho_occ(t)), with dDelta_N(t) cdot dt^-1 = u_wfm(t) - N_sched(t) cdot (ds_shrink(t) cdot dt^-1) - dN_req(t) cdot dt^-1",
+        "interpretation": "Fatigue accumulates whenever occupancy rho_occ exceeds critical threshold rho_crit (~0.85) and recovers during idle intervals, coupling directly into net staffing Delta_N(t)"
+      }
+    ],
+    "scaleInvariants": [
+      "Square-root staffing elasticity: relative shrinkage variance decays as N_sched^-0.5 across pooled multi-skill rosters",
+      "O(1) streaming Kalman-Bucy filter update for intraday arrival intensity lambda(t) and shrinkage drift at 1-second telemetry ticks",
+      "Work-energy conservation over diurnal cycles: excess occupancy above rho_crit integrates linearly into downstream unplanned absenteeism and AHT inflation"
+    ]
+  }
+}

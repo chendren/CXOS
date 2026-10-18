@@ -1,0 +1,526 @@
+{
+  "kind": "cxTaxonomy",
+  "id": "journey_tracking",
+  "acronym": "CJT",
+  "name": "Customer Journey Tracking & Process Mining",
+  "category": "analytics",
+  "version": "2026.10.0",
+  "description": "Plane 2 of the CXOS Journey Triad — empirical, descriptive telemetry and process mining of what DID actually happen across time, channels, bots, and human agents: event-log stitching, actual path discovery, planned-vs-actual conformance checking, path drift vectors, channel ping-pong and loop detection, silent drop-off attribution, and repeat-contact root-cause correlation.",
+  "roleInCenter": "Empirical reality engine: reconstructs stitched cross-channel event traces from raw telemetry, discovers actual customer paths via process mining, and quantifies conformance drift against Plane 1 (journey_mapping) blueprints so Plane 3 (journey_orchestration) can intervene.",
+  "glossary": [
+    {
+      "id": "empirical_journey_trace",
+      "term": "Empirical Stitched Journey Trace",
+      "definition": "Time-ordered, identity-resolved sequence of all digital events, bot turns, queue waits, A2A delegations, and agent interactions belonging to a single customer goal episode",
+      "tags": ["core", "telemetry", "plane_2"],
+      "aliases": ["Stitched Journey Log", "Customer Episode Trace"],
+      "seeAlso": ["omnichannel_context", "crm", "journey_mapping"]
+    },
+    {
+      "id": "process_mining_discovery",
+      "term": "Empirical Journey Process Mining",
+      "definition": "Algorithmic reconstruction of the actual directed graph of customer transitions, probabilities, and dwell times directly from stitched production event logs",
+      "tags": ["core", "process_mining", "analytics"],
+      "aliases": ["Automated Path Discovery", "As-Is Journey Graph"],
+      "seeAlso": ["journey_mapping", "acd", "ivr"]
+    },
+    {
+      "id": "conformance_drift_delta",
+      "term": "Planned-vs-Actual Conformance Drift Delta",
+      "definition": "Quantitative divergence metric comparing the empirical process-mined journey trace against the Plane 1 normative Golden Path blueprint across stage order, latency, and channel hops",
+      "tags": ["core", "conformance", "drift"],
+      "aliases": ["Blueprint Drift Vector", "Fitness Delta"],
+      "seeAlso": ["journey_mapping", "journey_orchestration"]
+    },
+    {
+      "id": "channel_ping_pong_loop",
+      "term": "Cross-Channel Ping-Pong & Re-Entry Loop",
+      "definition": "Pathological journey pattern where a customer bounces repeatedly between channels or queues (such as web to chat to voice and back to web) without advancing toward resolution",
+      "tags": ["pathology", "friction", "omnichannel"],
+      "aliases": ["Modality Bounce Loop", "Transfer Pinball"],
+      "seeAlso": ["omnichannel_context", "acd", "ivr"]
+    },
+    {
+      "id": "silent_journey_dropoff",
+      "term": "Silent Mid-Journey Drop-Off & Abandonment",
+      "definition": "Unresolved termination where a customer abandons a digital flow, bot session, or hold queue and does not re-engage within the recovery window, indicating latent dissatisfaction or churn risk",
+      "tags": ["pathology", "abandonment", "churn"],
+      "aliases": ["Silent Abandon", "Unresolved Disengagement"],
+      "seeAlso": ["ivr", "cai", "journey_orchestration"]
+    },
+    {
+      "id": "shadow_escalation_path",
+      "term": "Undocumented Shadow Escalation Path",
+      "definition": "Frequently observed empirical route by which customers or agents bypass broken self-service menus or formal routing rules (such as zeroing out of IVR or using ad-hoc internal transfers)",
+      "tags": ["pathology", "conformance", "routing"],
+      "aliases": ["Workaround Route", "De-Facto Escalation Path"],
+      "seeAlso": ["journey_mapping", "ivr", "acd"]
+    },
+    {
+      "id": "repeat_contact_window_link",
+      "term": "Repeat-Contact Causal Window Linkage",
+      "definition": "Probabilistic and semantic linking of two or more contacts from the same customer within a rolling window (such as 24 hours or 7 days) to the same unresolved underlying Job-to-be-Done",
+      "tags": ["attribution", "fcr", "telemetry"],
+      "aliases": ["Recontact Attribution Link"],
+      "seeAlso": ["crm", "speech_analytics", "qa"]
+    },
+    {
+      "id": "stage_dwell_bottleneck",
+      "term": "Empirical Stage Dwell & Queue Bottleneck",
+      "definition": "Process-mined stage or transition edge exhibiting disproportionate p90 elapsed wait or handling time that violates Plane 1 stage SLA budgets",
+      "tags": ["performance", "bottleneck", "sla"],
+      "aliases": ["Latency Chokepoint"],
+      "seeAlso": ["journey_mapping", "wfm", "acd"]
+    },
+    {
+      "id": "context_reset_penalty",
+      "term": "Context Reset & Customer Repetition Penalty",
+      "definition": "Measured handle-time inflation and sentiment drop caused when a channel switch or transfer fails to propagate the omnichannel context envelope, forcing the customer to repeat information",
+      "tags": ["friction", "omnichannel", "effort"],
+      "aliases": ["Amnesia Penalty", "Re-Authentication Tax"],
+      "seeAlso": ["omnichannel_context", "speech_analytics", "desktop_assist"]
+    },
+    {
+      "id": "false_containment_leak",
+      "term": "False Self-Service Containment Leakage",
+      "definition": "Contacts scored by siloed IVR or bot telemetry as 'contained' because no immediate live transfer occurred, but which trigger an inbound call or chat on the same issue within hours",
+      "tags": ["pathology", "containment", "attribution"],
+      "aliases": ["Phantom Deflection", "Mirage Containment"],
+      "seeAlso": ["ivr", "cai", "acd"]
+    },
+    {
+      "id": "sentiment_degradation_slope",
+      "term": "Multi-Touch Sentiment Degradation Slope",
+      "definition": "Rate at which acoustic or lexical customer sentiment deteriorates across successive touchpoints, transfers, and bot turns within a single stitched journey trace",
+      "tags": ["sentiment", "analytics", "risk"],
+      "aliases": ["Frustration Velocity"],
+      "seeAlso": ["speech_analytics", "voc", "journey_orchestration"]
+    },
+    {
+      "id": "variant_entropy_index",
+      "term": "Journey Path Variant Entropy Index",
+      "definition": "Information-theoretic measure of dispersion across discovered path variants for a given intent; high entropy indicates chaotic, unpredictable customer experiences",
+      "tags": ["process_mining", "analytics", "conformance"],
+      "aliases": ["Path Spaghettification Score"],
+      "seeAlso": ["journey_mapping"]
+    }
+  ],
+  "facets": [
+    {
+      "id": "cjt_telemetry_reconstruction",
+      "name": "Event Ingestion & Trace Reconstruction",
+      "description": "Data engineering and identity-resolution pipelines that assemble fragmented multi-system logs into unified customer journey episodes",
+      "root": {
+        "id": "cjt_reconstruction_root",
+        "name": "Trace Stitching & Normalization Pipeline",
+        "children": [
+          {
+            "id": "identity_and_temporal_stitching",
+            "name": "Identity Resolution & Temporal Alignment",
+            "description": "Correlating anonymous, authenticated, and telephony identifiers across distributed clocks",
+            "children": [
+              { "id": "cross_system_correlation_keys", "name": "Cross-System Identity Correlation Keys", "description": "Deterministic and probabilistic graph linking web session cookies, CRM customer IDs, ANI phone numbers, and context envelope IDs", "seeAlso": ["omnichannel_context", "crm"] },
+              { "id": "temporal_clock_skew_normalization", "name": "Temporal Ordering & Clock-Skew Normalization", "description": "Sub-second monotonic event sequencing across cloud telephony, CRM webhooks, and mobile client telemetry", "seeAlso": ["ccaas"] },
+              { "id": "retroactive_anonymous_binding", "name": "Retroactive Anonymous-to-Known Binding", "description": "Back-stitching pre-login help-center browsing and failed web flows onto the customer record once authentication occurs", "seeAlso": ["crm", "fraud_auth"] }
+            ]
+          },
+          {
+            "id": "episode_and_span_clustering",
+            "name": "Episode Clustering & Multi-Actor Span Linking",
+            "description": "Grouping discrete contact events into coherent goal-driven journey instances",
+            "children": [
+              { "id": "session_boundary_episode_clustering", "name": "Intent-Window Episode Clustering", "description": "Dynamic boundary detection that groups multi-day touchpoints into one journey episode until true resolution occurs", "seeAlso": ["speech_analytics"] },
+              { "id": "multi_actor_a2a_human_span_linking", "name": "Multi-Actor A2A & Human Span Linking", "description": "Distributed tracing spans capturing orchestrator bots, specialist A2A agents, and live human transfer legs in a single causal tree", "seeAlso": ["a2a_protocol", "cai", "acd"] }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "cjt_conformance_and_drift",
+      "name": "Conformance Checking & Path Drift Analysis",
+      "description": "Algorithmic alignment of discovered empirical traces against Plane 1 prescriptive journey blueprints",
+      "root": {
+        "id": "cjt_conformance_root",
+        "name": "Blueprint Conformance & Drift Vectors",
+        "children": [
+          {
+            "id": "structural_conformance_scoring",
+            "name": "Structural Path Conformance & Fitness",
+            "description": "Token-replay and trace-alignment algorithms measuring adherence to planned stage sequences",
+            "children": [
+              { "id": "golden_path_fitness_score", "name": "Golden Path Trace Fitness Score", "description": "Normalized 0-to-1 alignment score measuring how closely empirical journeys follow the Plane 1 Golden Path", "seeAlso": ["journey_mapping"] },
+              { "id": "skipped_mandatory_stage_detection", "name": "Skipped Mandatory Stage Detection", "description": "Identifies traces where required authentication, disclosure, or triage stages were bypassed", "seeAlso": ["qa", "fraud_auth"] },
+              { "id": "unexpected_detour_branch_mining", "name": "Unexpected Detour & Shadow Branch Mining", "description": "Surfaces high-volume unplanned stage transitions not modeled in the prescriptive blueprint", "seeAlso": ["journey_mapping"] }
+            ]
+          },
+          {
+            "id": "budget_and_emotion_drift",
+            "name": "Budget Overrun & Trajectory Drift",
+            "description": "Comparing empirical latency, effort, and sentiment curves against Plane 1 normative budgets",
+            "children": [
+              { "id": "sla_budget_overrun_attribution", "name": "Stage SLA Budget Overrun Attribution", "description": "Pinpoints which frontstage wait or backstage API dependency caused a stage latency ceiling breach", "seeAlso": ["wfm", "acd"] },
+              { "id": "emotion_curve_divergence", "name": "Expected-vs-Actual Emotion Divergence", "description": "Detects stages where observed customer sentiment drops sharply below the Plane 1 expected emotion trajectory", "seeAlso": ["speech_analytics", "voc"] }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "cjt_path_pathology_taxonomy",
+      "name": "Empirical Journey Pathologies",
+      "description": "Catalog of recurring high-friction journey anti-patterns automatically classified by Plane 2 process mining",
+      "root": {
+        "id": "cjt_pathologies_root",
+        "name": "Discovered Journey Anti-Patterns",
+        "children": [
+          {
+            "id": "containment_and_escalation_failures",
+            "name": "Self-Service & Escalation Cascade Pathologies",
+            "description": "Failures at the boundary between automated self-service and human assistance",
+            "children": [
+              { "id": "self_service_loop_back", "name": "Self-Service Containment Loop-Back", "description": "Customer cycles through IVR or CAI menus three or more times without slot progression", "seeAlso": ["ivr", "cai"] },
+              { "id": "web_to_ivr_to_agent_cascade", "name": "Web-to-IVR-to-Agent Escalation Cascade", "description": "Three-stage escalation where digital failure leads to IVR re-triage and then unhydrated agent queueing", "seeAlso": ["omnichannel_context", "acd"] },
+              { "id": "dead_end_stage_abandonment", "name": "Dead-End Stage Abandonment", "description": "High concentration of customer drop-offs immediately following a confusing prompt, error screen, or hold spike", "seeAlso": ["ivr", "cai"] }
+            ]
+          },
+          {
+            "id": "transfer_and_relapse_pathologies",
+            "name": "Transfer Pinball & Repeat Relapse Pathologies",
+            "description": "Post-contact and multi-transfer failures that inflate contact volume and destroy trust",
+            "children": [
+              { "id": "ping_pong_transfer_chain", "name": "Multi-Hop Ping-Pong Transfer Chain", "description": "Contact transferred across three or more agent queues, including return transfers to the originating skill", "seeAlso": ["acd", "qa"] },
+              { "id": "repeat_contact_relapse_7d", "name": "7-Day Repeat-Contact Relapse", "description": "Customer re-initiates contact on the same underlying intent within 7 days of an apparent resolution wrap code", "seeAlso": ["qa", "crm"] }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "cjt_outcome_and_cohort_analytics",
+      "name": "True Outcome & Root-Cause Analytics",
+      "description": "End-to-end journey economics, true multi-touch resolution accounting, and closed-loop feedback to Plane 1 and Plane 3",
+      "root": {
+        "id": "cjt_outcome_root",
+        "name": "Journey Outcome & Root-Cause Attribution",
+        "children": [
+          {
+            "id": "true_resolution_and_economics",
+            "name": "True Resolution & Journey Economics",
+            "description": "Evaluating performance at the complete journey episode level rather than isolated contact segments",
+            "children": [
+              { "id": "true_journey_fcr_accounting", "name": "True Journey FCR vs Channel FCR", "description": "Reconciles optimistic single-channel FCR against cross-channel repeat contacts over the full episode window", "seeAlso": ["qa", "acd"] },
+              { "id": "cumulative_cost_per_journey", "name": "Cumulative Cost-per-Journey Accumulation", "description": "Sums all bot turns, telephony minutes, A2A compute tokens, and multi-touch agent handle times per resolved journey", "seeAlso": ["wfm", "ccaas"] }
+            ]
+          },
+          {
+            "id": "causal_drivers_and_feedback",
+            "name": "Churn Survival & Blueprint Feedback Loops",
+            "description": "Translating empirical path defects into retention risk models and Plane 1 blueprint updates",
+            "children": [
+              { "id": "friction_to_churn_survival_analysis", "name": "Friction-to-Churn Hazard Modeling", "description": "Quantifies how specific journey pathologies (such as false containment or 3+ transfers) elevate 90-day churn hazard", "seeAlso": ["crm", "voc"] },
+              { "id": "blueprint_recalibration_proposal", "name": "Automated Blueprint Recalibration Proposal", "description": "Generates structured change recommendations for Plane 1 stage budgets and Plane 3 intervention triggers", "seeAlso": ["journey_mapping", "journey_orchestration"] }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "metrics": [
+    {
+      "id": "empirical_journey_fcr_rate",
+      "name": "Empirical Cross-Channel Journey FCR Rate",
+      "unit": "percent",
+      "direction": "higher_is_better",
+      "definition": "Percentage of stitched customer journey episodes fully resolved in a single interaction without any same-intent repeat contact across any channel within 7 days",
+      "mapsToKpi": "fcr_rate"
+    },
+    {
+      "id": "verified_non_leaking_containment_rate",
+      "name": "Verified Non-Leaking Containment Rate",
+      "unit": "percent",
+      "direction": "higher_is_better",
+      "definition": "Share of self-service journeys (web, IVR, CAI) that complete without live agent transfer AND without false-containment repeat contact within 24 hours",
+      "mapsToKpi": "deflection_rate"
+    },
+    {
+      "id": "golden_path_conformance_rate",
+      "name": "Golden Path & Stage SLA Conformance Rate",
+      "unit": "percent",
+      "direction": "higher_is_better",
+      "definition": "Percentage of observed customer journeys that conform to their Plane 1 blueprint stage sequence and complete within cumulative stage SLA budgets",
+      "mapsToKpi": "sla_compliance_rate"
+    },
+    {
+      "id": "cumulative_journey_wait_seconds",
+      "name": "Cumulative Multi-Stage Journey Wait Time",
+      "unit": "seconds",
+      "direction": "lower_is_better",
+      "definition": "Total customer wait and hold time accumulated across all queue entries, transfers, and asynchronous delays within a stitched journey episode",
+      "mapsToKpi": "avg_wait_time"
+    },
+    {
+      "id": "cumulative_journey_handle_seconds",
+      "name": "Cumulative Multi-Touch Journey Handle Time",
+      "unit": "seconds",
+      "direction": "lower_is_better",
+      "definition": "Sum of all live agent and assisted handling durations across every touchpoint and repeat contact belonging to the same journey episode",
+      "mapsToKpi": "aht_seconds"
+    },
+    {
+      "id": "pathological_repeat_contact_volume",
+      "name": "Pathological Loop & Repeat Contact Volume",
+      "unit": "count",
+      "direction": "lower_is_better",
+      "definition": "Total inbound contacts generated by cross-channel ping-pong loops, false containment leaks, and 7-day repeat relapses",
+      "mapsToKpi": "total_contacts"
+    },
+    {
+      "id": "stitched_journey_episode_csat",
+      "name": "End-of-Journey Episode CSAT",
+      "unit": "score_1_to_5",
+      "direction": "higher_is_better",
+      "definition": "Customer satisfaction score attributed to the complete stitched journey trace rather than only the final handling agent",
+      "mapsToKpi": "csat"
+    }
+  ],
+  "scoringModel": {
+    "id": "journey_conformance_and_path_health_rubric",
+    "name": "Journey Conformance & Empirical Path Health Scorecard",
+    "scaleType": "weighted_rubric",
+    "maxPoints": 100,
+    "autoFailItems": [
+      "unstitched_channel_silo_blindspot",
+      "unmonitored_false_containment_leakage",
+      "mandatory_compliance_stage_bypassed"
+    ],
+    "note": "Evaluates the empirical health of a live customer journey cohort in Plane 2 by measuring trace stitch completeness, conformance to Plane 1 blueprints, and absence of multi-touch pathologies.",
+    "dimensions": [
+      {
+        "id": "trace_stitching_completeness",
+        "name": "Cross-Channel Trace Stitching Integrity",
+        "weightPercent": 20,
+        "description": "Completeness and temporal accuracy of identity-resolved event stitching across web, mobile, IVR, CAI, A2A, and ACD systems",
+        "sampleCriteria": [
+          "Links pre-authentication digital struggle events to subsequent inbound voice or chat contacts",
+          "Normalizes clock skew across telemetry sources to preserve causal stage ordering",
+          "Captures A2A specialist delegations and context envelope handoffs as linked child spans"
+        ]
+      },
+      {
+        "id": "blueprint_conformance_fitness",
+        "name": "Plane 1 Blueprint Conformance & Fitness",
+        "weightPercent": 25,
+        "description": "Degree to which empirical customer traces follow the prescriptive Golden Path or approved fallback branches within stage SLA budgets",
+        "sampleCriteria": [
+          "High trace fitness score against versioned Plane 1 journey blueprint",
+          "Zero unauthorized bypasses of mandatory identity or compliance stages",
+          "Stage transition latencies remain within Plane 1 stage SLA ceilings"
+        ]
+      },
+      {
+        "id": "containment_honesty_and_fcr",
+        "name": "True Containment Integrity & Multi-Touch FCR",
+        "weightPercent": 25,
+        "description": "Freedom from false self-service containment leaks and 7-day repeat-contact relapses on the same customer Job-to-be-Done",
+        "sampleCriteria": [
+          "Audits all IVR and CAI contained sessions against 24-hour cross-channel callback logs",
+          "Reconciles agent wrap-up dispositions against 7-day repeat contact recurrence",
+          "Quantifies context reset penalties when omnichannel continuity tokens drop"
+        ]
+      },
+      {
+        "id": "pathology_and_loop_suppression",
+        "name": "Loop, Ping-Pong & Silent Drop-Off Freedom",
+        "weightPercent": 20,
+        "description": "Low incidence of channel ping-pong loops, multi-hop transfer chains, and silent mid-journey abandonments",
+        "sampleCriteria": [
+          "Detects and flags self-service loop-backs and 3+ hop transfer chains",
+          "Attributes silent mid-journey drop-offs to specific friction stages",
+          "Tracks multi-touch sentiment degradation slope across transfers"
+        ]
+      },
+      {
+        "id": "closed_loop_actionability",
+        "name": "Plane 1 & Plane 3 Actionability",
+        "weightPercent": 10,
+        "description": "Speed and precision with which discovered drift and bottleneck signals feed Plane 3 live interceptors and Plane 1 blueprint updates",
+        "sampleCriteria": [
+          "Streams real-time conformance drift alerts to Plane 3 orchestration engine",
+          "Publishes ranked root-cause pathology reports to Plane 1 blueprint owners"
+        ]
+      }
+    ]
+  },
+  "failureModes": [
+    {
+      "id": "siloed_channel_myopia",
+      "name": "Siloed Channel Myopia (Mirage Containment)",
+      "signal": "IVR or bot team celebrates 80% self-service containment while ACD call volume rises because 60% of 'contained' customers call back within 2 hours via a different menu option",
+      "mitigation": "Replace single-session containment metrics with Plane 2 stitched 24-hour non-leaking containment accounting"
+    },
+    {
+      "id": "unstitched_anonymous_web_prehistory",
+      "name": "Unstitched Anonymous Web Pre-History",
+      "signal": "Process mining treats inbound voice calls as journey start node 1, missing the 15 minutes of failed web checkout and help-article looping that actually caused the call",
+      "mitigation": "Implement retroactive anonymous-to-known session binding using login events, continuity tokens, and probabilistic device-to-ANI correlation"
+    },
+    {
+      "id": "survivorship_bias_survey_attribution",
+      "name": "Survivorship Bias in Survey Attribution",
+      "signal": "Journey health appears green because post-call CSAT surveys only sample customers who survived queues and completed handling, ignoring silent mid-journey drop-offs",
+      "mitigation": "Combine VOC survey scores with Plane 2 silent drop-off rates and speech analytics sentiment on abandoned or transferred legs"
+    },
+    {
+      "id": "event_timestamp_clock_skew",
+      "name": "Cross-System Event Timestamp Skew",
+      "signal": "Discovered process graphs show impossible backward transitions (such as CRM wrap-up occurring before ACD call arrival) due to unsynchronized system clocks or batch log delays",
+      "mitigation": "Enforce NTP clock discipline, ingest logical sequence numbers from the context envelope, and distinguish event occurrence time from ingestion time"
+    },
+    {
+      "id": "confounding_repeats_as_new_journeys",
+      "name": "Confounding Repeat Contacts as Independent Journeys",
+      "signal": "Five contacts from the same customer over 4 days are logged as five fast, successful journeys instead of one broken 4-day ordeal",
+      "mitigation": "Apply semantic intent similarity and rolling 7-day episode clustering to bind repeat contacts into a single longitudinal journey trace"
+    },
+    {
+      "id": "alert_fatigue_benign_variants",
+      "name": "Alert Fatigue on Benign Path Variants",
+      "signal": "Process mining flags thousands of minor customer navigation variations as conformance violations, burying severe dead-end loops and compliance skips",
+      "mitigation": "Weight conformance drift alerts by downstream impact on CSAT, handle-time penalty, compliance risk, and repeat-contact probability"
+    }
+  ],
+  "integrations": [
+    {
+      "with": "journey_mapping",
+      "exchanges": [
+        "Normative Golden Path graphs, stage SLA budgets, and Moment-of-Truth definitions ingested as the conformance reference model",
+        "Empirical trace fitness scores, shadow escalation paths, and stage bottleneck rankings returned for blueprint recalibration"
+      ]
+    },
+    {
+      "with": "journey_orchestration",
+      "exchanges": [
+        "Live conformance drift deltas, loop detections, and sentiment degradation slopes streamed to trigger real-time Plane 3 interventions",
+        "Orchestration intervention logs and NBA execution outcomes ingested to measure whether Plane 3 saves actually restored the Golden Path"
+      ]
+    },
+    {
+      "with": "omnichannel_context",
+      "exchanges": [
+        "Context envelope IDs, provenance chains, and continuity tokens consumed to stitch cross-channel journey traces deterministically",
+        "Context-drop defects and repetition penalties reported whenever a modality switch fails to hydrate state"
+      ]
+    },
+    {
+      "with": "speech_analytics",
+      "exchanges": [
+        "Turn-level sentiment trajectories, repeat-call declarations, and root-cause friction topics enriched onto stitched journey stages",
+        "Journey pathology cohorts (such as false containment leaks and transfer chains) passed to target deep transcript mining"
+      ]
+    },
+    {
+      "with": "acd",
+      "exchanges": [
+        "Queue arrival, wait duration, transfer hop chains, and abandon events ingested for empirical path reconstruction",
+        "Ping-pong transfer patterns and shadow routing bypasses surfaced to optimize ACD skill rules"
+      ]
+    },
+    {
+      "with": "ivr",
+      "exchanges": [
+        "DTMF and voice menu traversals, containment dispositions, and bailout events ingested as frontstage journey spans",
+        "False containment leakage rates and dead-end menu drop-off nodes fed back for IVR call-flow tuning"
+      ]
+    },
+    {
+      "with": "crm",
+      "exchanges": [
+        "Customer identity graphs, case lifecycle timestamps, and account churn outcomes linked to empirical journey traces",
+        "Longitudinal journey episode summaries and repeat-relapse flags persisted to the customer timeline"
+      ]
+    },
+    {
+      "with": "voc",
+      "exchanges": [
+        "Post-interaction CSAT, NPS, and CES responses joined to the exact multi-touch journey trace that preceded the survey",
+        "Silent drop-off cohorts and high-friction trace segments exported to trigger targeted recovery outreach"
+      ]
+    }
+  ],
+  "continuousDynamics": {
+    "stateSpaceDimension": 16,
+    "manifoldCoordinates": [
+      "empirical_progress_coordinate",
+      "instantaneous_progress_velocity",
+      "observed_sentiment_valence",
+      "sentiment_degradation_velocity",
+      "mahalanobis_conformance_drift",
+      "cumulative_customer_effort",
+      "loop_oscillation_intensity",
+      "abandonment_hazard_rate"
+    ],
+    "stateVariables": [
+      {
+        "id": "empirical_journey_state_vector",
+        "symbol": "z(t)",
+        "domain": "R^16",
+        "unit": "manifold_vector",
+        "description": "Real-time 16-dimensional empirical state vector reconstructed via streaming Kalman-Bucy filtering over raw omnichannel clickstreams, voice acoustics, ACD queues, and A2A spans"
+      },
+      {
+        "id": "mahalanobis_conformance_drift",
+        "symbol": "D_M(z(t))",
+        "domain": "R_+",
+        "unit": "std_deviations",
+        "description": "Instantaneous Riemannian Mahalanobis distance between the live empirical trajectory z(t) and the Plane 1 Golden Attractor Tube (mu_star(tau_t), Sigma_star(tau_t))"
+      },
+      {
+        "id": "local_lyapunov_divergence_exponent",
+        "symbol": "lambda_Lyap(t)",
+        "domain": "R^1",
+        "unit": "per_second",
+        "description": "Continuous local Lyapunov exponent measuring whether the customer trajectory is converging toward resolution (lambda_Lyap < 0) or diverging into chaotic ping-pong and abandonment (lambda_Lyap > 0)"
+      },
+      {
+        "id": "churn_abandonment_hazard_intensity",
+        "symbol": "h_drop(t)",
+        "domain": "R_+",
+        "unit": "hazard_per_sec",
+        "description": "Instantaneous Cox proportional hazard intensity of silent mid-journey drop-off or 7-day repeat relapse conditioned on accumulated drift, wait time, and sentiment slope"
+      },
+      {
+        "id": "cohort_wasserstein_divergence",
+        "symbol": "W_2(rho_emp, rho_star)",
+        "domain": "R_+",
+        "unit": "transport_cost",
+        "description": "Continuous 2-Wasserstein optimal transport distance between the empirical population density rho_emp(z, t) and the normative Plane 1 blueprint density rho_star(z, t)"
+      }
+    ],
+    "differentialEquations": [
+      {
+        "id": "empirical_langevin_trajectory_sde",
+        "name": "Empirical Journey Trajectory Ito-Langevin SDE",
+        "formula": "dz(t) = f_emp(z(t), u(t)) * dt + Sigma_noise(z(t)) * dW(t) + J_jump * dN_event(t)",
+        "interpretation": "Models the live customer journey as a continuous jump-diffusion process combining deterministic stage progression f_emp, continuous sentiment and wait fluctuations dW(t), and discrete channel or transfer impulses dN_event(t)"
+      },
+      {
+        "id": "instantaneous_mahalanobis_drift_functional",
+        "name": "Continuous Golden-Tube Mahalanobis Conformance Metric",
+        "formula": "D_M(z(t), tau_t) = sqrt( (z(t) - mu_star(tau_t))^T * Sigma_star(tau_t)^(-1) * (z(t) - mu_star(tau_t)) )",
+        "interpretation": "Replaces brittle discrete token-replay checks with a smooth, differentiable conformance drift scalar evaluated at every streaming event arrival"
+      },
+      {
+        "id": "fokker_planck_cohort_density_pde",
+        "name": "Population Journey Flow Fokker-Planck Conservation PDE",
+        "formula": "d_t rho(z, t) = -div( rho(z, t) * v_flow(z, t) ) + 0.5 * Tr( D_diff * Hessian(rho(z, t)) ) - h_drop(z, t) * rho(z, t)",
+        "interpretation": "Tracks millions of concurrent journeys as a continuous Eulerian probability fluid rho(z, t), directly revealing stage bottlenecks (high density, low velocity v_flow) and silent drop-off sinks h_drop(z, t)"
+      }
+    ],
+    "scaleInvariants": [
+      "O(1) constant-memory recursive state estimation per journey (fixed 16-float state vector + sufficient statistics) scaling linearly to 5,000,000+ streaming events per second",
+      "Time-scale invariance across millisecond A2A spans, minute-scale voice queues, and multi-day asynchronous messaging pauses via continuous-time hazard integration",
+      "Fokker-Planck density aggregation eliminates O(N^2) pairwise trace alignment, computing cohort-wide conformance and bottleneck fields in single-pass streaming reductions"
+    ]
+  }
+}

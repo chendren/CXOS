@@ -1,0 +1,517 @@
+{
+  "kind": "cxTaxonomy",
+  "id": "journey_mapping",
+  "acronym": "CJM",
+  "name": "Customer Journey Mapping (Prescriptive Blueprint)",
+  "category": "analytics",
+  "version": "2026.10.0",
+  "description": "Plane 1 of the CXOS Journey Triad — prescriptive, normative design of what the organization HOPES and plans will happen across a customer journey: persona and Jobs-to-be-Done (JTBD) intent framing, Golden Path stage blueprints, Moments of Truth (MoT), planned channel swimlanes, target stage SLA and effort budgets, designed fallback and exception branches, and expected emotion curves.",
+  "roleInCenter": "Normative journey architect: codifies the target Golden Path, stage SLA budgets, and handoff contracts that Plane 2 (journey_tracking) audits for empirical drift and Plane 3 (journey_orchestration) enforces in real time.",
+  "glossary": [
+    {
+      "id": "prescriptive_journey_blueprint",
+      "term": "Prescriptive Journey Blueprint",
+      "definition": "Versioned, machine-readable architectural specification of the intended end-to-end customer journey across personas, stages, channels, and supporting backstage systems",
+      "tags": ["core", "blueprint", "plane_1"],
+      "aliases": ["Normative Journey Map", "Target Journey Specification"],
+      "seeAlso": ["journey_tracking", "journey_orchestration"]
+    },
+    {
+      "id": "golden_path_specification",
+      "term": "Normative Golden Path Specification",
+      "definition": "The primary designed sequence of customer stages and channel touchpoints that achieves true resolution with minimum customer effort and optimal unit cost",
+      "tags": ["core", "blueprint", "optimization"],
+      "aliases": ["Ideal Path", "Canonical Happy Path"],
+      "seeAlso": ["journey_tracking", "ivr", "acd"]
+    },
+    {
+      "id": "jobs_to_be_done_framing",
+      "term": "Customer Jobs-to-be-Done Goal Framing",
+      "definition": "Outcome-oriented articulation of the underlying functional, emotional, and social job the customer is trying to accomplish, independent of internal department boundaries",
+      "tags": ["persona", "intent", "design"],
+      "aliases": ["JTBD", "Customer Goal Statement"],
+      "seeAlso": ["voc", "crm"]
+    },
+    {
+      "id": "moment_of_truth_node",
+      "term": "Critical Moment of Truth Node",
+      "definition": "High-stakes inflection stage in the journey blueprint where interaction quality disproportionately determines trust, retention, or long-term loyalty",
+      "tags": ["blueprint", "loyalty", "risk"],
+      "aliases": ["MoT", "Make-or-Break Touchpoint"],
+      "seeAlso": ["voc", "qa", "journey_orchestration"]
+    },
+    {
+      "id": "planned_channel_swimlane",
+      "term": "Planned Omnichannel Swimlane Architecture",
+      "definition": "Prescriptive allocation of journey stages across self-service web, mobile app, conversational AI, asynchronous messaging, and assisted voice lanes with explicit context-bridge contracts",
+      "tags": ["architecture", "omnichannel", "routing"],
+      "aliases": ["Channel Choreography Matrix"],
+      "seeAlso": ["omnichannel_context", "cai", "ccaas"]
+    },
+    {
+      "id": "stage_sla_and_effort_budget",
+      "term": "Stage Transition SLA & Customer Effort Budget",
+      "definition": "Quantitative ceiling assigned to each blueprint stage specifying maximum acceptable latency, customer wait time, authentication steps, and channel switches",
+      "tags": ["governance", "sla", "effort"],
+      "aliases": ["Friction Budget", "Stage Latency Budget"],
+      "seeAlso": ["wfm", "acd", "voc"]
+    },
+    {
+      "id": "designed_fallback_branch",
+      "term": "Designed Exception & Fallback Branch",
+      "definition": "Pre-engineered alternate route in the journey blueprint that gracefully handles low NLU confidence, policy exceptions, out-of-hours arrival, or backend outages without stranding the customer",
+      "tags": ["resilience", "blueprint", "escalation"],
+      "aliases": ["Exception Path", "Graceful Recovery Branch"],
+      "seeAlso": ["cai", "acd", "journey_orchestration"]
+    },
+    {
+      "id": "expected_emotion_trajectory",
+      "term": "Target Sentiment & Emotion Trajectory",
+      "definition": "Prescriptive curve plotting anticipated customer anxiety, relief, and confidence across each stage of the blueprint to guide empathy cues and proactive reassurance",
+      "tags": ["sentiment", "empathy", "design"],
+      "aliases": ["Planned Emotion Curve"],
+      "seeAlso": ["speech_analytics", "voc", "qa"]
+    },
+    {
+      "id": "service_blueprint_frontstage",
+      "term": "Frontstage Customer Experience Layer",
+      "definition": "Visible interfaces, prompts, notifications, and live agent dialogs directly experienced by the customer above the line of visibility in a service blueprint",
+      "tags": ["service_design", "frontstage"],
+      "aliases": ["Above the Line of Visibility"],
+      "seeAlso": ["ivr", "cai", "desktop_assist"]
+    },
+    {
+      "id": "service_blueprint_backstage",
+      "term": "Backstage System & Agent Choreographies",
+      "definition": "Internal API workflows, A2A specialist delegations, CRM state mutations, and WFM queue allocations below the line of visibility required to fulfill frontstage promises",
+      "tags": ["service_design", "backstage", "architecture"],
+      "aliases": ["Below the Line of Visibility"],
+      "seeAlso": ["a2a_protocol", "crm", "km", "wfm"]
+    },
+    {
+      "id": "entry_intent_precondition",
+      "term": "Journey Entry Intent & Precondition Contract",
+      "definition": "Formal specification of the customer trigger, identity state, and segment eligibility criteria that instantiate a specific journey blueprint",
+      "tags": ["contract", "intent", "state"],
+      "aliases": ["Journey Trigger Specification"],
+      "seeAlso": ["journey_orchestration", "fraud_auth", "crm"]
+    },
+    {
+      "id": "exit_resolution_criterion",
+      "term": "Normative Exit & True Resolution Criterion",
+      "definition": "Customer-validated condition proving the underlying Job-to-be-Done is genuinely complete and verified free of downstream repeat contacts within the audit window",
+      "tags": ["contract", "resolution", "outcome"],
+      "aliases": ["Done Criterion", "True Journey Closure"],
+      "seeAlso": ["journey_tracking", "qa", "voc"]
+    }
+  ],
+  "facets": [
+    {
+      "id": "cjm_blueprint_anatomy",
+      "name": "Journey Blueprint Structural Anatomy",
+      "description": "Core structural layers composing a machine-executable customer journey blueprint from persona framing down to backstage choreography",
+      "root": {
+        "id": "cjm_anatomy_root",
+        "name": "Blueprint Structural Layers",
+        "children": [
+          {
+            "id": "persona_and_jtbd_archetypes",
+            "name": "Persona & JTBD Intent Archetypes",
+            "description": "Customer segment profiles paired with functional and emotional Jobs-to-be-Done",
+            "children": [
+              { "id": "functional_job_definition", "name": "Functional Job Specification", "description": "Concrete task outcome the customer seeks to complete such as disputing a charge or activating hardware", "seeAlso": ["crm"] },
+              { "id": "emotional_reassurance_goal", "name": "Emotional & Trust Goal", "description": "Target psychological state such as peace of mind during fraud lockouts or billing shocks", "seeAlso": ["voc", "fraud_auth"] },
+              { "id": "persona_vulnerability_profile", "name": "Persona Vulnerability & Accessibility Profile", "description": "Designed accommodations for elderly, stressed, or assistive-technology customers" }
+            ]
+          },
+          {
+            "id": "macro_and_micro_stage_graphs",
+            "name": "Lifecycle Macro-Phases & Micro-Stage Graphs",
+            "description": "Hierarchical decomposition of customer lifecycle phases into directed acyclic stage transition graphs",
+            "children": [
+              { "id": "lifecycle_macro_phase", "name": "Lifecycle Macro-Phase Node", "description": "High-level journey horizon covering onboarding, routine usage, exception recovery, and renewal", "seeAlso": ["crm"] },
+              { "id": "micro_stage_transition_graph", "name": "Micro-Stage Directed Graph", "description": "Granular step-by-step state nodes with explicit entry guards, SLA timers, and transition predicates", "seeAlso": ["journey_orchestration"] },
+              { "id": "moment_of_truth_checkpoint", "name": "Moment of Truth Gate", "description": "Designated critical stage requiring elevated quality assurance and zero context loss", "seeAlso": ["qa", "omnichannel_context"] }
+            ]
+          },
+          {
+            "id": "frontstage_backstage_swimlanes",
+            "name": "Frontstage vs Backstage Service Swimlanes",
+            "description": "Vertical alignment of customer-visible touchpoints with underlying agent, bot, and system dependencies",
+            "children": [
+              { "id": "customer_visible_touchpoint_lane", "name": "Frontstage Customer Touchpoint Lane", "description": "UI screens, voice prompts, and live conversations experienced directly by the customer", "seeAlso": ["ivr", "cai"] },
+              { "id": "agent_and_copilot_lane", "name": "Frontline Agent & Co-Pilot Swimlane", "description": "Desktop guidance, knowledge cards, and wrap-up workflows supporting human handling", "seeAlso": ["desktop_assist", "km"] },
+              { "id": "backstage_a2a_and_api_lane", "name": "Backstage System & A2A Choreography Lane", "description": "Sub-second API calls, multi-agent A2A task delegations, and asynchronous fulfillment jobs", "seeAlso": ["a2a_protocol", "crm"] }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "cjm_path_classifications",
+      "name": "Prescriptive Path Classifications",
+      "description": "Normative taxonomy of designed routes through a journey blueprint across primary, recovery, proactive, and compliance scenarios",
+      "root": {
+        "id": "cjm_paths_root",
+        "name": "Prescriptive Journey Path Types",
+        "children": [
+          {
+            "id": "primary_resolution_paths",
+            "name": "Primary & Proactive Resolution Paths",
+            "description": "Low-effort primary routes engineered for autonomous or proactive completion",
+            "children": [
+              { "id": "primary_golden_path", "name": "Primary Self-Service Golden Path", "description": "Zero-escalation digital or conversational AI path resolving the customer need on first contact", "seeAlso": ["cai", "ivr"] },
+              { "id": "proactive_deflection_path", "name": "Proactive Pre-Contact Deflection Path", "description": "Center-initiated notification path that resolves a known disruption before the customer initiates contact", "seeAlso": ["journey_orchestration", "outbound"] },
+              { "id": "hybrid_assisted_golden_path", "name": "Context-Hydrated Assisted Golden Path", "description": "Planned digital pre-collection followed by warm transfer to a specialist agent for high-complexity intents", "seeAlso": ["omnichannel_context", "acd"] }
+            ]
+          },
+          {
+            "id": "exception_and_compliance_paths",
+            "name": "Recovery, Compliance & Degradation Paths",
+            "description": "Pre-planned contingency branches when primary paths encounter friction, risk, or system constraints",
+            "children": [
+              { "id": "assisted_service_recovery_path", "name": "Assisted Service Recovery Path", "description": "High-empathy escalation route triggered after prior service failure or SLA breach", "seeAlso": ["acd", "voc"] },
+              { "id": "regulatory_compliance_mandatory_path", "name": "Regulatory & Compliance Mandatory Path", "description": "Non-bypassable identity verification, consent capture, and verbatim disclosure sequence", "seeAlso": ["fraud_auth", "qa"] },
+              { "id": "designed_graceful_degradation_branch", "name": "Designed Graceful Degradation Branch", "description": "Planned fallback to scheduled callback or asynchronous messaging during queue surges or backend downtime", "seeAlso": ["wfm", "ccaas"] }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "cjm_normative_targets",
+      "name": "Normative Targets & Guardrail Budgets",
+      "description": "Quantitative performance thresholds and friction ceilings embedded directly into blueprint stages",
+      "root": {
+        "id": "cjm_targets_root",
+        "name": "Stage Budgets & Normative Guardrails",
+        "children": [
+          {
+            "id": "latency_and_effort_ceilings",
+            "name": "Latency & Customer Effort Ceilings",
+            "description": "Hard upper bounds on customer time and cognitive effort across journey stages",
+            "children": [
+              { "id": "stage_latency_sla_ceiling", "name": "Stage Transition Latency SLA Ceiling", "description": "Maximum allowed elapsed time between stage entry and completion across synchronous or asynchronous waits", "seeAlso": ["acd", "wfm"] },
+              { "id": "max_channel_hop_budget", "name": "Maximum Channel-Hop Budget", "description": "Normative cap on modality switches allowed within a single journey (typically at most 1 planned switch)", "seeAlso": ["omnichannel_context", "journey_tracking"] },
+              { "id": "zero_repetition_effort_guard", "name": "Zero-Repetition Effort Guardrail", "description": "Blueprint invariant forbidding re-collection of identity or slot data already captured in an earlier stage", "seeAlso": ["omnichannel_context", "cai"] }
+            ]
+          },
+          {
+            "id": "outcome_and_sentiment_gates",
+            "name": "Containment & Sentiment Milestones",
+            "description": "Target quality and resolution checkpoints across the blueprint",
+            "children": [
+              { "id": "target_containment_gate", "name": "Stage Containment Rate Gate", "description": "Planned percentage of arrivals expected to complete self-service at a given stage without escalation", "seeAlso": ["ivr", "cai"] },
+              { "id": "expected_sentiment_inflection_milestone", "name": "Expected Sentiment Inflection Milestone", "description": "Blueprint stage where customer sentiment is designed to shift from anxious or frustrated to reassured", "seeAlso": ["speech_analytics", "voc"] }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "cjm_governance_and_versioning",
+      "name": "Blueprint Lifecycle & Simulation Governance",
+      "description": "Design methodology, simulation stress-testing, versioning, and closed-loop recalibration from empirical telemetry",
+      "root": {
+        "id": "cjm_governance_root",
+        "name": "Blueprint Lifecycle & Recalibration",
+        "children": [
+          {
+            "id": "design_and_simulation",
+            "name": "Hypothesis Design & Digital Twin Simulation",
+            "description": "Pre-deployment validation of journey blueprints against historical arrival and capacity models",
+            "children": [
+              { "id": "hypothesis_driven_stage_design", "name": "Hypothesis-Driven Stage Design", "description": "Framing every blueprint change with falsifiable predictions on containment, FCR, and CSAT", "seeAlso": ["voc"] },
+              { "id": "digital_twin_capacity_stress_test", "name": "Digital Twin Capacity Stress-Testing", "description": "Simulating blueprint routing and escalation branches against WFM staffing and queue arrival spikes", "seeAlso": ["wfm", "acd"] }
+            ]
+          },
+          {
+            "id": "versioning_and_recalibration",
+            "name": "Variant Versioning & Closed-Loop Recalibration",
+            "description": "Controlled rollout and continuous refinement of blueprints using Plane 2 process-mining telemetry",
+            "children": [
+              { "id": "ab_blueprint_variant_versioning", "name": "A-B Blueprint Variant Versioning", "description": "Running controlled cohort experiments comparing two prescriptive journey blueprints in production", "seeAlso": ["journey_orchestration"] },
+              { "id": "closed_loop_telemetry_recalibration", "name": "Closed-Loop Telemetry Recalibration", "description": "Systematic revision of Plane 1 stage budgets and fallback paths when Plane 2 exposes persistent conformance drift", "seeAlso": ["journey_tracking"] }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "metrics": [
+    {
+      "id": "blueprint_golden_path_target_fcr",
+      "name": "Target Blueprint First-Contact Resolution Rate",
+      "unit": "percent",
+      "direction": "higher_is_better",
+      "definition": "Normative target percentage of customer journeys designed to achieve full resolution on the primary Golden Path without follow-up contacts",
+      "mapsToKpi": "fcr_rate"
+    },
+    {
+      "id": "planned_self_service_containment_rate",
+      "name": "Planned Self-Service Containment Budget",
+      "unit": "percent",
+      "direction": "higher_is_better",
+      "definition": "Prescriptive share of journey arrivals budgeted to resolve autonomously inside digital, IVR, or CAI swimlanes",
+      "mapsToKpi": "deflection_rate"
+    },
+    {
+      "id": "normative_stage_sla_target",
+      "name": "Normative End-to-End Journey SLA Target",
+      "unit": "percent",
+      "direction": "higher_is_better",
+      "definition": "Planned proportion of customer journeys completing all stages within their cumulative stage latency SLA budget",
+      "mapsToKpi": "sla_compliance_rate"
+    },
+    {
+      "id": "budgeted_queue_wait_ceiling",
+      "name": "Budgeted Assisted Transition Wait Ceiling",
+      "unit": "seconds",
+      "direction": "lower_is_better",
+      "definition": "Maximum planned customer wait time when transitioning from self-service swimlanes into an assisted agent queue",
+      "mapsToKpi": "avg_wait_time"
+    },
+    {
+      "id": "budgeted_assisted_stage_aht",
+      "name": "Budgeted Assisted Stage Handle Time",
+      "unit": "seconds",
+      "direction": "lower_is_better",
+      "definition": "Planned agent handle time budget for escalated stages assuming full omnichannel context hydration from prior stages",
+      "mapsToKpi": "aht_seconds"
+    },
+    {
+      "id": "target_moment_of_truth_csat",
+      "name": "Target Moment-of-Truth CSAT Benchmark",
+      "unit": "score_1_to_5",
+      "direction": "higher_is_better",
+      "definition": "Prescriptive customer satisfaction benchmark assigned to critical Moment of Truth nodes in the journey blueprint",
+      "mapsToKpi": "csat"
+    }
+  ],
+  "scoringModel": {
+    "id": "prescriptive_blueprint_completeness_rubric",
+    "name": "Prescriptive Journey Blueprint Completeness Scorecard",
+    "scaleType": "weighted_rubric",
+    "maxPoints": 100,
+    "autoFailItems": [
+      "missing_exception_fallback_branch",
+      "unbounded_customer_effort_stage",
+      "missing_context_handoff_contract"
+    ],
+    "note": "Evaluates whether a Plane 1 Customer Journey Blueprint is production-ready, machine-auditable by Plane 2 (journey_tracking), and actionable by Plane 3 (journey_orchestration).",
+    "dimensions": [
+      {
+        "id": "jtbd_and_outcome_clarity",
+        "name": "Persona & JTBD Outcome Clarity",
+        "weightPercent": 20,
+        "description": "Outside-in framing of customer personas, entry preconditions, and customer-verified exit resolution criteria",
+        "sampleCriteria": [
+          "Defines customer Job-to-be-Done independent of internal org chart",
+          "Specifies verifiable exit resolution criterion beyond single-channel wrap-up",
+          "Identifies critical Moments of Truth and target emotion trajectory"
+        ]
+      },
+      {
+        "id": "exception_and_fallback_rigor",
+        "name": "Exception & Fallback Branch Completeness",
+        "weightPercent": 25,
+        "description": "Explicit engineering of non-happy paths including low AI confidence, authentication failures, queue surges, and policy denials",
+        "sampleCriteria": [
+          "Every self-service stage defines a deterministic warm-escalation fallback branch",
+          "Includes graceful degradation routes for out-of-hours or WFM staffing deficits",
+          "Covers regulatory and fraud step-up verification branches"
+        ]
+      },
+      {
+        "id": "omnichannel_and_backstage_contracts",
+        "name": "Omnichannel & Backstage Handoff Contracts",
+        "weightPercent": 25,
+        "description": "Specification of context envelope propagation across channel swimlanes and backstage CRM, KM, and A2A dependencies",
+        "sampleCriteria": [
+          "Mandates canonical context envelope fields at every channel or agent boundary",
+          "Maps backstage API and A2A specialist latency dependencies to frontstage stages",
+          "Enforces zero-repetition invariant on customer-supplied slots"
+        ]
+      },
+      {
+        "id": "quantitative_sla_and_effort_budgets",
+        "name": "Quantitative Stage Budgets & Guardrails",
+        "weightPercent": 15,
+        "description": "Assignment of measurable latency SLA ceilings, maximum channel-hop caps, and containment targets to each stage",
+        "sampleCriteria": [
+          "Assigns explicit latency and wait budgets to every stage transition",
+          "Caps planned channel switches and authentication prompts",
+          "Links stage targets directly to engine KPI identifiers"
+        ]
+      },
+      {
+        "id": "closed_loop_telemetry_observability",
+        "name": "Telemetry Observability & Recalibration Hooks",
+        "weightPercent": 15,
+        "description": "Instrumentation bindings enabling Plane 2 conformance checking and Plane 3 real-time drift intervention",
+        "sampleCriteria": [
+          "Every blueprint stage emits a deterministic stage_id and blueprint_version tag",
+          "Defines drift thresholds that trigger Plane 3 real-time orchestration saves",
+          "Schedules periodic recalibration reviews against Plane 2 process-mining findings"
+        ]
+      }
+    ]
+  },
+  "failureModes": [
+    {
+      "id": "happy_path_delusion",
+      "name": "Happy-Path Delusion (Ignoring Exception Branches)",
+      "signal": "Blueprint documents only the ideal self-service Golden Path; 35%+ of live traffic hits unmapped exceptions and drops into generic default queues",
+      "mitigation": "Mandate explicit fallback and exception branches for every stage node as a hard gate in the blueprint completeness rubric"
+    },
+    {
+      "id": "inside_out_org_chart_mapping",
+      "name": "Inside-Out Org-Chart Mapping",
+      "signal": "Journey stages mirror internal department silos (Billing, Tech Support, Retention) rather than customer Jobs-to-be-Done, institutionalizing transfers",
+      "mitigation": "Anchor all blueprint stages on customer JTBD milestones and require cross-functional backstage choreography beneath unified frontstage steps"
+    },
+    {
+      "id": "static_slideware_decay",
+      "name": "Static Slideware Decay",
+      "signal": "Journey maps live as static design PDFs disconnected from production routing rules and telemetry; actual flows diverge within weeks of launch",
+      "mitigation": "Publish blueprints as versioned machine-readable graphs bound directly to Plane 2 conformance monitors and Plane 3 state machines"
+    },
+    {
+      "id": "unbudgeted_backstage_latency",
+      "name": "Unbudgeted Backstage System Latency",
+      "signal": "Frontstage blueprint promises instant resolution while backstage fulfillment requires manual back-office queues or slow legacy batch jobs",
+      "mitigation": "Map backstage system and A2A execution SLAs into cumulative stage latency budgets and stress-test against WFM capacity models"
+    },
+    {
+      "id": "missing_handoff_contracts",
+      "name": "Missing Cross-Channel Handoff Contracts",
+      "signal": "Blueprint arrows connect Web App to Voice Queue without specifying identity binding or context payload, causing 100% context reset on escalation",
+      "mitigation": "Require canonical omnichannel context envelope specifications on every cross-swimlane transition edge"
+    },
+    {
+      "id": "vanity_resolution_definitions",
+      "name": "Vanity Single-Channel Resolution Definitions",
+      "signal": "Blueprint marks journey complete when a bot displays a FAQ link or an agent closes a ticket, even though the underlying customer problem persists",
+      "mitigation": "Define normative exit resolution criteria using customer-verified JTBD completion and zero repeat contact within a 7-day window"
+    }
+  ],
+  "integrations": [
+    {
+      "with": "journey_tracking",
+      "exchanges": [
+        "Versioned prescriptive stage graphs, Golden Path specifications, and stage SLA budgets published as the normative baseline for conformance checking",
+        "Empirical drift vectors, shadow escalation paths, and bottleneck telemetry ingested to recalibrate blueprint versions"
+      ]
+    },
+    {
+      "with": "journey_orchestration",
+      "exchanges": [
+        "Machine-readable stage transition rules, Moment-of-Truth flags, and designed fallback branches compiled into real-time execution policies",
+        "A-B blueprint variant performance and live intervention outcomes returned to refine prescriptive path designs"
+      ]
+    },
+    {
+      "with": "omnichannel_context",
+      "exchanges": [
+        "Prescriptive context-bridge contracts defining required identity, intent, and slot fields at each planned channel switch",
+        "Channel continuity validation telemetry confirming whether planned swimlane handoffs preserve state"
+      ]
+    },
+    {
+      "with": "voc",
+      "exchanges": [
+        "Expected emotion trajectories and Moment-of-Truth survey placement specifications shared for listening-post design",
+        "Customer effort scores, verbatim pain points, and JTBD gap analyses fed into blueprint redesign cycles"
+      ]
+    },
+    {
+      "with": "km",
+      "exchanges": [
+        "Self-service and agent-assisted blueprint stages linked to required canonical knowledge articles and RAG collections",
+        "Content gap signals from failed self-service stages prioritized in the knowledge authoring backlog"
+      ]
+    },
+    {
+      "with": "wfm",
+      "exchanges": [
+        "Planned stage arrival volumes, assisted escalation percentages, and target SLA ceilings shared for capacity forecasting",
+        "Staffing constraints and intraday shrinkage boundaries incorporated into graceful degradation branch designs"
+      ]
+    }
+  ],
+  "continuousDynamics": {
+    "stateSpaceDimension": 16,
+    "manifoldCoordinates": [
+      "normalized_journey_progress",
+      "target_progress_velocity",
+      "normative_sentiment_valence",
+      "cumulative_effort_budget",
+      "auth_assurance_target",
+      "context_continuity_floor",
+      "containment_probability_prior",
+      "moment_of_truth_criticality"
+    ],
+    "stateVariables": [
+      {
+        "id": "normalized_journey_progress",
+        "symbol": "tau",
+        "domain": "[0, 1]",
+        "unit": "progress_fraction",
+        "description": "Continuous intrinsic journey progress parameter mapping initial customer JTBD trigger (tau = 0.0) to verified true resolution closure (tau = 1.0)"
+      },
+      {
+        "id": "golden_attractor_mean_curve",
+        "symbol": "mu_star(tau)",
+        "domain": "R^16",
+        "unit": "manifold_vector",
+        "description": "Smooth C^2 normative reference trajectory in the 16-dimensional CXOS state space defining the ideal Golden Path evolution of effort, sentiment, latency, and context fidelity"
+      },
+      {
+        "id": "golden_attractor_covariance_tube",
+        "symbol": "Sigma_star(tau)",
+        "domain": "S_+^16",
+        "unit": "covariance_matrix",
+        "description": "Positive-definite covariance tensor around mu_star(tau) specifying the allowable normative tolerance envelope (Golden Attractor Tube) before Plane 2 flags conformance drift"
+      },
+      {
+        "id": "target_progress_velocity_field",
+        "symbol": "v_star(tau)",
+        "domain": "R_+",
+        "unit": "progress_per_sec",
+        "description": "Prescriptive stage advancement velocity field d_tau_dt derived from stage SLA latency budgets and planned backstage fulfillment rates"
+      },
+      {
+        "id": "normative_effort_emotion_potential",
+        "symbol": "U_star(tau)",
+        "domain": "R^1",
+        "unit": "potential_score",
+        "description": "Designed scalar potential surface combining cumulative customer friction ceiling and expected emotional reassurance trajectory across Moments of Truth"
+      }
+    ],
+    "differentialEquations": [
+      {
+        "id": "golden_path_geodesic_flow",
+        "name": "Normative Golden Path Geodesic Evolution",
+        "formula": "dmu_star(tau) * inv(dtau) = F_blueprint(mu_star(tau), u_planned(tau))",
+        "interpretation": "Defines the Plane 1 prescriptive blueprint not as rigid discrete boxes, but as a continuous geodesic vector field F_blueprint transporting customer state from entry precondition to JTBD resolution with minimal cumulative effort"
+      },
+      {
+        "id": "normative_effort_sla_accumulation_law",
+        "name": "Stage SLA & Friction Budget Accumulation Law",
+        "formula": "dE_budget(tau) * inv(dtau) = c_wait(tau) * inv(v_star(tau)) + c_switch * delta_swimlane(tau) <= E_max'(tau)",
+        "interpretation": "Bounds the instantaneous rate of customer effort accumulation per unit of journey progress by balancing planned wait time against modality switch overhead delta_swimlane(tau)"
+      },
+      {
+        "id": "expected_emotion_recovery_ode",
+        "name": "Target Moment-of-Truth Sentiment Inflection ODE",
+        "formula": "dS_star(tau) * inv(dtau) = kappa_reassure(tau) * (S_target(tau) - S_star(tau)) - xi_anxiety(tau)",
+        "interpretation": "Models the planned emotional inflection curve where empathetic frontstage design and Moment-of-Truth reassurance gain kappa_reassure(tau) overcome initial issue anxiety xi_anxiety(tau)"
+      }
+    ],
+    "scaleInvariants": [
+      "Reparameterization invariance over normalized progress tau in [0, 1], allowing identical mathematical comparison between 30-second self-service flows and 14-day asynchronous claims journeys",
+      "Hierarchical diffeomorphism: macro-lifecycle phases and micro-stage graphs compose smoothly into a single continuous Riemannian manifold without boundary discontinuities",
+      "Vectorized blueprint tensor compilation enabling Plane 2 and Plane 3 engines to evaluate Golden Tube membership in O(1) SIMD operations across millions of active journeys"
+    ]
+  }
+}

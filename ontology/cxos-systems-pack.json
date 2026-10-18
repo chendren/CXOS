@@ -1,0 +1,2254 @@
+{
+  "version": "2026.10.0",
+  "source": "cxos-systems-ontology",
+  "domains": [
+    {
+      "id": "sys_ivr",
+      "name": "IVR (Interactive Voice Response)",
+      "intents": [
+        {
+          "id": "failure_menu_maze",
+          "name": "IVR: Menu Maze",
+          "description": "Containment drops with menu depth; zero-outs spike at level 3+ — Mitigation: Flatten to 3 levels, open-phrase routing at entry",
+          "exemplars": [
+            "Containment drops with menu depth; zero-outs spike at level 3+",
+            "Flatten to 3 levels, open-phrase routing at entry",
+            "Investigate IVR menu maze in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_prompt_ambiguity",
+          "name": "IVR: Ambiguous Prompts",
+          "description": "No-match and repeated-keypress clusters on specific nodes — Mitigation: Rewrite prompt to distinctive vocabulary; A/B test grammars",
+          "exemplars": [
+            "No-match and repeated-keypress clusters on specific nodes",
+            "Rewrite prompt to distinctive vocabulary; A/B test grammars",
+            "Investigate IVR ambiguous prompts in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_blind_transfer",
+          "name": "IVR: Blind Transfer",
+          "description": "Repeated calls and low FCR on transferred segments — Mitigation: Attach call context and data-dip results to transfer; consider warm transfer for complex intents",
+          "exemplars": [
+            "Repeated calls and low FCR on transferred segments",
+            "Attach call context and data-dip results to transfer; consider warm transfer for complex intents",
+            "Investigate IVR blind transfer in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_stale_flow_content",
+          "name": "IVR: Stale Flow Content",
+          "description": "Complaints and repeat contacts about wrong hours, prices, policy in IVR — Mitigation: Flow content linked to KM single source of truth with review cycle",
+          "exemplars": [
+            "Complaints and repeat contacts about wrong hours, prices, policy in IVR",
+            "Flow content linked to KM single source of truth with review cycle",
+            "Investigate IVR stale flow content in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_identity_mismatch",
+          "name": "IVR: ANI Fraud / Wrong-Party",
+          "description": "Auth failures spike on one flow; verify claims from VOC verbatims — Mitigation: Stronger authentication strength rules step-up before transactions",
+          "exemplars": [
+            "Auth failures spike on one flow; verify claims from VOC verbatims",
+            "Stronger authentication strength rules step-up before transactions",
+            "Investigate IVR ani fraud / wrong-party in contact center operations"
+          ]
+        },
+        {
+          "id": "ops_ivr_service_types",
+          "name": "IVR Self-Service Types",
+          "description": "Operational classification for Interactive Voice Response: Self-Service Types",
+          "exemplars": [
+            "Configure IVR self-service types",
+            "IVR Informational",
+            "IVR Transactional",
+            "IVR Navigational",
+            "IVR Diagnostic"
+          ]
+        },
+        {
+          "id": "ops_ivr_failure_paths",
+          "name": "IVR Failure & Exit Paths",
+          "description": "Operational classification for Interactive Voice Response: Failure & Exit Paths",
+          "exemplars": [
+            "Configure IVR failure & exit paths",
+            "IVR Contained",
+            "IVR Transferred",
+            "IVR Abandoned in IVR",
+            "IVR Zeroed Out"
+          ]
+        },
+        {
+          "id": "ops_ivr_prompt_delivery",
+          "name": "IVR Prompt Delivery",
+          "description": "Operational classification for Interactive Voice Response: Prompt Delivery",
+          "exemplars": [
+            "Configure IVR prompt delivery",
+            "IVR Studio-Recorded Voice",
+            "IVR TTS Voice (Static Content)",
+            "IVR TTS Voice (Dynamic Content)",
+            "IVR Multilingual Variant"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sys_acd",
+      "name": "ACD (Automatic Call Distributor)",
+      "intents": [
+        {
+          "id": "failure_skill_starvation",
+          "name": "ACD: Skill Starvation",
+          "description": "One niche queue builds while generalists idle; abandonment concentrated on sparse skills — Mitigation: Overflow matrix to cross-trained groups; WFM cross-skill planning",
+          "exemplars": [
+            "One niche queue builds while generalists idle; abandonment concentrated on sparse skills",
+            "Overflow matrix to cross-trained groups; WFM cross-skill planning",
+            "Investigate ACD skill starvation in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_misconfigured_priority",
+          "name": "ACD: Priority Inversion",
+          "description": "VIP queue slippage while ordinary traffic answers; priority flag overuse — Mitigation: Priority budget: restrict flagged volume, review monthly",
+          "exemplars": [
+            "VIP queue slippage while ordinary traffic answers; priority flag overuse",
+            "Priority budget: restrict flagged volume, review monthly",
+            "Investigate ACD priority inversion in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_queue_runway_miss",
+          "name": "ACD: Unannounced Long Waits",
+          "description": "Abandons spike after 90s without EWT announcement — Mitigation: Expected-wait announcement plus callback offer at threshold",
+          "exemplars": [
+            "Abandons spike after 90s without EWT announcement",
+            "Expected-wait announcement plus callback offer at threshold",
+            "Investigate ACD unannounced long waits in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_cold_transfer_chain",
+          "name": "ACD: Ping-Pong Transfers",
+          "description": "3+ transfers per contact on a path; repeat contacts on same intent — Mitigation: Preferred-agent routing and consult-before-transfer protocol",
+          "exemplars": [
+            "3+ transfers per contact on a path; repeat contacts on same intent",
+            "Preferred-agent routing and consult-before-transfer protocol",
+            "Investigate ACD ping-pong transfers in contact center operations"
+          ]
+        },
+        {
+          "id": "ops_acd_routing_strategies",
+          "name": "ACD Routing Strategies",
+          "description": "Operational classification for Automatic Call Distributor: Routing Strategies",
+          "exemplars": [
+            "Configure ACD routing strategies",
+            "ACD Skills-Based Routing",
+            "ACD Longest Idle",
+            "ACD Round Robin",
+            "ACD Priority-Based"
+          ]
+        },
+        {
+          "id": "ops_acd_contact_dispositions",
+          "name": "ACD Queue Dispositions",
+          "description": "Operational classification for Automatic Call Distributor: Queue Dispositions",
+          "exemplars": [
+            "Configure ACD queue dispositions",
+            "ACD Answered",
+            "ACD Abandoned (True)",
+            "ACD Short Abandoned",
+            "ACD Converted to Callback"
+          ]
+        },
+        {
+          "id": "ops_acd_transfer_types",
+          "name": "ACD Transfer Types",
+          "description": "Operational classification for Automatic Call Distributor: Transfer Types",
+          "exemplars": [
+            "Configure ACD transfer types",
+            "ACD Warm / Consult",
+            "ACD Cold / Blind",
+            "ACD Conference"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sys_wfm",
+      "name": "WFM (Workforce Management)",
+      "intents": [
+        {
+          "id": "failure_forecast_blind_spot",
+          "name": "WFM: Forecast Blind Spots",
+          "description": "Campaign or outage volume arrives unbudgeted; interval requirement understated — Mitigation: Outbound and notification calendars wired into forecast inputs",
+          "exemplars": [
+            "Campaign or outage volume arrives unbudgeted; interval requirement understated",
+            "Outbound and notification calendars wired into forecast inputs",
+            "Investigate WFM forecast blind spots in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_shrinkage_undercount",
+          "name": "WFM: Shrinkage Undercount",
+          "description": "Planned schedule never achieves SL because shrinkage factor below actual — Mitigation: Recalculate monthly from aux actuals; separate planned vs unplanned trend lines",
+          "exemplars": [
+            "Planned schedule never achieves SL because shrinkage factor below actual",
+            "Recalculate monthly from aux actuals; separate planned vs unplanned trend lines",
+            "Investigate WFM shrinkage undercount in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_adherence_whack_a_mole",
+          "name": "WFM: Adherence Whack-a-Mole",
+          "description": "Intraday moves cascade breaks into coverage gaps later in day — Mitigation: Move-in-time budgets; escalate to supervisor only past concurrency threshold",
+          "exemplars": [
+            "Intraday moves cascade breaks into coverage gaps later in day",
+            "Move-in-time budgets; escalate to supervisor only past concurrency threshold",
+            "Investigate WFM adherence whack-a-mole in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_occupancy_burnout",
+          "name": "WFM: Occupancy Burnout",
+          "description": "Occupancy >90% with rising absenteeism and QA soft-skill scores falling — Mitigation: Surge staffing plan, attrition-risk review, aux recovery windows",
+          "exemplars": [
+            "Occupancy >90% with rising absenteeism and QA soft-skill scores falling",
+            "Surge staffing plan, attrition-risk review, aux recovery windows",
+            "Investigate WFM occupancy burnout in contact center operations"
+          ]
+        },
+        {
+          "id": "ops_wfm_planning_horizon",
+          "name": "WFM Planning Horizon",
+          "description": "Operational classification for Workforce Management: Planning Horizon",
+          "exemplars": [
+            "Configure WFM planning horizon",
+            "WFM Forecasting",
+            "WFM Scheduling",
+            "WFM Intraday",
+            "WFM Retrospective"
+          ]
+        },
+        {
+          "id": "ops_wfm_shrinkage_classes",
+          "name": "WFM Shrinkage Classes",
+          "description": "Operational classification for Workforce Management: Shrinkage Classes",
+          "exemplars": [
+            "Configure WFM shrinkage classes",
+            "WFM Planned Shrinkage",
+            "WFM Unplanned Shrinkage"
+          ]
+        },
+        {
+          "id": "ops_wfm_schedule_states",
+          "name": "WFM Agent Schedule States",
+          "description": "Operational classification for Workforce Management: Agent Schedule States",
+          "exemplars": [
+            "Configure WFM agent schedule states",
+            "WFM On Queue (Available)",
+            "WFM Handling Contact",
+            "WFM After-Call Work",
+            "WFM Planned Aux (break, lunch, training)"
+          ]
+        },
+        {
+          "id": "ops_wfm_shift_types",
+          "name": "WFM Shift Types",
+          "description": "Operational classification for Workforce Management: Shift Types",
+          "exemplars": [
+            "Configure WFM shift types",
+            "WFM Full-Time Fixed",
+            "WFM Part-Time Fixed",
+            "WFM Split Shift",
+            "WFM Flex Shift"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sys_qa",
+      "name": "QA (Quality Assurance)",
+      "intents": [
+        {
+          "id": "failure_gotcha_qa",
+          "name": "QA: Gotcha QA",
+          "description": "Agent trust pulse falls while scores rise; appeals spike on minor items — Mitigation: Weighted rubric with behavior criteria, calibration, and appeal path",
+          "exemplars": [
+            "Agent trust pulse falls while scores rise; appeals spike on minor items",
+            "Weighted rubric with behavior criteria, calibration, and appeal path",
+            "Investigate QA gotcha qa in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_calibration_drift",
+          "name": "QA: Calibration Drift",
+          "description": "Evaluator variance trending upward; scores diverge by team — Mitigation: Monthly calibration sessions; shared anchors per scorecard item",
+          "exemplars": [
+            "Evaluator variance trending upward; scores diverge by team",
+            "Monthly calibration sessions; shared anchors per scorecard item",
+            "Investigate QA calibration drift in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_cherry_picked_sampling",
+          "name": "QA: Cherry-Picked Sampling",
+          "description": "Coverage stats nominal but variance of sampled AHT far below population — Mitigation: Deterministic random sampling algorithm; audit trail on sample selection",
+          "exemplars": [
+            "Coverage stats nominal but variance of sampled AHT far below population",
+            "Deterministic random sampling algorithm; audit trail on sample selection",
+            "Investigate QA cherry-picked sampling in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_score_sales_disconnect",
+          "name": "QA: Score-Outcome Disconnect",
+          "description": "QA rising while CSAT and FCR fall — Mitigation: Correlation review of qa_score_avg vs csat and fcr_rate each period",
+          "exemplars": [
+            "QA rising while CSAT and FCR fall",
+            "Correlation review of qa_score_avg vs csat and fcr_rate each period",
+            "Investigate QA score-outcome disconnect in contact center operations"
+          ]
+        },
+        {
+          "id": "ops_qa_evaluation_scopes",
+          "name": "QA Evaluation Scopes",
+          "description": "Operational classification for Quality Assurance: Evaluation Scopes",
+          "exemplars": [
+            "Configure QA evaluation scopes",
+            "QA Transactional QA",
+            "QA Strategic QA",
+            "QA Self-Evaluation",
+            "QA Peer QA"
+          ]
+        },
+        {
+          "id": "ops_qa_contact_dispositions",
+          "name": "QA Contact Disposition Resolution Outcomes",
+          "description": "Operational classification for Quality Assurance: Contact Disposition Resolution Outcomes",
+          "exemplars": [
+            "Configure QA contact disposition resolution outcomes",
+            "QA Resolved - First Contact",
+            "QA Resolved - After Follow-Up",
+            "QA Escalated and Resolved",
+            "QA Transferred - Stranded"
+          ]
+        },
+        {
+          "id": "ops_qa_root_cause_codes",
+          "name": "QA Root-Cause Codes",
+          "description": "Operational classification for Quality Assurance: Root-Cause Codes",
+          "exemplars": [
+            "Configure QA root-cause codes",
+            "QA Knowledge Gap",
+            "QA Skill Gap",
+            "QA Tool / System Friction",
+            "QA Policy Conflict"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sys_crm",
+      "name": "CRM (Customer Relationship Management)",
+      "intents": [
+        {
+          "id": "failure_context_blindness",
+          "name": "CRM: Context Blindness",
+          "description": "Customers re-explain; VOC repeat-contact drivers dominated by history gap — Mitigation: Screen pop plus context banner scan mandatory in QA rubric",
+          "exemplars": [
+            "Customers re-explain; VOC repeat-contact drivers dominated by history gap",
+            "Screen pop plus context banner scan mandatory in QA rubric",
+            "Investigate CRM context blindness in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_swivel_chair_logging",
+          "name": "CRM: Swivel-Chair Logging",
+          "description": "Wrap codes inconsistent; ACW ballooning in CRM tools with poor UX — Mitigation: Streamlined wrap flow, disposition presets from case type",
+          "exemplars": [
+            "Wrap codes inconsistent; ACW ballooning in CRM tools with poor UX",
+            "Streamlined wrap flow, disposition presets from case type",
+            "Investigate CRM swivel-chair logging in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_identity_fragmentation",
+          "name": "CRM: Identity Fragmentation",
+          "description": "Duplicate accounts proliferating; fragmented history on new channels — Mitigation: Background matching job; channel keys normalized to master identity",
+          "exemplars": [
+            "Duplicate accounts proliferating; fragmented history on new channels",
+            "Background matching job; channel keys normalized to master identity",
+            "Investigate CRM identity fragmentation in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_consent_zoning_error",
+          "name": "CRM: Consent Zoning Error",
+          "description": "QA auto-fails around recording or outreach despite recorded consent elsewhere — Mitigation: Consent state must be surfaced in context banner with jurisdiction rules",
+          "exemplars": [
+            "QA auto-fails around recording or outreach despite recorded consent elsewhere",
+            "Consent state must be surfaced in context banner with jurisdiction rules",
+            "Investigate CRM consent zoning error in contact center operations"
+          ]
+        },
+        {
+          "id": "ops_crm_record_hierarchy",
+          "name": "CRM Record Hierarchy",
+          "description": "Operational classification for Customer Relationship Management: Record Hierarchy",
+          "exemplars": [
+            "Configure CRM record hierarchy",
+            "CRM Account",
+            "CRM Case",
+            "CRM Opportunity"
+          ]
+        },
+        {
+          "id": "ops_crm_integration_patterns",
+          "name": "CRM Integration Patterns",
+          "description": "Operational classification for Customer Relationship Management: Integration Patterns",
+          "exemplars": [
+            "Configure CRM integration patterns",
+            "CRM Pre-Contact",
+            "CRM During Contact",
+            "CRM Post Contact (Wrap)",
+            "CRM Background Sync"
+          ]
+        },
+        {
+          "id": "ops_crm_consent_states",
+          "name": "CRM Consent States",
+          "description": "Operational classification for Customer Relationship Management: Consent States",
+          "exemplars": [
+            "Configure CRM consent states",
+            "CRM Marketing Opt-In",
+            "CRM Service Contact Allowed",
+            "CRM Recording / QA Consent",
+            "CRM Do Not Contact"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sys_km",
+      "name": "KM (Knowledge Management)",
+      "intents": [
+        {
+          "id": "failure_poisoned_knowledge",
+          "name": "KM: Poisoned Knowledge",
+          "description": "QA root-cause knowledge_gap clusters on specific articles; IVR and agents disagree — Mitigation: Flag-to-fix SLA; article version status surfaced to agents with last-reviewed date",
+          "exemplars": [
+            "QA root-cause knowledge_gap clusters on specific articles; IVR and agents disagree",
+            "Flag-to-fix SLA; article version status surfaced to agents with last-reviewed date",
+            "Investigate KM poisoned knowledge in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_silent_divergence",
+          "name": "KM: Silent Divergence",
+          "description": "Customer help and internal KB answer the same question differently — Mitigation: SSOT enforcement: one canonical article, other surfaces reference it",
+          "exemplars": [
+            "Customer help and internal KB answer the same question differently",
+            "SSOT enforcement: one canonical article, other surfaces reference it",
+            "Investigate KM silent divergence in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_search_dead_end",
+          "name": "KM: Search Dead Ends",
+          "description": "Agent search-to-click rate low; questions routed to tier 2 for findable answers — Mitigation: Search analytics; curation backlog prioritized by failed-query volume",
+          "exemplars": [
+            "Agent search-to-click rate low; questions routed to tier 2 for findable answers",
+            "Search analytics; curation backlog prioritized by failed-query volume",
+            "Investigate KM search dead ends in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_unindexed_new_products",
+          "name": "KM: Launch Content Gap",
+          "description": "Contact drivers spike on recently launched products with no articles — Mitigation: Content readiness gate in product launch checklist",
+          "exemplars": [
+            "Contact drivers spike on recently launched products with no articles",
+            "Content readiness gate in product launch checklist",
+            "Investigate KM launch content gap in contact center operations"
+          ]
+        },
+        {
+          "id": "ops_km_visibility",
+          "name": "KM Audience Visibility",
+          "description": "Operational classification for Knowledge Management: Audience Visibility",
+          "exemplars": [
+            "Configure KM audience visibility",
+            "KM Customer-Facing",
+            "KM Agent-Facing",
+            "KM Machine-Facing"
+          ]
+        },
+        {
+          "id": "ops_km_content_types",
+          "name": "KM Content Types",
+          "description": "Operational classification for Knowledge Management: Content Types",
+          "exemplars": [
+            "Configure KM content types",
+            "KM How-To Procedure",
+            "KM Policy Explainer",
+            "KM FAQ",
+            "KM Troubleshooting Tree"
+          ]
+        },
+        {
+          "id": "ops_km_lifecycle_states",
+          "name": "KM Article Lifecycle States",
+          "description": "Operational classification for Knowledge Management: Article Lifecycle States",
+          "exemplars": [
+            "Configure KM article lifecycle states",
+            "KM Draft",
+            "KM In Review",
+            "KM Approved (not yet live)",
+            "KM Published"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sys_speech_analytics",
+      "name": "SA (Speech & Text Analytics)",
+      "intents": [
+        {
+          "id": "failure_transcript_fidelity_drift",
+          "name": "SA: Transcript Fidelity Drift",
+          "description": "Acoustic-heavy accents or crosstalk degrade WER silently; topic confidence falls — Mitigation: Sample human WER audit per channel; recalibration with domain lexicon",
+          "exemplars": [
+            "Acoustic-heavy accents or crosstalk degrade WER silently; topic confidence falls",
+            "Sample human WER audit per channel; recalibration with domain lexicon",
+            "Investigate SA transcript fidelity drift in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_alert_fatigue",
+          "name": "SA: Alert Fatigue",
+          "description": "Reviewers clear alerts in bulk; precision unmeasured — Mitigation: Alert precision scorecard; thresholds tuned to reviewer feedback loop",
+          "exemplars": [
+            "Reviewers clear alerts in bulk; precision unmeasured",
+            "Alert precision scorecard; thresholds tuned to reviewer feedback loop",
+            "Investigate SA alert fatigue in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_sentiment_theater",
+          "name": "SA: Sentiment Theater",
+          "description": "Agent sentiment scores improve while customer measures worsen — Mitigation: Score customer side only for CX; ban agent-sentiment from QA scores by default",
+          "exemplars": [
+            "Agent sentiment scores improve while customer measures worsen",
+            "Score customer side only for CX; ban agent-sentiment from QA scores by default",
+            "Investigate SA sentiment theater in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_redaction_gaps",
+          "name": "SA: Redaction Gaps",
+          "description": "QA finds unredacted PCI in evaluation samples — Mitigation: Redaction verification as auto-QA artifact before analyst access",
+          "exemplars": [
+            "QA finds unredacted PCI in evaluation samples",
+            "Redaction verification as auto-QA artifact before analyst access",
+            "Investigate SA redaction gaps in contact center operations"
+          ]
+        },
+        {
+          "id": "ops_sa_analyte_classes",
+          "name": "SA Analyte Classes",
+          "description": "Operational classification for Speech & Text Analytics: Analyte Classes",
+          "exemplars": [
+            "Configure SA analyte classes",
+            "SA Lexical",
+            "SA Acoustic",
+            "SA Semantic Affect",
+            "SA Conversational Structure"
+          ]
+        },
+        {
+          "id": "ops_sa_use_cases",
+          "name": "SA Primary Use Cases",
+          "description": "Operational classification for Speech & Text Analytics: Primary Use Cases",
+          "exemplars": [
+            "Configure SA primary use cases",
+            "SA Auto-QA / Full-Coverage Scoring",
+            "SA Compliance Monitoring",
+            "SA Contact-Driver Discovery",
+            "SA Churn & Risk Signals"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sys_outbound",
+      "name": "OB (Outbound Dialer & Campaigns)",
+      "intents": [
+        {
+          "id": "failure_pacing_overrun",
+          "name": "OB: Pacing Overrun",
+          "description": "Abandon ceiling approached in specific intervals; regulator exposure grows — Mitigation: Auto-throttle and per-mode ceiling alarms in dialer config",
+          "exemplars": [
+            "Abandon ceiling approached in specific intervals; regulator exposure grows",
+            "Auto-throttle and per-mode ceiling alarms in dialer config",
+            "Investigate OB pacing overrun in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_consent_basis_gap",
+          "name": "OB: Consent Basis Gap",
+          "description": "Audit finds contacts without recallable consent or business relationship — Mitigation: No dial without consent tag; CRM consent state is the gate",
+          "exemplars": [
+            "Audit finds contacts without recallable consent or business relationship",
+            "No dial without consent tag; CRM consent state is the gate",
+            "Investigate OB consent basis gap in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_outbound_echo",
+          "name": "OB: Outbound Echo Wave",
+          "description": "Inbound volume spikes 24-72h after campaign waves; WFM understaffed — Mitigation: Campaign calendar informs forecast; response-wave factor applied",
+          "exemplars": [
+            "Inbound volume spikes 24-72h after campaign waves; WFM understaffed",
+            "Campaign calendar informs forecast; response-wave factor applied",
+            "Investigate OB outbound echo wave in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_list_decay",
+          "name": "OB: List Decay",
+          "description": "Bad-number and wrong-party rates climbing as list ages — Mitigation: Penetration caps; auto-suspend records after N bad outcomes",
+          "exemplars": [
+            "Bad-number and wrong-party rates climbing as list ages",
+            "Penetration caps; auto-suspend records after N bad outcomes",
+            "Investigate OB list decay in contact center operations"
+          ]
+        },
+        {
+          "id": "ops_ob_dialing_modes",
+          "name": "OB Dialing Modes",
+          "description": "Operational classification for Outbound Dialer & Campaigns: Dialing Modes",
+          "exemplars": [
+            "Configure OB dialing modes",
+            "OB Manual Preview",
+            "OB Progressive",
+            "OB Predictive",
+            "OB Voice Broadcast / Message Drop"
+          ]
+        },
+        {
+          "id": "ops_ob_campaign_types",
+          "name": "OB Campaign Types",
+          "description": "Operational classification for Outbound Dialer & Campaigns: Campaign Types",
+          "exemplars": [
+            "Configure OB campaign types",
+            "OB Collections & Recovery",
+            "OB Telesales / Acquisition",
+            "OB Retention Outreach",
+            "OB Appointment & Renewal Reminders"
+          ]
+        },
+        {
+          "id": "ops_ob_regulatory_controls",
+          "name": "OB Regulatory Controls",
+          "description": "Operational classification for Outbound Dialer & Campaigns: Regulatory Controls",
+          "exemplars": [
+            "Configure OB regulatory controls",
+            "OB DNC Suppression & Consent Basis",
+            "OB Calling Window Enforcement",
+            "OB Abandon Ceiling Monitor",
+            "OB Mandatory Disclosures & Recording Notices"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sys_voc",
+      "name": "VOC (Voice of the Customer)",
+      "intents": [
+        {
+          "id": "failure_csat_theater",
+          "name": "VOC: CSAT Theater",
+          "description": "Survey scores up while retention and churn signals flat or worse — Mitigation: Track NPS/CES alongside; disallow survey gating in agent scripts",
+          "exemplars": [
+            "Survey scores up while retention and churn signals flat or worse",
+            "Track NPS/CES alongside; disallow survey gating in agent scripts",
+            "Investigate VOC csat theater in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_survey_gaming",
+          "name": "VOC: Survey Gaming",
+          "description": "Score clustering at maximum with response times under 5 seconds on one team — Mitigation: Fraud filters on response velocity; QA cross-check verbatims for agent prompting",
+          "exemplars": [
+            "Score clustering at maximum with response times under 5 seconds on one team",
+            "Fraud filters on response velocity; QA cross-check verbatims for agent prompting",
+            "Investigate VOC survey gaming in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_driver_gaps",
+          "name": "VOC: Unactioned Drivers",
+          "description": "Same top-3 driver verbatims every quarter with no linked backlog items — Mitigation: Driver themes must open KM/QA/routing backlog items with owners",
+          "exemplars": [
+            "Same top-3 driver verbatims every quarter with no linked backlog items",
+            "Driver themes must open KM/QA/routing backlog items with owners",
+            "Investigate VOC unactioned drivers in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_sampling_bias",
+          "name": "VOC: Sampling Bias",
+          "description": "Respondents skew to extreme experiences; mid-experience voice missing — Mitigation: Quota sampling across journey stages and sentiment strata",
+          "exemplars": [
+            "Respondents skew to extreme experiences; mid-experience voice missing",
+            "Quota sampling across journey stages and sentiment strata",
+            "Investigate VOC sampling bias in contact center operations"
+          ]
+        },
+        {
+          "id": "ops_voc_listening_posts",
+          "name": "VOC Listening Posts",
+          "description": "Operational classification for Voice of the Customer: Listening Posts",
+          "exemplars": [
+            "Configure VOC listening posts",
+            "VOC Relationship Survey",
+            "VOC Transactional Post-Contact Survey",
+            "VOC Unsolicited Listening Posts",
+            "VOC Employee Insight Roundtrip"
+          ]
+        },
+        {
+          "id": "ops_voc_instruments",
+          "name": "VOC Survey Instruments",
+          "description": "Operational classification for Voice of the Customer: Survey Instruments",
+          "exemplars": [
+            "Configure VOC survey instruments",
+            "VOC NPS (0-10 + why)",
+            "VOC CSAT (1-5 satisfaction + reason)",
+            "VOC CES (effort + friction question)",
+            "VOC Custom Journey Instrument"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sys_ccaas",
+      "name": "CCaaS (Contact Center as a Service & Telephony Fabric)",
+      "intents": [
+        {
+          "id": "failure_one_way_audio_nat",
+          "name": "CCaaS: One-Way Audio & Symmetric NAT Block",
+          "description": "Agent hears caller or caller hears silence; short-duration agent disconnects and repeat redials spike — Mitigation: Enforce TURN relay fallback on WebRTC endpoints and validate symmetric RTP latching at the SBC",
+          "exemplars": [
+            "Agent hears caller or caller hears silence; short-duration agent disconnects and repeat redials spike",
+            "Enforce TURN relay fallback on WebRTC endpoints and validate symmetric RTP latching at the SBC",
+            "Investigate CCaaS one-way audio & symmetric nat block in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_carrier_trunk_saturation",
+          "name": "CCaaS: SIP Trunk Concurrent Channel Exhaustion",
+          "description": "Carrier returns SIP 486 or 503 busy signals during peak intervals while agents remain idle in ACD — Mitigation: Configure burst-elastic SIP trunk capacity and automated overflow across secondary carrier peers",
+          "exemplars": [
+            "Carrier returns SIP 486 or 503 busy signals during peak intervals while agents remain idle in ACD",
+            "Configure burst-elastic SIP trunk capacity and automated overflow across secondary carrier peers",
+            "Investigate CCaaS sip trunk concurrent channel exhaustion in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_siprec_fork_drop",
+          "name": "CCaaS: Silent Recording & Stream Fork Failure",
+          "description": "Completed interactions lack dual-channel audio in QA and real-time co-pilot transcripts stall mid-call — Mitigation: Enable continuous RTP packet-count telemetry on SIPREC forks with automated switchover to backup media recorders",
+          "exemplars": [
+            "Completed interactions lack dual-channel audio in QA and real-time co-pilot transcripts stall mid-call",
+            "Enable continuous RTP packet-count telemetry on SIPREC forks with automated switchover to backup media recorders",
+            "Investigate CCaaS silent recording & stream fork failure in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_webrtc_home_isp_jitter",
+          "name": "CCaaS: Remote Agent Last-Mile Jitter Degradation",
+          "description": "MOS drops below 3.5 for specific remote agents; talk-over and repeat verification requests increase AHT — Mitigation: Enable Opus FEC packet recovery, DSCP QoS tagging, and pre-shift WebRTC network readiness checks",
+          "exemplars": [
+            "MOS drops below 3.5 for specific remote agents; talk-over and repeat verification requests increase AHT",
+            "Enable Opus FEC packet recovery, DSCP QoS tagging, and pre-shift WebRTC network readiness checks",
+            "Investigate CCaaS remote agent last-mile jitter degradation in contact center operations"
+          ]
+        },
+        {
+          "id": "ops_ccaas_telephony_ingress",
+          "name": "CCaaS Telephony & Media Ingress Architecture",
+          "description": "Signaling, edge control, and endpoint transport layers across the cloud voice fabric",
+          "exemplars": [
+            "Configure CCaaS telephony & media ingress architecture",
+            "CCaaS Carrier Peering & SIP Trunking",
+            "CCaaS Session Border Control & Signaling Security",
+            "CCaaS Agent Audio Delivery & Codecs"
+          ]
+        },
+        {
+          "id": "ops_ccaas_media_services",
+          "name": "CCaaS Media Recording & Stream Forking",
+          "description": "Real-time audio capture, compliance pause controls, and streaming tap pipelines",
+          "exemplars": [
+            "Configure CCaaS media recording & stream forking",
+            "CCaaS Dual-Channel Stereo Recording",
+            "CCaaS PCI Compliance Pause & Resume",
+            "CCaaS Low-Latency Media Streaming"
+          ]
+        },
+        {
+          "id": "ops_ccaas_resilience_failover",
+          "name": "CCaaS Region Resilience & Continuity",
+          "description": "Disaster recovery and carrier failover mechanisms preserving inbound reachability",
+          "exemplars": [
+            "Configure CCaaS region resilience & continuity",
+            "CCaaS Multi-Carrier Trunk Failover",
+            "CCaaS Cloud Region Failover"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sys_cai",
+      "name": "CAI (Conversational AI & Virtual Agents)",
+      "intents": [
+        {
+          "id": "failure_ungrounded_policy_hallucination",
+          "name": "CAI: Ungrounded Policy or Refund Hallucination",
+          "description": "Escalated callers cite non-existent refund promises or policy rules generated by the bot; QA flags bot transcript discrepancies — Mitigation: Enforce strict RAG entailment scoring, zero-temperature decoding, and deterministic template responses for financial policies",
+          "exemplars": [
+            "Escalated callers cite non-existent refund promises or policy rules generated by the bot; QA flags bot transcript discrepancies",
+            "Enforce strict RAG entailment scoring, zero-temperature decoding, and deterministic template responses for financial policies",
+            "Investigate CAI ungrounded policy or refund hallucination in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_containment_trap_loop",
+          "name": "CAI: Containment Trap & Deflection Loop",
+          "description": "High apparent containment paired with plummeting CSAT, hang-ups on turn 4+, and immediate callback spikes — Mitigation: Trigger automatic warm escalation after two disambiguation failures or rising frustration sentiment",
+          "exemplars": [
+            "High apparent containment paired with plummeting CSAT, hang-ups on turn 4+, and immediate callback spikes",
+            "Trigger automatic warm escalation after two disambiguation failures or rising frustration sentiment",
+            "Investigate CAI containment trap & deflection loop in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_voicebot_turn_collision",
+          "name": "CAI: Premature Endpointing & Turn Collision",
+          "description": "Voicebot interrupts callers mid-account-number or pauses over 2.5 seconds causing 'hello?' utterances — Mitigation: Tune slot-specific VAD silence thresholds and stream filler acknowledgments during slow backend tool calls",
+          "exemplars": [
+            "Voicebot interrupts callers mid-account-number or pauses over 2.5 seconds causing 'hello?' utterances",
+            "Tune slot-specific VAD silence thresholds and stream filler acknowledgments during slow backend tool calls",
+            "Investigate CAI premature endpointing & turn collision in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_amnesiac_agent_handoff",
+          "name": "CAI: Context Loss on Escalation Handoff",
+          "description": "Live agents ask customers to repeat authentication and issue details already captured by the virtual agent — Mitigation: Bind dialog state slots and structured summary payload directly to ACD SIP headers and desktop co-pilot screen pop",
+          "exemplars": [
+            "Live agents ask customers to repeat authentication and issue details already captured by the virtual agent",
+            "Bind dialog state slots and structured summary payload directly to ACD SIP headers and desktop co-pilot screen pop",
+            "Investigate CAI context loss on escalation handoff in contact center operations"
+          ]
+        },
+        {
+          "id": "ops_cai_understanding_architecture",
+          "name": "CAI NLU & Generative Grounding Architecture",
+          "description": "Classification, extraction, and grounded synthesis pipelines powering virtual agents",
+          "exemplars": [
+            "Configure CAI nlu & generative grounding architecture",
+            "CAI Deterministic Intent & Entity Tier",
+            "CAI Generative LLM & RAG Tier"
+          ]
+        },
+        {
+          "id": "ops_cai_guardrails_safety",
+          "name": "CAI Guardrails & Escalation Controls",
+          "description": "Runtime safety rails preventing ungrounded claims, policy violations, and frustrating bot loops",
+          "exemplars": [
+            "Configure CAI guardrails & escalation controls",
+            "CAI Input Filtering & Security Rails",
+            "CAI Output Validation Rails",
+            "CAI Human Escalation Triggers"
+          ]
+        },
+        {
+          "id": "ops_cai_turn_orchestration",
+          "name": "CAI Voice & Digital Turn Orchestration",
+          "description": "Real-time turn-taking, latency management, and modality adaptation",
+          "exemplars": [
+            "Configure CAI voice & digital turn orchestration",
+            "CAI Streaming ASR & Neural TTS Pipeline",
+            "CAI Full-Duplex Barge-In Handling",
+            "CAI Voice-to-Digital Visual Card Push"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sys_wfo",
+      "name": "WFO (Workforce Optimization & Engagement)",
+      "intents": [
+        {
+          "id": "failure_gamification_aht_gaming",
+          "name": "WFO: Unbalanced Gamification Metric Gaming",
+          "description": "Agents top speed leaderboards while cold transfers, premature hang-ups, and repeat contacts surge — Mitigation: Gate all speed and volume gamification points on minimum QA compliance and FCR quality floors",
+          "exemplars": [
+            "Agents top speed leaderboards while cold transfers, premature hang-ups, and repeat contacts surge",
+            "Gate all speed and volume gamification points on minimum QA compliance and FCR quality floors",
+            "Investigate WFO unbalanced gamification metric gaming in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_check_the_box_coaching",
+          "name": "WFO: Performative Check-the-Box Coaching",
+          "description": "100% coaching completion logged by supervisors, but zero improvement in repeat QA errors or customer outcomes — Mitigation: Track 14-day post-coaching behavior delta on the specific tagged skill and audit coaching action plans",
+          "exemplars": [
+            "100% coaching completion logged by supervisors, but zero improvement in repeat QA errors or customer outcomes",
+            "Track 14-day post-coaching behavior delta on the specific tagged skill and audit coaching action plans",
+            "Investigate WFO performative check-the-box coaching in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_high_performer_burnout_spiral",
+          "name": "WFO: Top-Performer Escalation Burnout",
+          "description": "Tenured multi-skilled specialists receive disproportionate angry escalations, leading to sudden absenteeism and resignations — Mitigation: Cap consecutive high-stress contacts in ACD routing and enforce automated recovery intervals after critical escalations",
+          "exemplars": [
+            "Tenured multi-skilled specialists receive disproportionate angry escalations, leading to sudden absenteeism and resignations",
+            "Cap consecutive high-stress contacts in ACD routing and enforce automated recovery intervals after critical escalations",
+            "Investigate WFO top-performer escalation burnout in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_premature_multiskill_promotion",
+          "name": "WFO: Premature Multi-Skill Queue Assignment",
+          "description": "Newly cross-trained agents flood supervisor assist channels and spike hold times when placed in blended queues too early — Mitigation: Require validated simulation pass rates and 2-week single-skill FCR stability before activating secondary ACD skills",
+          "exemplars": [
+            "Newly cross-trained agents flood supervisor assist channels and spike hold times when placed in blended queues too early",
+            "Require validated simulation pass rates and 2-week single-skill FCR stability before activating secondary ACD skills",
+            "Investigate WFO premature multi-skill queue assignment in contact center operations"
+          ]
+        },
+        {
+          "id": "ops_wfo_coaching_development",
+          "name": "WFO Coaching & Competency Development",
+          "description": "Structured interventions that elevate agent communication, system navigation, and resolution mastery",
+          "exemplars": [
+            "Configure WFO coaching & competency development",
+            "WFO Coaching Delivery Modes",
+            "WFO Skill Progression & Cross-Skilling Tiers"
+          ]
+        },
+        {
+          "id": "ops_wfo_engagement_retention",
+          "name": "WFO Employee Engagement, Gamification & Wellbeing",
+          "description": "Motivation systems and burnout safeguards protecting agent retention and morale",
+          "exemplars": [
+            "Configure WFO employee engagement, gamification & wellbeing",
+            "WFO Gamification & Recognition Programs",
+            "WFO Burnout & Attrition Prevention"
+          ]
+        },
+        {
+          "id": "ops_wfo_desktop_analytics",
+          "name": "WFO Desktop Workflow & Friction Analytics",
+          "description": "Telemetry into tool usage, swivel-chair bottlenecks, and after-call work drivers",
+          "exemplars": [
+            "Configure WFO desktop workflow & friction analytics",
+            "WFO Application Focus & Swivel-Chair Mapping",
+            "WFO Hold-Time Root-Cause Attribution",
+            "WFO After-Call Work Activity Trace"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sys_journey_orchestration",
+      "name": "JO (Real-Time Journey Orchestration & NBA)",
+      "intents": [
+        {
+          "id": "failure_tone_deaf_upsell_collision",
+          "name": "JO: Tone-Deaf Upsell During Service Failure",
+          "description": "Angry customers receive promotional NBA offers during outage or billing-dispute calls; CSAT drops and complaints spike — Mitigation: Enforce real-time sentiment and open-incident suppression gates that zero commercial NBA weights when frustration or active tickets exist",
+          "exemplars": [
+            "Angry customers receive promotional NBA offers during outage or billing-dispute calls; CSAT drops and complaints spike",
+            "Enforce real-time sentiment and open-incident suppression gates that zero commercial NBA weights when frustration or active tickets exist",
+            "Investigate JO tone-deaf upsell during service failure in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_stale_event_nudge_storm",
+          "name": "JO: Delayed Event Nudge After Resolution",
+          "description": "Customers receive proactive 'issue detected' SMS hours after already calling in and resolving the problem, triggering confused repeat calls — Mitigation: Enforce sub-second CRM, ACD, and Plane 2 trace disposition checks immediately prior to message dispatch",
+          "exemplars": [
+            "Customers receive proactive 'issue detected' SMS hours after already calling in and resolving the problem, triggering confused repeat calls",
+            "Enforce sub-second CRM, ACD, and Plane 2 trace disposition checks immediately prior to message dispatch",
+            "Investigate JO delayed event nudge after resolution in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_omnichannel_context_drop",
+          "name": "JO: Web-to-Voice Journey Amnesia",
+          "description": "Customer clicks 'Call Support' inside an authenticated app error flow but lands in generic IVR root menu with no context — Mitigation: Inject canonical omnichannel continuity tokens bindable by ANI or session code to fast-track IVR and hydrate ACD and desktop co-pilot state",
+          "exemplars": [
+            "Customer clicks 'Call Support' inside an authenticated app error flow but lands in generic IVR root menu with no context",
+            "Inject canonical omnichannel continuity tokens bindable by ANI or session code to fast-track IVR and hydrate ACD and desktop co-pilot state",
+            "Investigate JO web-to-voice journey amnesia in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_fatigue_cap_bypass",
+          "name": "JO: Siloed Campaign Fatigue Cap Bypass",
+          "description": "Opt-out rates and spam complaints climb because billing, collections, and marketing triggers fire independently on the same day — Mitigation: Centralize all outbound and proactive triggers through a unified journey suppression ledger with hard daily and weekly caps",
+          "exemplars": [
+            "Opt-out rates and spam complaints climb because billing, collections, and marketing triggers fire independently on the same day",
+            "Centralize all outbound and proactive triggers through a unified journey suppression ledger with hard daily and weekly caps",
+            "Investigate JO siloed campaign fatigue cap bypass in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_blueprint_blind_local_optimization",
+          "name": "JO: Blueprint-Blind Local Stage Optimization",
+          "description": "Orchestrator aggressively deflects high-emotion Moment-of-Truth contacts to low-cost chat to save immediate voice queue wait, causing severe downstream repeat contacts and churn — Mitigation: Bind Plane 3 channel steering to Plane 1 Moment-of-Truth contracts and Plane 2 true 7-day journey FCR outcomes",
+          "exemplars": [
+            "Orchestrator aggressively deflects high-emotion Moment-of-Truth contacts to low-cost chat to save immediate voice queue wait, causing severe downstream repeat contacts and churn",
+            "Bind Plane 3 channel steering to Plane 1 Moment-of-Truth contracts and Plane 2 true 7-day journey FCR outcomes",
+            "Investigate JO blueprint-blind local stage optimization in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_unbounded_a2a_ping_pong",
+          "name": "JO: Unbounded A2A Specialist Delegation Loop",
+          "description": "Orchestrator and specialist AI agents pass an ambiguous customer request back and forth across multiple A2A hops, spiking turn latency and token cost without resolution — Mitigation: Enforce strict hop-count TTL budgets in the context envelope and trigger confidence-banded warm human escalation when confidence remains below 0.70",
+          "exemplars": [
+            "Orchestrator and specialist AI agents pass an ambiguous customer request back and forth across multiple A2A hops, spiking turn latency and token cost without resolution",
+            "Enforce strict hop-count TTL budgets in the context envelope and trigger confidence-banded warm human escalation when confidence remains below 0.70",
+            "Investigate JO unbounded a2a specialist delegation loop in contact center operations"
+          ]
+        },
+        {
+          "id": "ops_jo_triggers_state",
+          "name": "JO Journey Event Triggers & State Management",
+          "description": "Streaming signals and persistent state transitions that drive real-time journey progression across channels",
+          "exemplars": [
+            "Configure JO journey event triggers & state management",
+            "JO Operational & Product Event Triggers",
+            "JO Customer Lifecycle Journey Stages"
+          ]
+        },
+        {
+          "id": "ops_jo_nba_arbitration_matrix",
+          "name": "JO Next-Best-Action Arbitration & Policy",
+          "description": "Scoring and prioritization logic selecting the single best action and trajectory for a live customer moment",
+          "exemplars": [
+            "Configure JO next-best-action arbitration & policy",
+            "JO Action Priority Override Tiers",
+            "JO Channel & Timing Selection"
+          ]
+        },
+        {
+          "id": "ops_jo_suppression_governance",
+          "name": "JO Channel Suppression & Contact Governance",
+          "description": "Guardrails preventing conflicting messages, over-contacting, and tone-deaf outreach across autonomous and human channels",
+          "exemplars": [
+            "Configure JO channel suppression & contact governance",
+            "JO Open Escalation Promotional Mute",
+            "JO Post-Contact Outbound Cooldown",
+            "JO Multi-Channel Alert Deduplication"
+          ]
+        },
+        {
+          "id": "ops_jo_conformance_and_a2a_interventions",
+          "name": "JO Real-Time Conformance Drift & A2A Interventions",
+          "description": "Active Plane 3 closed-loop controls that intercept Plane 2 drift from Plane 1 blueprints, delegate tasks to A2A specialist agents, rescue omnichannel context, and gate execution by calibrated confidence",
+          "exemplars": [
+            "Configure JO real-time conformance drift & a2a interventions",
+            "JO Real-Time Blueprint Drift Interception",
+            "JO Dynamic A2A Delegation & Context Rescue"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sys_fraud_auth",
+      "name": "FA (Fraud Detection & Caller Authentication)",
+      "intents": [
+        {
+          "id": "failure_kba_social_engineering_breach",
+          "name": "FA: Static KBA Social Engineering Bypass",
+          "description": "Fraudsters pass verbal security questions using leaked personal data and convince agents to change email or wire funds — Mitigation: Retire static KBA questions and enforce hard desktop locks requiring cryptographic step-up MFA before profile or payment mutations",
+          "exemplars": [
+            "Fraudsters pass verbal security questions using leaked personal data and convince agents to change email or wire funds",
+            "Retire static KBA questions and enforce hard desktop locks requiring cryptographic step-up MFA before profile or payment mutations",
+            "Investigate FA static kba social engineering bypass in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_sms_otp_sim_swap_compromise",
+          "name": "FA: SMS OTP Interception via SIM Swap",
+          "description": "High-value accounts experience sudden password and phone changes shortly after carrier port-out events — Mitigation: Query carrier SIM-swap and port-age APIs prior to SMS dispatch; block SMS OTP if SIM changed within 72 hours",
+          "exemplars": [
+            "High-value accounts experience sudden password and phone changes shortly after carrier port-out events",
+            "Query carrier SIM-swap and port-age APIs prior to SMS dispatch; block SMS OTP if SIM changed within 72 hours",
+            "Investigate FA sms otp interception via sim swap in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_biometric_false_reject_spike",
+          "name": "FA: Noisy Environment Biometric False Rejects",
+          "description": "Legitimate mobile callers in noisy environments repeatedly fail voice verification, spiking AHT and customer frustration — Mitigation: Check audio SNR prior to biometric scoring and fall back seamlessly to in-app push approval when background noise is high",
+          "exemplars": [
+            "Legitimate mobile callers in noisy environments repeatedly fail voice verification, spiking AHT and customer frustration",
+            "Check audio SNR prior to biometric scoring and fall back seamlessly to in-app push approval when background noise is high",
+            "Investigate FA noisy environment biometric false rejects in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_synthetic_voice_clone_bypass",
+          "name": "FA: Generative Voice Clone Spoofing",
+          "description": "Synthetic TTS audio replays attempt to pass voiceprint matching on high-balance accounts — Mitigation: Enable acoustic liveness and synthetic artifact detection alongside multi-signal carrier attestation",
+          "exemplars": [
+            "Synthetic TTS audio replays attempt to pass voiceprint matching on high-balance accounts",
+            "Enable acoustic liveness and synthetic artifact detection alongside multi-signal carrier attestation",
+            "Investigate FA generative voice clone spoofing in contact center operations"
+          ]
+        },
+        {
+          "id": "ops_fa_authentication_modalities",
+          "name": "FA Authentication Modalities & Assurance Tiers",
+          "description": "Layered identity verification methods balanced by risk level and customer friction",
+          "exemplars": [
+            "Configure FA authentication modalities & assurance tiers",
+            "FA Passive Zero-Friction Signals",
+            "FA Active Step-Up Verification Factors",
+            "FA Legacy High-Risk Factors (Restricted)"
+          ]
+        },
+        {
+          "id": "ops_fa_threat_vectors",
+          "name": "FA Contact Center Fraud & Threat Vectors",
+          "description": "Attack patterns targeting IVR self-service and live contact center agents",
+          "exemplars": [
+            "Configure FA contact center fraud & threat vectors",
+            "FA Telephony & Audio Manipulation",
+            "FA Social Engineering & Account Takeover"
+          ]
+        },
+        {
+          "id": "ops_fa_risk_orchestration_actions",
+          "name": "FA Real-Time Fraud Intervention Controls",
+          "description": "Automated policy responses executed when risk scores cross threshold bands",
+          "exemplars": [
+            "Configure FA real-time fraud intervention controls",
+            "FA Low-Risk Green Fast-Track",
+            "FA Medium-Risk Step-Up Gate",
+            "FA High-Risk Fraud Specialist Divert"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sys_desktop_assist",
+      "name": "DA (Agent Desktop & Real-Time Co-Pilot)",
+      "intents": [
+        {
+          "id": "failure_copilot_notification_overload",
+          "name": "DA: Co-Pilot Card Spam & Cognitive Overload",
+          "description": "Agents ignore or minimize the co-pilot panel because noisy, low-relevance cards pop up on every sentence — Mitigation: Gate card pops on high intent-shift confidence, cap active cards to two on screen, and suppress duplicates",
+          "exemplars": [
+            "Agents ignore or minimize the co-pilot panel because noisy, low-relevance cards pop up on every sentence",
+            "Gate card pops on high intent-shift confidence, cap active cards to two on screen, and suppress duplicates",
+            "Investigate DA co-pilot card spam & cognitive overload in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_rubber_stamped_summary_error",
+          "name": "DA: Unreviewed Auto-Summary Factual Drift",
+          "description": "Incorrect dollar amounts or promised dates appear in CRM case notes because agents click save without reviewing the generated summary — Mitigation: Highlight extracted numbers and commitments in bold review chips requiring explicit agent confirmation before CRM write",
+          "exemplars": [
+            "Incorrect dollar amounts or promised dates appear in CRM case notes because agents click save without reviewing the generated summary",
+            "Highlight extracted numbers and commitments in bold review chips requiring explicit agent confirmation before CRM write",
+            "Investigate DA unreviewed auto-summary factual drift in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_whisper_latency_miss",
+          "name": "DA: Late Knowledge Card Arrival",
+          "description": "Co-pilot surfaces the correct policy card 15 seconds after the agent already placed the customer on hold to search manually — Mitigation: Stream partial ASR transcripts with sub-2-second semantic cache lookup on top 200 recurring intents",
+          "exemplars": [
+            "Co-pilot surfaces the correct policy card 15 seconds after the agent already placed the customer on hold to search manually",
+            "Stream partial ASR transcripts with sub-2-second semantic cache lookup on top 200 recurring intents",
+            "Investigate DA late knowledge card arrival in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_broken_screen_pop_hydration",
+          "name": "DA: Incomplete Screen-Pop Context Hydration",
+          "description": "Agent answers call to a blank workspace or spinning loader, forcing manual account lookup and extending handle time — Mitigation: Pre-hydrate CRM profile and bot handoff brief during ACD ring state with cached fallback views",
+          "exemplars": [
+            "Agent answers call to a blank workspace or spinning loader, forcing manual account lookup and extending handle time",
+            "Pre-hydrate CRM profile and bot handoff brief during ACD ring state with cached fallback views",
+            "Investigate DA incomplete screen-pop context hydration in contact center operations"
+          ]
+        },
+        {
+          "id": "ops_da_workspace_unification",
+          "name": "DA Unified Workspace & Swivel-Chair Elimination",
+          "description": "Composite desktop architecture uniting channels, customer context, and guided workflows",
+          "exemplars": [
+            "Configure DA unified workspace & swivel-chair elimination",
+            "DA Omnichannel Media & State Bar",
+            "DA Swivel-Chair Elimination Widgets"
+          ]
+        },
+        {
+          "id": "ops_da_realtime_copilot",
+          "name": "DA Real-Time In-Call AI Co-Pilot",
+          "description": "Live listening intelligence that assists agents during active customer conversations",
+          "exemplars": [
+            "Configure DA real-time in-call ai co-pilot",
+            "DA Live Knowledge & Response Assist",
+            "DA In-Call Quality & Compliance Prompts"
+          ]
+        },
+        {
+          "id": "ops_da_acw_wrap_automation",
+          "name": "DA After-Call Work & Wrap-Up Automation",
+          "description": "Post-interaction automation compressing wrap-up time and improving CRM hygiene",
+          "exemplars": [
+            "Configure DA after-call work & wrap-up automation",
+            "DA Structured Problem-Action-Outcome Summary",
+            "DA Automated Wrap & Reason Code Selection",
+            "DA Post-Call Confirmation Email & Task Generator"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sys_omnichannel_context",
+      "name": "OCX (Omnichannel Orchestration & Context Sharing)",
+      "intents": [
+        {
+          "id": "failure_handoff_context_amnesia",
+          "name": "OCX: Omnichannel Handoff Context Amnesia",
+          "description": "Customers escalating from web chat or voicebot to a live agent are greeted with 'How can I help you today?' and forced to restate their entire issue; CSAT on escalated contacts drops sharply — Mitigation: Enforce mandatory Warm Handoff State Contracts in ACD routing and auto-pop the structured Handoff Digest and filled slots inside the agent co-pilot before call answer",
+          "exemplars": [
+            "Customers escalating from web chat or voicebot to a live agent are greeted with 'How can I help you today?' and forced to restate their entire issue; CSAT on escalated contacts drops sharply",
+            "Enforce mandatory Warm Handoff State Contracts in ACD routing and auto-pop the structured Handoff Digest and filled slots inside the agent co-pilot before call answer",
+            "Investigate OCX omnichannel handoff context amnesia in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_redundant_reauthentication_friction",
+          "name": "OCX: Cross-Channel Re-Authentication Loop",
+          "description": "Callers initiating contact from an already-authenticated mobile banking or healthcare app are challenged again by IVR and live agents for date of birth, PIN, or KBA — Mitigation: Propagate signed Authentication Assurance Carryover Tokens via WebRTC headers or SIP UUI and configure IVR and desktop flows to honor valid AAL claims within their TTL window",
+          "exemplars": [
+            "Callers initiating contact from an already-authenticated mobile banking or healthcare app are challenged again by IVR and live agents for date of birth, PIN, or KBA",
+            "Propagate signed Authentication Assurance Carryover Tokens via WebRTC headers or SIP UUI and configure IVR and desktop flows to honor valid AAL claims within their TTL window",
+            "Investigate OCX cross-channel re-authentication loop in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_sip_trunk_uui_header_stripping",
+          "name": "OCX: Carrier SIP Trunk UUI & Header Stripping",
+          "description": "Voice calls transferred across PSTN interconnect or regional SBC boundaries arrive at the ACD with empty UUI headers and orphaned Context Envelope lookups — Mitigation: Implement dual-path context resolution combining RFC-compliant SIP UUI transport with out-of-band cloud session ledger lookup keyed by ANI, DNIS, and sub-second arrival window",
+          "exemplars": [
+            "Voice calls transferred across PSTN interconnect or regional SBC boundaries arrive at the ACD with empty UUI headers and orphaned Context Envelope lookups",
+            "Implement dual-path context resolution combining RFC-compliant SIP UUI transport with out-of-band cloud session ledger lookup keyed by ANI, DNIS, and sub-second arrival window",
+            "Investigate OCX carrier sip trunk uui & header stripping in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_stale_slot_ledger_overwrite",
+          "name": "OCX: Stale Context & Zombie Slot Overwrite",
+          "description": "Returning customer starting a new inquiry has their current session polluted by slots (such as an old order ID or travel date) from a resolved ticket days earlier — Mitigation: Attach strict domain-specific TTLs and journey-disposition lifecycle hooks to every slot in the Context Envelope, archiving closed-intent slots upon resolution",
+          "exemplars": [
+            "Returning customer starting a new inquiry has their current session polluted by slots (such as an old order ID or travel date) from a resolved ticket days earlier",
+            "Attach strict domain-specific TTLs and journey-disposition lifecycle hooks to every slot in the Context Envelope, archiving closed-intent slots upon resolution",
+            "Investigate OCX stale context & zombie slot overwrite in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_split_brain_async_thread_collision",
+          "name": "OCX: Split-Brain Simultaneous Channel Collision",
+          "description": "Customer sends an SMS reply while simultaneously calling into the voice queue, resulting in two agents or bots working conflicting mutations on the same case — Mitigation: Maintain an atomic distributed session lock on the Unified Conversation Thread Ledger so active synchronous voice handling pauses automated async bot turns and merges both streams into one workspace",
+          "exemplars": [
+            "Customer sends an SMS reply while simultaneously calling into the voice queue, resulting in two agents or bots working conflicting mutations on the same case",
+            "Maintain an atomic distributed session lock on the Unified Conversation Thread Ledger so active synchronous voice handling pauses automated async bot turns and merges both streams into one workspace",
+            "Investigate OCX split-brain simultaneous channel collision in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_dead_end_modality_deflection",
+          "name": "OCX: Dead-End Voice-to-Digital Deflection Link",
+          "description": "Caller accepts an IVR-to-SMS deflection link, clicks the URL, and lands on a generic login page or unhydrated web home screen, triggering immediate angry repeat calls — Mitigation: Bind deflection deep links to pre-authenticated, single-use session continuity tokens that open directly into the target workflow step with all IVR-captured slots pre-filled",
+          "exemplars": [
+            "Caller accepts an IVR-to-SMS deflection link, clicks the URL, and lands on a generic login page or unhydrated web home screen, triggering immediate angry repeat calls",
+            "Bind deflection deep links to pre-authenticated, single-use session continuity tokens that open directly into the target workflow step with all IVR-captured slots pre-filled",
+            "Investigate OCX dead-end voice-to-digital deflection link in contact center operations"
+          ]
+        },
+        {
+          "id": "ops_ocx_context_envelope_architecture",
+          "name": "OCX Context Envelope & Payload Facets",
+          "description": "Structural layers of the canonical Omnichannel Context Envelope propagated across channel switches and escalations",
+          "exemplars": [
+            "Configure OCX context envelope & payload facets",
+            "OCX Identity & Authentication Claims Layer",
+            "OCX Intent Stack & Slot Ledger Layer",
+            "OCX Interaction Digest, Telemetry & Governance Layer"
+          ]
+        },
+        {
+          "id": "ops_ocx_modality_transitions",
+          "name": "OCX Cross-Channel Modality Transitions",
+          "description": "Directional switching patterns between digital, messaging, and voice modalities",
+          "exemplars": [
+            "Configure OCX cross-channel modality transitions",
+            "OCX Digital-to-Voice Elevation (Web or App to Voice)",
+            "OCX Voice-to-Digital Deflection & Multimodal Sync",
+            "OCX Asynchronous-to-Synchronous Escalation"
+          ]
+        },
+        {
+          "id": "ops_ocx_identity_and_session_stitching",
+          "name": "OCX Identity Resolution & Session Continuity",
+          "description": "Mechanisms correlating customer identity and thread state across disparate channel identifiers and time gaps",
+          "exemplars": [
+            "Configure OCX identity resolution & session continuity",
+            "OCX Deterministic Identity & Token Binding",
+            "OCX Probabilistic & Ephemeral Handoff Correlation",
+            "OCX Long-Horizon Thread & Journey Persistence"
+          ]
+        },
+        {
+          "id": "ops_ocx_handoff_execution_modes",
+          "name": "OCX Handoff Execution & Hydration Modes",
+          "description": "Operational patterns governing how context is delivered and consumed when transferring between bots, channels, and human agents",
+          "exemplars": [
+            "Configure OCX handoff execution & hydration modes",
+            "OCX Cold Blind Transfer (Degraded Anti-Pattern)",
+            "OCX Warm Screen-Pop & Slot Hydration Handoff",
+            "OCX Whisper-Briefed & Co-Pilot Shadowed Transition"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sys_a2a_protocol",
+      "name": "A2A (Agent-to-Agent (A2A) & Multi-Agent Facets)",
+      "intents": [
+        {
+          "id": "failure_infinite_agent_ping_pong_loop",
+          "name": "A2A: Infinite Inter-Agent Delegation Ping-Pong Loop",
+          "description": "Billing specialist agent delegates back to account triage agent which re-delegates to billing; recursion depth spikes, turn latency exceeds timeout, and customer hangs up — Mitigation: Enforce strict DAG cycle detection and a hard max_delegation_hops ceiling (such as 3 hops) in the A2A Handoff Envelope that immediately routes to a human advocate when breached",
+          "exemplars": [
+            "Billing specialist agent delegates back to account triage agent which re-delegates to billing; recursion depth spikes, turn latency exceeds timeout, and customer hangs up",
+            "Enforce strict DAG cycle detection and a hard max_delegation_hops ceiling (such as 3 hops) in the A2A Handoff Envelope that immediately routes to a human advocate when breached",
+            "Investigate A2A infinite inter-agent delegation ping-pong loop in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_confused_deputy_privilege_escalation",
+          "name": "A2A: Confused Deputy Cross-Agent Privilege Escalation",
+          "description": "Low-trust informational bot tricks a high-privilege billing specialist agent into issuing an unauthorized refund or exposing restricted account fields via crafted task prompts — Mitigation: Bind every A2A delegation to cryptographic On-Behalf-Of (OBO) tokens scoped to the verified customer assurance level and enforce deterministic tool authority boundaries independent of natural-language prompts",
+          "exemplars": [
+            "Low-trust informational bot tricks a high-privilege billing specialist agent into issuing an unauthorized refund or exposing restricted account fields via crafted task prompts",
+            "Bind every A2A delegation to cryptographic On-Behalf-Of (OBO) tokens scoped to the verified customer assurance level and enforce deterministic tool authority boundaries independent of natural-language prompts",
+            "Investigate A2A confused deputy cross-agent privilege escalation in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_multi_hop_telephone_game_drift",
+          "name": "A2A: Multi-Hop Context Pollution & Semantic Drift",
+          "description": "Each agent in a sequential relay re-summarizes the customer request in free text, subtly distorting constraints or dropping negation until the final specialist executes the wrong action — Mitigation: Propagate immutable typed slots and canonical customer utterances inside the Shared Episodic Scratchpad rather than relying on lossy free-text re-summarization across hops",
+          "exemplars": [
+            "Each agent in a sequential relay re-summarizes the customer request in free text, subtly distorting constraints or dropping negation until the final specialist executes the wrong action",
+            "Propagate immutable typed slots and canonical customer utterances inside the Shared Episodic Scratchpad rather than relying on lossy free-text re-summarization across hops",
+            "Investigate A2A multi-hop context pollution & semantic drift in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_zombie_async_subtask_mutation",
+          "name": "A2A: Orphaned Zombie Sub-Task Late Mutation",
+          "description": "Customer barges in and cancels a request or switches intent, but a slow background specialist agent finishes seconds later and commits an unwanted order cancellation or CRM write — Mitigation: Enforce idempotent task cancellation propagation and pre-commit parent-task state validation before any specialist agent executes an external write tool",
+          "exemplars": [
+            "Customer barges in and cancels a request or switches intent, but a slow background specialist agent finishes seconds later and commits an unwanted order cancellation or CRM write",
+            "Enforce idempotent task cancellation propagation and pre-commit parent-task state validation before any specialist agent executes an external write tool",
+            "Investigate A2A orphaned zombie sub-task late mutation in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_unverified_specialist_hallucinated_commit",
+          "name": "A2A: Unverified Specialist Action or Policy Hallucination",
+          "description": "Domain specialist agent misinterprets an edge-case policy and executes an irreversible account modification or promises an invalid SLA without oversight — Mitigation: Route all state-mutating tool calls and financial commitments through a synchronous Critic-Verifier Agent gate and require high-band confidence calibration",
+          "exemplars": [
+            "Domain specialist agent misinterprets an edge-case policy and executes an irreversible account modification or promises an invalid SLA without oversight",
+            "Route all state-mutating tool calls and financial commitments through a synchronous Critic-Verifier Agent gate and require high-band confidence calibration",
+            "Investigate A2A unverified specialist action or policy hallucination in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_opaque_ai_to_human_trace_dump",
+          "name": "A2A: Opaque Multi-Agent Log Dump on Human Escalation",
+          "description": "Live agents receiving an escalated A2A contact are overwhelmed by raw JSON reasoning traces from four sub-agents, increasing AHT and forcing them to ask the customer what happened — Mitigation: Transform the Multi-Agent Provenance Ledger into a structured 3-line Human-in-the-Loop Advocate Card showing verified customer goal, completed specialist checks, and the exact blocker requiring human judgment",
+          "exemplars": [
+            "Live agents receiving an escalated A2A contact are overwhelmed by raw JSON reasoning traces from four sub-agents, increasing AHT and forcing them to ask the customer what happened",
+            "Transform the Multi-Agent Provenance Ledger into a structured 3-line Human-in-the-Loop Advocate Card showing verified customer goal, completed specialist checks, and the exact blocker requiring human judgment",
+            "Investigate A2A opaque multi-agent log dump on human escalation in contact center operations"
+          ]
+        },
+        {
+          "id": "ops_a2a_discovery_and_contracts",
+          "name": "A2A Agent Discovery, Cards & Capability Contracts",
+          "description": "Metadata schemas, capability declarations, and authorization boundaries enabling dynamic agent matchmaking",
+          "exemplars": [
+            "Configure A2A agent discovery, cards & capability contracts",
+            "A2A Agent Card Metadata & Skill Declarations",
+            "A2A Authority, Security & RBAC Scopes",
+            "A2A Operational SLA, Latency & Token Budgets"
+          ]
+        },
+        {
+          "id": "ops_a2a_orchestration_topologies",
+          "name": "A2A Multi-Agent Coordination Topologies",
+          "description": "Structural execution patterns for coordinating frontline, specialist, verifier, and human agents",
+          "exemplars": [
+            "Configure A2A multi-agent coordination topologies",
+            "A2A Hub-and-Spoke Supervisor Orchestration",
+            "A2A Sequential Pipeline & Parallel Fan-Out Topologies",
+            "A2A Critic-Verifier Gate & Human Advocate Topologies"
+          ]
+        },
+        {
+          "id": "ops_a2a_task_state_and_protocol",
+          "name": "A2A Task Lifecycle & Message Protocol",
+          "description": "State transitions, streaming artifact exchange, clarification sub-dialogs, and rollback semantics across A2A tasks",
+          "exemplars": [
+            "Configure A2A task lifecycle & message protocol",
+            "A2A Canonical Task Lifecycle State Transitions",
+            "A2A Streaming Artifacts & Compensating Rollback"
+          ]
+        },
+        {
+          "id": "ops_a2a_memory_and_guardrails",
+          "name": "A2A Shared Memory, Provenance & Safety Guardrails",
+          "description": "Context scoping, cryptographic auditability, loop prevention, and cross-agent hallucination controls",
+          "exemplars": [
+            "Configure A2A shared memory, provenance & safety guardrails",
+            "A2A Scoped Memory & Context Hygiene",
+            "A2A Provenance Chain & Loop Circuit Breakers"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sys_journey_mapping",
+      "name": "CJM (Customer Journey Mapping (Prescriptive Blueprint))",
+      "intents": [
+        {
+          "id": "failure_happy_path_delusion",
+          "name": "CJM: Happy-Path Delusion (Ignoring Exception Branches)",
+          "description": "Blueprint documents only the ideal self-service Golden Path; 35%+ of live traffic hits unmapped exceptions and drops into generic default queues — Mitigation: Mandate explicit fallback and exception branches for every stage node as a hard gate in the blueprint completeness rubric",
+          "exemplars": [
+            "Blueprint documents only the ideal self-service Golden Path; 35%+ of live traffic hits unmapped exceptions and drops into generic default queues",
+            "Mandate explicit fallback and exception branches for every stage node as a hard gate in the blueprint completeness rubric",
+            "Investigate CJM happy-path delusion (ignoring exception branches) in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_inside_out_org_chart_mapping",
+          "name": "CJM: Inside-Out Org-Chart Mapping",
+          "description": "Journey stages mirror internal department silos (Billing, Tech Support, Retention) rather than customer Jobs-to-be-Done, institutionalizing transfers — Mitigation: Anchor all blueprint stages on customer JTBD milestones and require cross-functional backstage choreography beneath unified frontstage steps",
+          "exemplars": [
+            "Journey stages mirror internal department silos (Billing, Tech Support, Retention) rather than customer Jobs-to-be-Done, institutionalizing transfers",
+            "Anchor all blueprint stages on customer JTBD milestones and require cross-functional backstage choreography beneath unified frontstage steps",
+            "Investigate CJM inside-out org-chart mapping in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_static_slideware_decay",
+          "name": "CJM: Static Slideware Decay",
+          "description": "Journey maps live as static design PDFs disconnected from production routing rules and telemetry; actual flows diverge within weeks of launch — Mitigation: Publish blueprints as versioned machine-readable graphs bound directly to Plane 2 conformance monitors and Plane 3 state machines",
+          "exemplars": [
+            "Journey maps live as static design PDFs disconnected from production routing rules and telemetry; actual flows diverge within weeks of launch",
+            "Publish blueprints as versioned machine-readable graphs bound directly to Plane 2 conformance monitors and Plane 3 state machines",
+            "Investigate CJM static slideware decay in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_unbudgeted_backstage_latency",
+          "name": "CJM: Unbudgeted Backstage System Latency",
+          "description": "Frontstage blueprint promises instant resolution while backstage fulfillment requires manual back-office queues or slow legacy batch jobs — Mitigation: Map backstage system and A2A execution SLAs into cumulative stage latency budgets and stress-test against WFM capacity models",
+          "exemplars": [
+            "Frontstage blueprint promises instant resolution while backstage fulfillment requires manual back-office queues or slow legacy batch jobs",
+            "Map backstage system and A2A execution SLAs into cumulative stage latency budgets and stress-test against WFM capacity models",
+            "Investigate CJM unbudgeted backstage system latency in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_missing_handoff_contracts",
+          "name": "CJM: Missing Cross-Channel Handoff Contracts",
+          "description": "Blueprint arrows connect Web App to Voice Queue without specifying identity binding or context payload, causing 100% context reset on escalation — Mitigation: Require canonical omnichannel context envelope specifications on every cross-swimlane transition edge",
+          "exemplars": [
+            "Blueprint arrows connect Web App to Voice Queue without specifying identity binding or context payload, causing 100% context reset on escalation",
+            "Require canonical omnichannel context envelope specifications on every cross-swimlane transition edge",
+            "Investigate CJM missing cross-channel handoff contracts in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_vanity_resolution_definitions",
+          "name": "CJM: Vanity Single-Channel Resolution Definitions",
+          "description": "Blueprint marks journey complete when a bot displays a FAQ link or an agent closes a ticket, even though the underlying customer problem persists — Mitigation: Define normative exit resolution criteria using customer-verified JTBD completion and zero repeat contact within a 7-day window",
+          "exemplars": [
+            "Blueprint marks journey complete when a bot displays a FAQ link or an agent closes a ticket, even though the underlying customer problem persists",
+            "Define normative exit resolution criteria using customer-verified JTBD completion and zero repeat contact within a 7-day window",
+            "Investigate CJM vanity single-channel resolution definitions in contact center operations"
+          ]
+        },
+        {
+          "id": "ops_cjm_blueprint_anatomy",
+          "name": "CJM Journey Blueprint Structural Anatomy",
+          "description": "Core structural layers composing a machine-executable customer journey blueprint from persona framing down to backstage choreography",
+          "exemplars": [
+            "Configure CJM journey blueprint structural anatomy",
+            "CJM Persona & JTBD Intent Archetypes",
+            "CJM Lifecycle Macro-Phases & Micro-Stage Graphs",
+            "CJM Frontstage vs Backstage Service Swimlanes"
+          ]
+        },
+        {
+          "id": "ops_cjm_path_classifications",
+          "name": "CJM Prescriptive Path Classifications",
+          "description": "Normative taxonomy of designed routes through a journey blueprint across primary, recovery, proactive, and compliance scenarios",
+          "exemplars": [
+            "Configure CJM prescriptive path classifications",
+            "CJM Primary & Proactive Resolution Paths",
+            "CJM Recovery, Compliance & Degradation Paths"
+          ]
+        },
+        {
+          "id": "ops_cjm_normative_targets",
+          "name": "CJM Normative Targets & Guardrail Budgets",
+          "description": "Quantitative performance thresholds and friction ceilings embedded directly into blueprint stages",
+          "exemplars": [
+            "Configure CJM normative targets & guardrail budgets",
+            "CJM Latency & Customer Effort Ceilings",
+            "CJM Containment & Sentiment Milestones"
+          ]
+        },
+        {
+          "id": "ops_cjm_governance_and_versioning",
+          "name": "CJM Blueprint Lifecycle & Simulation Governance",
+          "description": "Design methodology, simulation stress-testing, versioning, and closed-loop recalibration from empirical telemetry",
+          "exemplars": [
+            "Configure CJM blueprint lifecycle & simulation governance",
+            "CJM Hypothesis Design & Digital Twin Simulation",
+            "CJM Variant Versioning & Closed-Loop Recalibration"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sys_journey_tracking",
+      "name": "CJT (Customer Journey Tracking & Process Mining)",
+      "intents": [
+        {
+          "id": "failure_siloed_channel_myopia",
+          "name": "CJT: Siloed Channel Myopia (Mirage Containment)",
+          "description": "IVR or bot team celebrates 80% self-service containment while ACD call volume rises because 60% of 'contained' customers call back within 2 hours via a different menu option — Mitigation: Replace single-session containment metrics with Plane 2 stitched 24-hour non-leaking containment accounting",
+          "exemplars": [
+            "IVR or bot team celebrates 80% self-service containment while ACD call volume rises because 60% of 'contained' customers call back within 2 hours via a different menu option",
+            "Replace single-session containment metrics with Plane 2 stitched 24-hour non-leaking containment accounting",
+            "Investigate CJT siloed channel myopia (mirage containment) in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_unstitched_anonymous_web_prehistory",
+          "name": "CJT: Unstitched Anonymous Web Pre-History",
+          "description": "Process mining treats inbound voice calls as journey start node 1, missing the 15 minutes of failed web checkout and help-article looping that actually caused the call — Mitigation: Implement retroactive anonymous-to-known session binding using login events, continuity tokens, and probabilistic device-to-ANI correlation",
+          "exemplars": [
+            "Process mining treats inbound voice calls as journey start node 1, missing the 15 minutes of failed web checkout and help-article looping that actually caused the call",
+            "Implement retroactive anonymous-to-known session binding using login events, continuity tokens, and probabilistic device-to-ANI correlation",
+            "Investigate CJT unstitched anonymous web pre-history in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_survivorship_bias_survey_attribution",
+          "name": "CJT: Survivorship Bias in Survey Attribution",
+          "description": "Journey health appears green because post-call CSAT surveys only sample customers who survived queues and completed handling, ignoring silent mid-journey drop-offs — Mitigation: Combine VOC survey scores with Plane 2 silent drop-off rates and speech analytics sentiment on abandoned or transferred legs",
+          "exemplars": [
+            "Journey health appears green because post-call CSAT surveys only sample customers who survived queues and completed handling, ignoring silent mid-journey drop-offs",
+            "Combine VOC survey scores with Plane 2 silent drop-off rates and speech analytics sentiment on abandoned or transferred legs",
+            "Investigate CJT survivorship bias in survey attribution in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_event_timestamp_clock_skew",
+          "name": "CJT: Cross-System Event Timestamp Skew",
+          "description": "Discovered process graphs show impossible backward transitions (such as CRM wrap-up occurring before ACD call arrival) due to unsynchronized system clocks or batch log delays — Mitigation: Enforce NTP clock discipline, ingest logical sequence numbers from the context envelope, and distinguish event occurrence time from ingestion time",
+          "exemplars": [
+            "Discovered process graphs show impossible backward transitions (such as CRM wrap-up occurring before ACD call arrival) due to unsynchronized system clocks or batch log delays",
+            "Enforce NTP clock discipline, ingest logical sequence numbers from the context envelope, and distinguish event occurrence time from ingestion time",
+            "Investigate CJT cross-system event timestamp skew in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_confounding_repeats_as_new_journeys",
+          "name": "CJT: Confounding Repeat Contacts as Independent Journeys",
+          "description": "Five contacts from the same customer over 4 days are logged as five fast, successful journeys instead of one broken 4-day ordeal — Mitigation: Apply semantic intent similarity and rolling 7-day episode clustering to bind repeat contacts into a single longitudinal journey trace",
+          "exemplars": [
+            "Five contacts from the same customer over 4 days are logged as five fast, successful journeys instead of one broken 4-day ordeal",
+            "Apply semantic intent similarity and rolling 7-day episode clustering to bind repeat contacts into a single longitudinal journey trace",
+            "Investigate CJT confounding repeat contacts as independent journeys in contact center operations"
+          ]
+        },
+        {
+          "id": "failure_alert_fatigue_benign_variants",
+          "name": "CJT: Alert Fatigue on Benign Path Variants",
+          "description": "Process mining flags thousands of minor customer navigation variations as conformance violations, burying severe dead-end loops and compliance skips — Mitigation: Weight conformance drift alerts by downstream impact on CSAT, handle-time penalty, compliance risk, and repeat-contact probability",
+          "exemplars": [
+            "Process mining flags thousands of minor customer navigation variations as conformance violations, burying severe dead-end loops and compliance skips",
+            "Weight conformance drift alerts by downstream impact on CSAT, handle-time penalty, compliance risk, and repeat-contact probability",
+            "Investigate CJT alert fatigue on benign path variants in contact center operations"
+          ]
+        },
+        {
+          "id": "ops_cjt_telemetry_reconstruction",
+          "name": "CJT Event Ingestion & Trace Reconstruction",
+          "description": "Data engineering and identity-resolution pipelines that assemble fragmented multi-system logs into unified customer journey episodes",
+          "exemplars": [
+            "Configure CJT event ingestion & trace reconstruction",
+            "CJT Identity Resolution & Temporal Alignment",
+            "CJT Episode Clustering & Multi-Actor Span Linking"
+          ]
+        },
+        {
+          "id": "ops_cjt_conformance_and_drift",
+          "name": "CJT Conformance Checking & Path Drift Analysis",
+          "description": "Algorithmic alignment of discovered empirical traces against Plane 1 prescriptive journey blueprints",
+          "exemplars": [
+            "Configure CJT conformance checking & path drift analysis",
+            "CJT Structural Path Conformance & Fitness",
+            "CJT Budget Overrun & Trajectory Drift"
+          ]
+        },
+        {
+          "id": "ops_cjt_path_pathology_taxonomy",
+          "name": "CJT Empirical Journey Pathologies",
+          "description": "Catalog of recurring high-friction journey anti-patterns automatically classified by Plane 2 process mining",
+          "exemplars": [
+            "Configure CJT empirical journey pathologies",
+            "CJT Self-Service & Escalation Cascade Pathologies",
+            "CJT Transfer Pinball & Repeat Relapse Pathologies"
+          ]
+        },
+        {
+          "id": "ops_cjt_outcome_and_cohort_analytics",
+          "name": "CJT True Outcome & Root-Cause Analytics",
+          "description": "End-to-end journey economics, true multi-touch resolution accounting, and closed-loop feedback to Plane 1 and Plane 3",
+          "exemplars": [
+            "Configure CJT true outcome & root-cause analytics",
+            "CJT True Resolution & Journey Economics",
+            "CJT Churn Survival & Blueprint Feedback Loops"
+          ]
+        }
+      ]
+    }
+  ],
+  "journeys": [
+    {
+      "id": "cxos_interaction_lifecycle",
+      "name": "CXOS End-to-End Interaction Lifecycle",
+      "triggerIntents": [
+        "sys_ivr.ops_ivr_service_types",
+        "sys_acd.ops_acd_routing_strategies"
+      ],
+      "stages": [
+        {
+          "id": "arrival",
+          "name": "Arrival",
+          "nextStages": [
+            "identity"
+          ]
+        },
+        {
+          "id": "identity",
+          "name": "Identify & Authenticate",
+          "nextStages": [
+            "self_service"
+          ]
+        },
+        {
+          "id": "self_service",
+          "name": "Self-Service",
+          "nextStages": [
+            "queue"
+          ]
+        },
+        {
+          "id": "queue",
+          "name": "Queue",
+          "nextStages": [
+            "routing"
+          ]
+        },
+        {
+          "id": "routing",
+          "name": "Routing",
+          "nextStages": [
+            "handling"
+          ]
+        },
+        {
+          "id": "handling",
+          "name": "Handling",
+          "nextStages": [
+            "wrap_up"
+          ]
+        },
+        {
+          "id": "wrap_up",
+          "name": "Wrap-Up",
+          "nextStages": [
+            "resolution"
+          ]
+        },
+        {
+          "id": "resolution",
+          "name": "Resolution",
+          "nextStages": [
+            "feedback"
+          ]
+        },
+        {
+          "id": "feedback",
+          "name": "Feedback",
+          "nextStages": []
+        }
+      ],
+      "terminalStages": [
+        "feedback"
+      ]
+    },
+    {
+      "id": "cxos_qa_calibration_loop",
+      "name": "CXOS QA Triage & Calibration Loop",
+      "triggerIntents": [
+        "sys_qa.failure_gotcha_qa",
+        "sys_qa.failure_calibration_drift",
+        "sys_qa.ops_qa_evaluation_scopes"
+      ],
+      "stages": [
+        {
+          "id": "sampled",
+          "name": "Contact Sampled",
+          "nextStages": [
+            "decider_triaged"
+          ]
+        },
+        {
+          "id": "decider_triaged",
+          "name": "Strands 2B Decider Triaged",
+          "nextStages": [
+            "targeted_human_qa",
+            "needs_review",
+            "auto_qa_only"
+          ]
+        },
+        {
+          "id": "targeted_human_qa",
+          "name": "Targeted Human QA Evaluation",
+          "nextStages": [
+            "coached",
+            "calibrated"
+          ]
+        },
+        {
+          "id": "needs_review",
+          "name": "Ambiguous Band Review",
+          "nextStages": [
+            "targeted_human_qa",
+            "auto_qa_only"
+          ]
+        },
+        {
+          "id": "auto_qa_only",
+          "name": "Full-Coverage Auto QA",
+          "nextStages": [
+            "calibrated"
+          ]
+        },
+        {
+          "id": "coached",
+          "name": "Coaching Scheduled in WFM",
+          "nextStages": [
+            "calibrated"
+          ]
+        },
+        {
+          "id": "calibrated",
+          "name": "Calibrated & Closed",
+          "nextStages": []
+        }
+      ],
+      "terminalStages": [
+        "calibrated"
+      ]
+    },
+    {
+      "id": "cxos_three_plane_journey_loop",
+      "name": "Three-Plane Journey Loop (Map -> Track -> Orchestrate)",
+      "description": "Closed-loop journey governance connecting Plane 1 prescriptive blueprint mapping, Plane 2 empirical trace & conformance drift tracking, and Plane 3 real-time NBA & A2A intervention",
+      "triggerIntents": [
+        "sys_journey_mapping.ops_cjm_blueprint_anatomy",
+        "sys_journey_mapping.ops_cjm_path_classifications",
+        "sys_journey_mapping.failure_happy_path_delusion",
+        "sys_journey_mapping.failure_missing_handoff_contracts",
+        "sys_journey_tracking.ops_cjt_telemetry_reconstruction",
+        "sys_journey_tracking.ops_cjt_conformance_and_drift",
+        "sys_journey_tracking.ops_cjt_path_pathology_taxonomy",
+        "sys_journey_tracking.failure_siloed_channel_myopia",
+        "sys_journey_orchestration.ops_jo_triggers_state",
+        "sys_journey_orchestration.ops_jo_nba_arbitration_matrix",
+        "sys_journey_orchestration.failure_omnichannel_context_drop"
+      ],
+      "stages": [
+        {
+          "id": "blueprint_mapped",
+          "name": "Plane 1: Blueprint Mapped",
+          "nextStages": [
+            "telemetry_tracked"
+          ]
+        },
+        {
+          "id": "telemetry_tracked",
+          "name": "Plane 2: Telemetry Tracked",
+          "nextStages": [
+            "conformance_evaluated"
+          ]
+        },
+        {
+          "id": "conformance_evaluated",
+          "name": "Plane 2: Conformance Evaluated",
+          "nextStages": [
+            "on_golden_path",
+            "drift_intercepted"
+          ]
+        },
+        {
+          "id": "on_golden_path",
+          "name": "On Golden Path (Conformant)",
+          "nextStages": []
+        },
+        {
+          "id": "drift_intercepted",
+          "name": "Plane 3: Conformance Drift Intercepted",
+          "nextStages": [
+            "context_hydrated"
+          ]
+        },
+        {
+          "id": "context_hydrated",
+          "name": "Omnichannel Context Envelope Hydrated",
+          "nextStages": [
+            "a2a_or_human_routed"
+          ]
+        },
+        {
+          "id": "a2a_or_human_routed",
+          "name": "A2A Specialist or Warm Human Routed",
+          "nextStages": [
+            "resolved_and_recalibrated"
+          ]
+        },
+        {
+          "id": "resolved_and_recalibrated",
+          "name": "Resolved & Blueprint Recalibrated",
+          "nextStages": []
+        }
+      ],
+      "terminalStages": [
+        "on_golden_path",
+        "resolved_and_recalibrated"
+      ]
+    },
+    {
+      "id": "cxos_a2a_omnichannel_handoff",
+      "name": "Omnichannel & A2A Warm Handoff Protocol",
+      "description": "End-to-end context envelope preservation across channel modality switches, AI-to-AI specialist delegation, critic verification, and warm human advocate escalation",
+      "triggerIntents": [
+        "sys_omnichannel_context.ops_ocx_context_envelope_architecture",
+        "sys_omnichannel_context.ops_ocx_modality_transitions",
+        "sys_omnichannel_context.ops_ocx_handoff_execution_modes",
+        "sys_omnichannel_context.failure_handoff_context_amnesia",
+        "sys_omnichannel_context.failure_sip_trunk_uui_header_stripping",
+        "sys_a2a_protocol.ops_a2a_discovery_and_contracts",
+        "sys_a2a_protocol.ops_a2a_orchestration_topologies",
+        "sys_a2a_protocol.ops_a2a_task_state_and_protocol",
+        "sys_a2a_protocol.failure_infinite_agent_ping_pong_loop",
+        "sys_a2a_protocol.failure_unverified_specialist_hallucinated_commit"
+      ],
+      "stages": [
+        {
+          "id": "channel_arrival",
+          "name": "Omnichannel Arrival & Identity Stitch",
+          "nextStages": [
+            "context_envelope_sealed"
+          ]
+        },
+        {
+          "id": "context_envelope_sealed",
+          "name": "Context Envelope Sealed & Hydrated",
+          "nextStages": [
+            "a2a_capability_matched"
+          ]
+        },
+        {
+          "id": "a2a_capability_matched",
+          "name": "A2A Agent Card Capability Matched",
+          "nextStages": [
+            "specialist_working"
+          ]
+        },
+        {
+          "id": "specialist_working",
+          "name": "Specialist Agent Working",
+          "nextStages": [
+            "critic_verified",
+            "human_advocate_escalated"
+          ]
+        },
+        {
+          "id": "critic_verified",
+          "name": "Critic / Policy Verifier Approved",
+          "nextStages": [
+            "handoff_completed"
+          ]
+        },
+        {
+          "id": "human_advocate_escalated",
+          "name": "Warm Human Advocate Escalated",
+          "nextStages": [
+            "handoff_completed"
+          ]
+        },
+        {
+          "id": "handoff_completed",
+          "name": "Handoff & Resolution Completed",
+          "nextStages": []
+        }
+      ],
+      "terminalStages": [
+        "handoff_completed"
+      ]
+    }
+  ],
+  "nbaRules": [
+    {
+      "id": "QA_COMPLIANCE_HIGH_RISK",
+      "name": "Route High-Risk Compliance Contact to Human QA",
+      "priority": 100,
+      "conditions": [
+        {
+          "field": "journey",
+          "op": "eq",
+          "value": "cxos_qa_calibration_loop"
+        },
+        {
+          "field": "stage",
+          "op": "eq",
+          "value": "targeted_human_qa"
+        }
+      ],
+      "logic": "AND",
+      "action": "assign_senior_qa_evaluator_and_flag_supervisor",
+      "actionType": "escalation",
+      "urgency": "critical"
+    },
+    {
+      "id": "A2A_PING_PONG_CIRCUIT_BREAKER",
+      "name": "Halt Multi-Agent Delegation Loop & Warm Transfer to Senior Advocate",
+      "priority": 97,
+      "conditions": [
+        {
+          "field": "journey",
+          "op": "eq",
+          "value": "cxos_a2a_omnichannel_handoff"
+        },
+        {
+          "field": "stage",
+          "op": "eq",
+          "value": "human_advocate_escalated"
+        }
+      ],
+      "logic": "AND",
+      "action": "halt_agent_delegation_loop_and_warm_transfer_senior_advocate",
+      "actionType": "escalation",
+      "urgency": "critical"
+    },
+    {
+      "id": "OMNICHANNEL_CONTEXT_DROP_RECOVERY",
+      "name": "Hydrate Omnichannel Context Envelope & Bypass IVR Menus",
+      "priority": 96,
+      "conditions": [
+        {
+          "field": "intent",
+          "op": "in",
+          "value": [
+            "sys_omnichannel_context.failure_handoff_context_amnesia",
+            "sys_omnichannel_context.failure_redundant_reauthentication_friction",
+            "sys_omnichannel_context.failure_sip_trunk_uui_header_stripping",
+            "sys_omnichannel_context.failure_stale_slot_ledger_overwrite",
+            "sys_omnichannel_context.failure_split_brain_async_thread_collision",
+            "sys_omnichannel_context.failure_dead_end_modality_deflection"
+          ]
+        },
+        {
+          "field": "journey",
+          "op": "eq",
+          "value": "cxos_three_plane_journey_loop"
+        },
+        {
+          "field": "stage",
+          "op": "eq",
+          "value": "drift_intercepted"
+        }
+      ],
+      "logic": "OR",
+      "action": "hydrate_context_envelope_and_bypass_ivr_menus",
+      "actionType": "protocol",
+      "urgency": "high"
+    },
+    {
+      "id": "JOURNEY_CONFORMANCE_DRIFT_INTERCEPT",
+      "name": "Intercept Plane 2 Conformance Drift with Plane 3 NBA or Dynamic Steering",
+      "priority": 91,
+      "conditions": [
+        {
+          "field": "journey",
+          "op": "eq",
+          "value": "cxos_three_plane_journey_loop"
+        },
+        {
+          "field": "stage",
+          "op": "eq",
+          "value": "conformance_evaluated"
+        }
+      ],
+      "logic": "AND",
+      "action": "arbitrate_plane3_nba_or_dynamic_channel_steering",
+      "actionType": "routing",
+      "urgency": "high"
+    },
+    {
+      "id": "WFM_OCCUPANCY_BURNOUT_GUARD",
+      "name": "Mitigate High Occupancy Burnout Risk",
+      "priority": 90,
+      "conditions": [
+        {
+          "field": "intent",
+          "op": "eq",
+          "value": "sys_wfm.failure_occupancy_burnout"
+        }
+      ],
+      "logic": "AND",
+      "action": "trigger_wfm_recovery_aux_window_and_overflow_queues",
+      "actionType": "proactive",
+      "urgency": "high"
+    },
+    {
+      "id": "KM_POISONED_KNOWLEDGE_ALERT",
+      "name": "Quarantine Stale or Contradictory KM Article",
+      "priority": 88,
+      "conditions": [
+        {
+          "field": "intent",
+          "op": "eq",
+          "value": "sys_km.failure_poisoned_knowledge"
+        }
+      ],
+      "logic": "AND",
+      "action": "flag_km_article_urgent_review_and_sync_ivr_prompts",
+      "actionType": "protocol",
+      "urgency": "high"
+    },
+    {
+      "id": "IVR_CONTAINMENT_DROP_GUARD",
+      "name": "Mitigate IVR Menu Maze / Zero-Out Spike",
+      "priority": 85,
+      "conditions": [
+        {
+          "field": "intent",
+          "op": "in",
+          "value": [
+            "sys_ivr.failure_menu_maze",
+            "sys_ivr.failure_prompt_ambiguity"
+          ]
+        }
+      ],
+      "logic": "OR",
+      "action": "enable_open_phrase_routing_and_callback_offer",
+      "actionType": "deflection",
+      "urgency": "high"
+    }
+  ],
+  "actionPolicies": {
+    "confidenceBands": {
+      "high": {
+        "min": 0.7,
+        "strategy": "act_immediately"
+      },
+      "medium": {
+        "min": 0.4,
+        "strategy": "act_with_verification"
+      },
+      "low": {
+        "min": 0,
+        "strategy": "gather_more_info"
+      }
+    },
+    "escalationChains": {
+      "qa_compliance_breach": [
+        "qa_specialist",
+        "compliance_officer",
+        "center_director"
+      ],
+      "wfm_sla_breach": [
+        "intraday_analyst",
+        "wfm_duty_manager",
+        "ops_lead"
+      ],
+      "a2a_delegation_exhaustion": [
+        "specialist_agent",
+        "critic_verifier_agent",
+        "senior_human_advocate"
+      ]
+    },
+    "actionSequenceTemplates": {
+      "qa_auto_fail_remediation": {
+        "steps": [
+          "isolate_contact_recording",
+          "assign_senior_qa_review",
+          "schedule_wfm_coaching_block",
+          "update_km_article_if_gap"
+        ],
+        "applicableWhen": "compliance_noul >= 0.70 or auto_fail item triggered"
+      },
+      "three_plane_drift_remediation": {
+        "steps": [
+          "hydrate_omnichannel_context_envelope",
+          "arbitrate_plane3_nba_or_a2a_specialist",
+          "execute_critic_or_human_warm_handoff",
+          "recalibrate_plane1_blueprint_from_trace"
+        ],
+        "applicableWhen": "conformance_drift_delta > 0.35 or loop_count >= 2"
+      }
+    },
+    "resolutionFactors": {
+      "weights": {
+        "compliance_security": 0.25,
+        "accuracy_resolution": 0.3,
+        "process_efficiency": 0.15,
+        "communication_empathy": 0.2,
+        "brand_voice": 0.1
+      }
+    },
+    "customerLifecycleStages": {}
+  },
+  "kpis": [
+    {
+      "id": "total_contacts",
+      "name": "Total Contacts",
+      "unit": "count",
+      "description": "Engine KPI (total_contacts) fed by 4 CXOS taxonomy metric(s): ACD:handled_volume_count, OB:attempts_count, CCaaS:platform_ingested_contacts, CJT:pathological_repeat_contact_volume"
+    },
+    {
+      "id": "sla_compliance_rate",
+      "name": "SLA Compliance Rate",
+      "unit": "percent",
+      "description": "Engine KPI (sla_compliance_rate) fed by 11 CXOS taxonomy metric(s): ACD:service_level_percent, WFM:schedule_adherence_percent, WFM:staffing_variance, OB:ob_abandon_ceiling_share, CCaaS:call_setup_success_rate, WFO:cross_skilled_sla_coverage, JO:drift_interception_sla_save_rate, OCX:context_hydration_success_rate, A2A:critic_verified_policy_compliance_rate, CJM:normative_stage_sla_target, CJT:golden_path_conformance_rate"
+    },
+    {
+      "id": "avg_wait_time",
+      "name": "Average Wait Time",
+      "unit": "seconds",
+      "description": "Engine KPI (avg_wait_time) fed by 8 CXOS taxonomy metric(s): IVR:callback_acceptance_rate, ACD:avg_speed_of_answer_seconds, CCaaS:post_dial_delay_seconds, CAI:p95_turn_latency_seconds, OCX:modality_switch_sync_latency_seconds, A2A:p95_inter_agent_coordination_latency_seconds, CJM:budgeted_queue_wait_ceiling, CJT:cumulative_journey_wait_seconds"
+    },
+    {
+      "id": "deflection_rate",
+      "name": "Deflection Rate",
+      "unit": "percent",
+      "description": "Engine KPI (deflection_rate) fed by 9 CXOS taxonomy metric(s): IVR:ivr_containment_rate, KM:self_service_resolution_share, CAI:true_ai_containment_rate, JO:proactive_deflection_rate, FA:verified_self_service_containment, OCX:voice_to_digital_deflection_completion, A2A:multi_agent_autonomous_containment_rate, CJM:planned_self_service_containment_rate, CJT:verified_non_leaking_containment_rate"
+    },
+    {
+      "id": "avg_contact_value",
+      "name": "Average Contact Value",
+      "unit": "currency",
+      "description": "Engine KPI (avg_contact_value) fed by 3 CXOS taxonomy metric(s): OB:outbound_conversion_percent, JO:nba_attributed_contact_value, DA:nba_card_conversion_value"
+    },
+    {
+      "id": "high_priority_contacts",
+      "name": "High Priority Contacts",
+      "unit": "count",
+      "description": "Engine KPI (high_priority_contacts) fed by 3 CXOS taxonomy metric(s): OB:cost_per_contact, JO:high_priority_journey_intercepts, FA:high_risk_fraud_escalations"
+    },
+    {
+      "id": "fcr_rate",
+      "name": "First Contact Resolution Rate",
+      "unit": "percent",
+      "description": "Engine KPI (fcr_rate) fed by 13 CXOS taxonomy metric(s): ACD:first_contact_resolution_share, QA:disposition_accuracy_percent, CRM:repeat_contact_context_quality, SA:auto_disposition_accuracy, VOC:repeat_driver_share, CAI:grounded_fcr_rate, WFO:post_coaching_fcr_lift, JO:journey_fcr_completion_rate, DA:assisted_first_contact_resolution, OCX:cross_channel_journey_fcr_rate, A2A:a2a_delegated_task_fcr_rate, CJM:blueprint_golden_path_target_fcr, CJT:empirical_journey_fcr_rate"
+    },
+    {
+      "id": "aht_seconds",
+      "name": "Average Handle Time",
+      "unit": "seconds",
+      "description": "Engine KPI (aht_seconds) fed by 13 CXOS taxonomy metric(s): IVR:avg_ivr_time_seconds, WFM:aht_seconds, CRM:avg_wrap_time_seconds, CCaaS:webrtc_media_drop_rate, CAI:handoff_context_aht_reduction, WFO:proficiency_adjusted_aht, JO:context_hydrated_escalation_aht, FA:authentication_handle_time_seconds, DA:copilot_assisted_aht_seconds, OCX:hydrated_handoff_aht_seconds, A2A:a2a_human_advocate_handoff_aht_seconds, CJM:budgeted_assisted_stage_aht, CJT:cumulative_journey_handle_seconds"
+    },
+    {
+      "id": "csat",
+      "name": "Customer Satisfaction Score",
+      "unit": "score",
+      "description": "Engine KPI (csat) fed by 13 CXOS taxonomy metric(s): KM:article_helpfulness_percent, SA:negative_sentiment_share, VOC:csat_instrument_score, CCaaS:mean_opinion_score, CAI:bot_interaction_csat, WFO:engaged_agent_csat, JO:journey_continuity_csat, FA:passive_auth_success_rate, DA:desktop_assisted_csat, OCX:zero_repetition_interaction_rate, A2A:multi_agent_experience_csat, CJM:target_moment_of_truth_csat, CJT:stitched_journey_episode_csat"
+    }
+  ],
+  "channels": [
+    "chat",
+    "email",
+    "phone",
+    "phone_transcript",
+    "social_media",
+    "in_app",
+    "sms"
+  ],
+  "sentiments": [
+    "angry",
+    "frustrated",
+    "confused",
+    "neutral",
+    "satisfied",
+    "demanding"
+  ],
+  "urgencies": [
+    "critical",
+    "high",
+    "medium",
+    "low"
+  ],
+  "actionTypes": [
+    "escalation",
+    "routing",
+    "protocol",
+    "deflection",
+    "retention",
+    "proactive",
+    "recovery",
+    "sales",
+    "onboarding",
+    "engagement"
+  ]
+}

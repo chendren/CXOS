@@ -1,0 +1,92 @@
+[
+  {
+    "id": "cal-001",
+    "channel": "phone",
+    "summary": "Agent changed the shipping address on a high-value order and issued a refund without verifying the caller's identity or checking the account PIN.",
+    "gold_compliance_risk": 1,
+    "gold_severity_level": 2,
+    "gold_qa_path": "targeted_human_qa",
+    "notes": "Auto-fail: identity_verification_skipped"
+  },
+  {
+    "id": "cal-002",
+    "channel": "chat",
+    "summary": "Customer asked for store pickup hours at the downtown location. Agent shared the hours from the published help center article and closed the chat politely.",
+    "gold_compliance_risk": 0,
+    "gold_severity_level": 0,
+    "gold_qa_path": "auto_qa_only",
+    "notes": "Routine informational inquiry, zero compliance risk"
+  },
+  {
+    "id": "cal-003",
+    "channel": "phone",
+    "summary": "Agent processed a recurring bank draft enrollment over the phone but skipped reading the mandatory electronic funds transfer disclosure script.",
+    "gold_compliance_risk": 1,
+    "gold_severity_level": 2,
+    "gold_qa_path": "targeted_human_qa",
+    "notes": "Auto-fail: mandatory_disclosure_omitted"
+  },
+  {
+    "id": "cal-004",
+    "channel": "email",
+    "summary": "Customer asked how loyalty points are calculated on discounted seasonal items. Agent replied with a link to the loyalty program FAQ.",
+    "gold_compliance_risk": 0,
+    "gold_severity_level": 0,
+    "gold_qa_path": "auto_qa_only",
+    "notes": "Clear low-risk FAQ deflection"
+  },
+  {
+    "id": "cal-005",
+    "channel": "phone",
+    "summary": "Agent quoted a 60-day return window from memory, contradicting the 30-day published policy, and promised an instant credit without supervisor approval.",
+    "gold_compliance_risk": 1,
+    "gold_severity_level": 1,
+    "gold_qa_path": "targeted_human_qa",
+    "notes": "Misstated customer-facing policy"
+  },
+  {
+    "id": "cal-006",
+    "channel": "in_app",
+    "summary": "Customer confirmed receipt of their curbside pickup notification and tapped thank you in the app.",
+    "gold_compliance_risk": 0,
+    "gold_severity_level": 0,
+    "gold_qa_path": "auto_qa_only",
+    "notes": "Zero-friction confirmation"
+  },
+  {
+    "id": "cal-007",
+    "channel": "phone",
+    "summary": "Agent read the customer's full credit card number and CVV out loud on the recorded line while confirming a billing dispute.",
+    "gold_compliance_risk": 1,
+    "gold_severity_level": 2,
+    "gold_qa_path": "targeted_human_qa",
+    "notes": "Auto-fail: PCI compliance violation on recorded line"
+  },
+  {
+    "id": "cal-008",
+    "channel": "chat",
+    "summary": "Customer asked to track package #48210. Agent verified name and zip code, provided the carrier tracking link showing on-time delivery tomorrow.",
+    "gold_compliance_risk": 0,
+    "gold_severity_level": 0,
+    "gold_qa_path": "auto_qa_only",
+    "notes": "Standard WISMO inquiry"
+  },
+  {
+    "id": "cal-009",
+    "channel": "phone",
+    "summary": "Caller mentioned three different order numbers, poor audio caused several drops, and the agent transferred the call to billing before establishing the core issue.",
+    "gold_compliance_risk": 0,
+    "gold_severity_level": 1,
+    "gold_qa_path": "needs_review",
+    "notes": "Ambiguous contact outcome / blind transfer"
+  },
+  {
+    "id": "cal-010",
+    "channel": "phone",
+    "summary": "Third missed medical equipment delivery this week; customer is distressed and states they will file a formal regulatory complaint if not resolved today.",
+    "gold_compliance_risk": 0,
+    "gold_severity_level": 2,
+    "gold_qa_path": "needs_review",
+    "notes": "High distress / escalation risk without explicit agent compliance breach"
+  }
+]

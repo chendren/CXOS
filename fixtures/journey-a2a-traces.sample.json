@@ -1,0 +1,388 @@
+[
+  {
+    "journeyId": "jrny-001",
+    "customerTier": "growth",
+    "hopedBlueprint": {
+      "blueprintId": "bp_order_modification_self_serve",
+      "goldenPathStages": [
+        "app_arrival",
+        "biometric_auth",
+        "cai_triage",
+        "a2a_order_modification",
+        "confirmation_nudge"
+      ],
+      "plannedChannels": ["in_app", "sms"],
+      "slaBudgetSeconds": 120,
+      "momentOfTruth": "Instant in-app delivery address and color swap confirmation before warehouse pick-pack lock without repeating order details."
+    },
+    "actualTrace": {
+      "observedStages": [
+        "app_arrival",
+        "biometric_auth",
+        "cai_triage",
+        "a2a_order_modification"
+      ],
+      "channelsTouched": ["in_app"],
+      "elapsedSeconds": 48,
+      "loopCount": 0,
+      "driftSummary": "On golden path: customer authenticated via FaceID in mobile app, requested a shipping color modification on order ORD-99214, and cai_concierge cleanly delegated to order_specialist with all extracted slots intact well within the 120-second SLA budget."
+    },
+    "contextEnvelope": {
+      "envelopeId": "env-jrny-001-a9f2",
+      "authCarriedOver": true,
+      "extractedSlotsPreserved": true,
+      "missingContextFields": [],
+      "a2aChain": [
+        {
+          "from": "cai_concierge",
+          "to": "order_specialist",
+          "status": "completed",
+          "confidence": 0.94
+        }
+      ]
+    },
+    "liveCustomerUtterance": "Awesome, I see the updated graphite colorway on my order summary now. Please send me the confirmation text."
+  },
+  {
+    "journeyId": "jrny-002",
+    "customerTier": "enterprise_vip",
+    "hopedBlueprint": {
+      "blueprintId": "bp_onboarding_api_setup",
+      "goldenPathStages": [
+        "web_portal_diagnostics",
+        "token_validation_step",
+        "one_click_voice_escalation",
+        "cti_context_screen_pop",
+        "specialist_resolution"
+      ],
+      "plannedChannels": ["web", "voice"],
+      "slaBudgetSeconds": 240,
+      "momentOfTruth": "Seamless web-to-voice transition where the engineer or IVR immediately greets the VIP by name with all 4 completed troubleshooting steps pre-populated."
+    },
+    "actualTrace": {
+      "observedStages": [
+        "web_portal_diagnostics",
+        "token_validation_step",
+        "one_click_voice_escalation",
+        "generic_ivr_root_menu",
+        "re_auth_prompt_loop"
+      ],
+      "channelsTouched": ["web", "in_app", "voice_ivr"],
+      "elapsedSeconds": 395,
+      "loopCount": 2,
+      "driftSummary": "Critical omnichannel context drop: customer completed 4 webhook troubleshooting steps in the authenticated app and clicked Call Support, but the SBC trunk stripped the SIP UUI continuity token. Caller landed in the generic IVR root menu and was asked to repeat their account number and issue from scratch twice."
+    },
+    "contextEnvelope": {
+      "envelopeId": "env-jrny-002-b4d1",
+      "authCarriedOver": false,
+      "extractedSlotsPreserved": false,
+      "missingContextFields": [
+        "sip_uui_continuity_token",
+        "verified_account_id",
+        "completed_diagnostic_steps",
+        "webhook_error_trace_id"
+      ],
+      "a2aChain": [
+        {
+          "from": "cai_concierge",
+          "to": "tech_diagnostics_agent",
+          "status": "context_dropped_on_sip_handoff",
+          "confidence": 0.31
+        }
+      ]
+    },
+    "liveCustomerUtterance": "I just spent ten minutes doing four diagnostic steps in your app and clicked Call Support! Why is this voice robot asking for my 12-digit account number and making me explain the problem all over again?"
+  },
+  {
+    "journeyId": "jrny-003",
+    "customerTier": "at_risk_high_ltv",
+    "hopedBlueprint": {
+      "blueprintId": "bp_billing_auto_dispute",
+      "goldenPathStages": [
+        "app_arrival",
+        "biometric_auth",
+        "cai_triage",
+        "automated_ledger_credit",
+        "confirmation_nudge"
+      ],
+      "plannedChannels": ["in_app", "chat"],
+      "slaBudgetSeconds": 180,
+      "momentOfTruth": "Single-touch explanation and instant ledger credit for disputed roaming telemetry overage without bouncing between billing and technical teams."
+    },
+    "actualTrace": {
+      "observedStages": [
+        "app_arrival",
+        "biometric_auth",
+        "cai_triage",
+        "a2a_billing_specialist",
+        "a2a_tech_diagnostics",
+        "a2a_billing_specialist",
+        "a2a_tech_diagnostics",
+        "a2a_billing_specialist"
+      ],
+      "channelsTouched": ["in_app", "chat"],
+      "elapsedSeconds": 640,
+      "loopCount": 3,
+      "driftSummary": "Severe A2A specialist ping-pong loop: cai_concierge delegated a disputed 420-dollar international data overage to billing_specialist_agent, which bounced to tech_diagnostics_agent to verify tower attachment logs, which bounced back to billing_specialist_agent 3 times without issuing a decision. Customer is furious and threatening executive escalation."
+    },
+    "contextEnvelope": {
+      "envelopeId": "env-jrny-003-c8e3",
+      "authCarriedOver": true,
+      "extractedSlotsPreserved": false,
+      "missingContextFields": [
+        "roaming_cdr_validation_verdict",
+        "authorized_credit_override_token"
+      ],
+      "a2aChain": [
+        {
+          "from": "cai_concierge",
+          "to": "billing_specialist_agent",
+          "status": "delegated",
+          "confidence": 0.78
+        },
+        {
+          "from": "billing_specialist_agent",
+          "to": "tech_diagnostics_agent",
+          "status": "input_required",
+          "confidence": 0.52
+        },
+        {
+          "from": "tech_diagnostics_agent",
+          "to": "billing_specialist_agent",
+          "status": "conflict_unresolved",
+          "confidence": 0.44
+        },
+        {
+          "from": "billing_specialist_agent",
+          "to": "tech_diagnostics_agent",
+          "status": "loop_detected",
+          "confidence": 0.29
+        },
+        {
+          "from": "tech_diagnostics_agent",
+          "to": "billing_specialist_agent",
+          "status": "max_hops_exceeded",
+          "confidence": 0.22
+        }
+      ]
+    },
+    "liveCustomerUtterance": "Your billing bot and tech bot have transferred me back and forth three times in a row! Stop passing me between AI agents and get me a senior human supervisor right now!"
+  },
+  {
+    "journeyId": "jrny-004",
+    "customerTier": "enterprise_vip",
+    "hopedBlueprint": {
+      "blueprintId": "bp_fiber_outage_proactive",
+      "goldenPathStages": [
+        "telemetry_outage_trigger",
+        "proactive_sms_nudge",
+        "eta_acknowledgment",
+        "auto_restoration_update"
+      ],
+      "plannedChannels": ["sms"],
+      "slaBudgetSeconds": 90,
+      "momentOfTruth": "Proactive outage notification keeps the subscriber informed via SMS, or immediately elevates life-safety and critical medical dependencies to emergency human care."
+    },
+    "actualTrace": {
+      "observedStages": [
+        "telemetry_outage_trigger",
+        "proactive_sms_nudge",
+        "inbound_medical_emergency_reply",
+        "cai_triage_hold"
+      ],
+      "channelsTouched": ["sms", "voice"],
+      "elapsedSeconds": 210,
+      "loopCount": 0,
+      "driftSummary": "Critical safety drift from planned SMS deflection: customer replied to the proactive fiber outage SMS stating an in-home dialysis telemetry monitor and oxygen concentrator gateway depend on the circuit with no cellular backup coverage. Standard automated SMS deflection cannot continue; immediate priority elevation and senior human advocate routing required."
+    },
+    "contextEnvelope": {
+      "envelopeId": "env-jrny-004-d2a7",
+      "authCarriedOver": true,
+      "extractedSlotsPreserved": true,
+      "missingContextFields": ["emergency_lte_failover_dispatch_eta"],
+      "a2aChain": [
+        {
+          "from": "cai_concierge",
+          "to": "tech_diagnostics_agent",
+          "status": "life_safety_escalation_required",
+          "confidence": 0.91
+        }
+      ]
+    },
+    "liveCustomerUtterance": "A 6-hour outage ETA does not work! My mother is on home nocturnal dialysis monitoring here and our medical alert bridge is completely offline. We need emergency restoration or an immediate hotspot dispatch!"
+  },
+  {
+    "journeyId": "jrny-005",
+    "customerTier": "at_risk_high_ltv",
+    "hopedBlueprint": {
+      "blueprintId": "bp_renewal_save_negotiation",
+      "goldenPathStages": [
+        "chat_arrival",
+        "session_auth",
+        "cai_plan_inquiry",
+        "a2a_retention_arbitration",
+        "loyalty_offer_commitment"
+      ],
+      "plannedChannels": ["chat"],
+      "slaBudgetSeconds": 300,
+      "momentOfTruth": "Detect mid-conversation churn signal immediately and pivot from generic tier lookup to authorized retention specialist with hydrated LTV and competitor quote context."
+    },
+    "actualTrace": {
+      "observedStages": [
+        "chat_arrival",
+        "session_auth",
+        "cai_plan_inquiry",
+        "competitor_cancellation_ultimatum"
+      ],
+      "channelsTouched": ["web", "chat"],
+      "elapsedSeconds": 165,
+      "loopCount": 1,
+      "driftSummary": "Mid-journey intent detour: contact started as a routine contract end-date question handled by cai_concierge, but the 6-year high-LTV subscriber just presented a written competitor fiber quote for 35 percent less and asked to schedule full account disconnection. Plane 3 must pivot and delegate to retention_negotiator_agent with full context envelope preserved."
+    },
+    "contextEnvelope": {
+      "envelopeId": "env-jrny-005-e5b9",
+      "authCarriedOver": true,
+      "extractedSlotsPreserved": true,
+      "missingContextFields": [],
+      "a2aChain": [
+        {
+          "from": "cai_concierge",
+          "to": "retention_negotiator_agent",
+          "status": "ready_for_delegation",
+          "confidence": 0.89
+        }
+      ]
+    },
+    "liveCustomerUtterance": "Actually, since my contract ends next Tuesday and MetroFiber quoted me 55 dollars a month with a 300-dollar buyout credit, just go ahead and process my cancellation unless you can match that rate."
+  },
+  {
+    "journeyId": "jrny-006",
+    "customerTier": "enterprise_vip",
+    "hopedBlueprint": {
+      "blueprintId": "bp_card_fraud_replacement",
+      "goldenPathStages": [
+        "app_arrival",
+        "session_token_check",
+        "fraud_risk_screen",
+        "automated_address_and_card_reissue",
+        "confirmation_nudge"
+      ],
+      "plannedChannels": ["in_app"],
+      "slaBudgetSeconds": 150,
+      "momentOfTruth": "Intercept high-risk account takeover indicators before any address modification or replacement card dispatch executes."
+    },
+    "actualTrace": {
+      "observedStages": [
+        "app_arrival",
+        "session_token_check",
+        "address_change_request",
+        "a2a_fraud_sim_swap_flag"
+      ],
+      "channelsTouched": ["in_app", "sms"],
+      "elapsedSeconds": 95,
+      "loopCount": 0,
+      "driftSummary": "Security step-up intercept: during a self-service billing address change followed by an expedited replacement card request, A2A fraud_trust_agent detected an unverified eSIM IMEI swap 18 minutes ago from an unfamiliar ASN. Self-service automation must halt immediately and transfer to fraud_trust_agent and security verification."
+    },
+    "contextEnvelope": {
+      "envelopeId": "env-jrny-006-f1c4",
+      "authCarriedOver": false,
+      "extractedSlotsPreserved": true,
+      "missingContextFields": ["step_up_biometric_liveness_proof"],
+      "a2aChain": [
+        {
+          "from": "cai_concierge",
+          "to": "fraud_trust_agent",
+          "status": "security_hold_triggered",
+          "confidence": 0.96
+        }
+      ]
+    },
+    "liveCustomerUtterance": "Change my mailing address to Suite 402 in Miami and overnight a new corporate Visa card right away, skip the SMS code because my phone just switched carriers."
+  },
+  {
+    "journeyId": "jrny-007",
+    "customerTier": "standard",
+    "hopedBlueprint": {
+      "blueprintId": "bp_device_upgrade_tradein",
+      "goldenPathStages": [
+        "voice_arrival",
+        "ani_auth_lookup",
+        "intent_capture",
+        "async_digital_link_push",
+        "qr_return_label_completion"
+      ],
+      "plannedChannels": ["voice", "whatsapp"],
+      "slaBudgetSeconds": 180,
+      "momentOfTruth": "During a voice queue spike, steer routine trade-in return label requests to an instant WhatsApp or SMS visual flow with full context so the caller avoids a 14-minute hold."
+    },
+    "actualTrace": {
+      "observedStages": [
+        "voice_arrival",
+        "ani_auth_lookup",
+        "intent_capture",
+        "voice_queue_spike_detected"
+      ],
+      "channelsTouched": ["voice"],
+      "elapsedSeconds": 42,
+      "loopCount": 0,
+      "driftSummary": "Minor queue wait deviation: caller arrived on voice requesting a prepaid QR return label for their trade-in handset while voice queue EWT is spiked at 840 seconds (14 minutes). Context envelope has verified mobile ANI, authenticated session, and extracted IMEI trade-in slot ready for async digital channel steering."
+    },
+    "contextEnvelope": {
+      "envelopeId": "env-jrny-007-g7k8",
+      "authCarriedOver": true,
+      "extractedSlotsPreserved": true,
+      "missingContextFields": [],
+      "a2aChain": [
+        {
+          "from": "cai_concierge",
+          "to": "cai_concierge",
+          "status": "async_steer_candidate",
+          "confidence": 0.88
+        }
+      ]
+    },
+    "liveCustomerUtterance": "I just need the prepaid QR return code for my old trade-in phone so I can drop it at the parcel locker—I do not want to wait 14 minutes on hold if you can text or WhatsApp it to me."
+  },
+  {
+    "journeyId": "jrny-008",
+    "customerTier": "growth",
+    "hopedBlueprint": {
+      "blueprintId": "bp_hipaa_records_request",
+      "goldenPathStages": [
+        "inbound_dispute_resolution",
+        "crm_ledger_settlement",
+        "post_contact_cooldown_gate",
+        "outbound_nudge_suppression"
+      ],
+      "plannedChannels": ["voice", "sms"],
+      "slaBudgetSeconds": 60,
+      "momentOfTruth": "Enforce cross-channel cooldown suppression so a customer who already resolved their billing dispute on the phone is never hit with a stale collections SMS minutes later."
+    },
+    "actualTrace": {
+      "observedStages": [
+        "inbound_dispute_resolution",
+        "crm_ledger_settlement",
+        "delayed_collections_batch_trigger_arrived"
+      ],
+      "channelsTouched": ["voice", "outbound_sms_queue"],
+      "elapsedSeconds": 35,
+      "loopCount": 0,
+      "driftSummary": "Stale event nudge collision: customer already resolved their medical billing dispute and HIPAA itemized statement request 20 minutes ago with a live phone agent (dispositioned CLOSED_PAID_IN_FULL), but a delayed batch collections SMS trigger just entered the real-time orchestration queue. Plane 3 must suppress the outreach and close the trigger."
+    },
+    "contextEnvelope": {
+      "envelopeId": "env-jrny-008-h3m5",
+      "authCarriedOver": true,
+      "extractedSlotsPreserved": true,
+      "missingContextFields": [],
+      "a2aChain": [
+        {
+          "from": "billing_specialist_agent",
+          "to": "cai_concierge",
+          "status": "already_resolved_cooldown_active",
+          "confidence": 0.95
+        }
+      ]
+    },
+    "liveCustomerUtterance": "[SYSTEM EVENT: Outbound collections dunning SMS queued for dispatch 20 minutes after voice agent recorded full dispute settlement and balance zeroed on ledger.]"
+  }
+]

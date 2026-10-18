@@ -106,6 +106,581 @@
     <h2>Open tasks (0)</h2>
     <table><thead><tr><th>Spec</th><th>Id</th><th>Status</th><th>Age</th><th>Title</th></tr></thead>
     <tbody><tr><td colspan=5>(none)</td></tr></tbody></table>
+  <!-- CXOS-ONTOLOGY-DECIDER:START -->
+  <h2>CX Ontology &amp; Domain Taxonomies (2026.10.0)</h2>
+  <div class="cards">
+    <div class="card"><b>19</b><span>System Taxonomies</span></div>
+    <div class="card"><b>200</b><span>Glossary Terms</span></div>
+    <div class="card"><b>106</b><span>Metrics (9 Engine KPIs)</span></div>
+    <div class="card"><b>87</b><span>Failure Modes</span></div>
+    <div class="card"><b class="ok">19</b><span>Continuous Dynamical Models (93 Vars · 57 ODEs)</span></div>
+    <div class="card"><b class="ok">19</b><span>100-Pt Weighted Rubrics</span></div>
+    <div class="card"><b>148</b><span>Engine Pack Intents</span></div>
+  </div>
+  <table>
+    <thead><tr><th>System</th><th>Category</th><th>Structure</th><th>Metrics (Engine KPI Links)</th><th>Continuous Dynamics &amp; 100-Pt Rubric</th><th>Failure Modes</th><th>Role Summary</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>IVR</strong> · Interactive Voice Response</td>
+        <td><code>self_service</code></td>
+        <td>12 terms · 3 facets</td>
+        <td>6 (<code>deflection_rate</code>, <code>aht_seconds</code>, <code>avg_wait_time</code>)</td>
+        <td><code>R^8</code> (5 vars, 3 ODEs) · 100pt (5 dims)</td>
+        <td>5</td>
+        <td class="idea">Voice self-service: menus, DTMF/ASR, transactions, containment</td>
+      </tr>
+      <tr>
+        <td><strong>ACD</strong> · Automatic Call Distributor</td>
+        <td><code>routing</code></td>
+        <td>12 terms · 3 facets</td>
+        <td>6 (<code>sla_compliance_rate</code>, <code>avg_wait_time</code>, <code>fcr_rate</code>, <code>total_contacts</code>)</td>
+        <td><code>R^10</code> (5 vars, 3 ODEs) · 100pt (5 dims)</td>
+        <td>4</td>
+        <td class="idea">Queueing, skills-based routing, service level, transfers, overflow</td>
+      </tr>
+      <tr>
+        <td><strong>WFM</strong> · Workforce Management</td>
+        <td><code>workforce</code></td>
+        <td>12 terms · 4 facets</td>
+        <td>6 (<code>sla_compliance_rate</code>, <code>aht_seconds</code>)</td>
+        <td><code>R^8</code> (5 vars, 3 ODEs) · 100pt (5 dims)</td>
+        <td>4</td>
+        <td class="idea">Forecasting, scheduling, shrinkage, intraday adherence, occupancy</td>
+      </tr>
+      <tr>
+        <td><strong>QA</strong> · Quality Assurance</td>
+        <td><code>quality</code></td>
+        <td>12 terms · 3 facets</td>
+        <td>6 (<code>fcr_rate</code>)</td>
+        <td><code>R^10</code> (5 vars, 3 ODEs) · 100pt (5 dims)</td>
+        <td>4</td>
+        <td class="idea">Transaction evaluation, scorecards, calibration, auto-fail compliance items</td>
+      </tr>
+      <tr>
+        <td><strong>CRM</strong> · Customer Relationship Management</td>
+        <td><code>customer_data</code></td>
+        <td>10 terms · 3 facets</td>
+        <td>4 (<code>fcr_rate</code>, <code>aht_seconds</code>)</td>
+        <td><code>R^8</code> (4 vars, 3 ODEs) · 100pt (5 dims)</td>
+        <td>4</td>
+        <td class="idea">Customer context: record hierarchy, screen pops, consent states, data quality</td>
+      </tr>
+      <tr>
+        <td><strong>KM</strong> · Knowledge Management</td>
+        <td><code>knowledge</code></td>
+        <td>10 terms · 3 facets</td>
+        <td>5 (<code>csat</code>, <code>deflection_rate</code>)</td>
+        <td><code>R^8</code> (4 vars, 3 ODEs) · 100pt (5 dims)</td>
+        <td>4</td>
+        <td class="idea">Curated answers: article lifecycle, agent assist, customer-facing help</td>
+      </tr>
+      <tr>
+        <td><strong>SA</strong> · Speech &amp; Text Analytics</td>
+        <td><code>analytics</code></td>
+        <td>10 terms · 2 facets</td>
+        <td>5 (<code>fcr_rate</code>, <code>csat</code>)</td>
+        <td><code>R^12</code> (5 vars, 3 ODEs) · 100pt (5 dims)</td>
+        <td>4</td>
+        <td class="idea">Transcription, topics, sentiment, emotion, auto-disposition, compliance spotting</td>
+      </tr>
+      <tr>
+        <td><strong>OB</strong> · Outbound Dialer &amp; Campaigns</td>
+        <td><code>outreach</code></td>
+        <td>10 terms · 3 facets</td>
+        <td>5 (<code>avg_contact_value</code>, <code>sla_compliance_rate</code>, <code>high_priority_contacts</code>, <code>total_contacts</code>)</td>
+        <td><code>R^8</code> (5 vars, 3 ODEs) · 100pt (4 dims)</td>
+        <td>4</td>
+        <td class="idea">Dialing modes, campaign types, list management, regulatory controls</td>
+      </tr>
+      <tr>
+        <td><strong>VOC</strong> · Voice of the Customer</td>
+        <td><code>feedback</code></td>
+        <td>8 terms · 2 facets</td>
+        <td>6 (<code>csat</code>, <code>fcr_rate</code>)</td>
+        <td><code>R^10</code> (5 vars, 3 ODEs) · 100pt (4 dims)</td>
+        <td>4</td>
+        <td class="idea">Surveys, listening posts, NPS/CSAT/CES instruments, close-the-loop</td>
+      </tr>
+      <tr>
+        <td><strong>CCaaS</strong> · Contact Center as a Service &amp; Telephony Fabric</td>
+        <td><code>routing</code></td>
+        <td>9 terms · 3 facets</td>
+        <td>5 (<code>csat</code>, <code>sla_compliance_rate</code>, <code>avg_wait_time</code>, <code>aht_seconds</code>, <code>total_contacts</code>)</td>
+        <td><code>R^10</code> (5 vars, 3 ODEs) · 100pt (4 dims)</td>
+        <td>4</td>
+        <td class="idea">SIP trunks, SBC, WebRTC endpoints, media recording, carrier failover, region resilience</td>
+      </tr>
+      <tr>
+        <td><strong>CAI</strong> · Conversational AI &amp; Virtual Agents</td>
+        <td><code>self_service</code></td>
+        <td>9 terms · 3 facets</td>
+        <td>5 (<code>deflection_rate</code>, <code>fcr_rate</code>, <code>avg_wait_time</code>, <code>aht_seconds</code>, <code>csat</code>)</td>
+        <td><code>R^12</code> (5 vars, 3 ODEs) · 100pt (4 dims)</td>
+        <td>4</td>
+        <td class="idea">Intent NLU, slot filling, LLM RAG grounding, hallucination guardrails, containment handoff, turn latency</td>
+      </tr>
+      <tr>
+        <td><strong>WFO</strong> · Workforce Optimization &amp; Engagement</td>
+        <td><code>workforce</code></td>
+        <td>8 terms · 3 facets</td>
+        <td>5 (<code>fcr_rate</code>, <code>aht_seconds</code>, <code>csat</code>, <code>sla_compliance_rate</code>)</td>
+        <td><code>R^10</code> (5 vars, 3 ODEs) · 100pt (4 dims)</td>
+        <td>4</td>
+        <td class="idea">Coaching workflows, gamification, skill progression matrices, agent attrition risk, desktop analytics</td>
+      </tr>
+      <tr>
+        <td><strong>JO</strong> · Real-Time Journey Orchestration &amp; NBA</td>
+        <td><code>routing</code></td>
+        <td>14 terms · 4 facets</td>
+        <td>7 (<code>deflection_rate</code>, <code>avg_contact_value</code>, <code>fcr_rate</code>, <code>sla_compliance_rate</code>, <code>aht_seconds</code>, <code>high_priority_contacts</code>, <code>csat</code>)</td>
+        <td><code>R^16</code> (5 vars, 3 ODEs) · 100pt (5 dims)</td>
+        <td>6</td>
+        <td class="idea">Plane 3 (What IS/SHOULD happen): live state estimation, conformance-drift intervention, NBA arbitration, suppression, dynamic steering</td>
+      </tr>
+      <tr>
+        <td><strong>FA</strong> · Fraud Detection &amp; Caller Authentication</td>
+        <td><code>customer_data</code></td>
+        <td>8 terms · 3 facets</td>
+        <td>5 (<code>aht_seconds</code>, <code>csat</code>, <code>deflection_rate</code>, <code>high_priority_contacts</code>)</td>
+        <td><code>R^10</code> (5 vars, 3 ODEs) · 100pt (4 dims)</td>
+        <td>4</td>
+        <td class="idea">ANI spoofing detection, voice biometrics, KBA threat mitigation, step-up MFA, ATO prevention</td>
+      </tr>
+      <tr>
+        <td><strong>DA</strong> · Agent Desktop &amp; Real-Time Co-Pilot</td>
+        <td><code>knowledge</code></td>
+        <td>8 terms · 3 facets</td>
+        <td>5 (<code>aht_seconds</code>, <code>fcr_rate</code>, <code>csat</code>, <code>avg_contact_value</code>)</td>
+        <td><code>R^10</code> (5 vars, 3 ODEs) · 100pt (4 dims)</td>
+        <td>4</td>
+        <td class="idea">Unified agent desktop, real-time call summarization, next-best-response cards, ACW automation, swivel-chair elimination</td>
+      </tr>
+      <tr>
+        <td><strong>OCX</strong> · Omnichannel Orchestration &amp; Context Sharing</td>
+        <td><code>routing</code></td>
+        <td>12 terms · 4 facets</td>
+        <td>6 (<code>sla_compliance_rate</code>, <code>csat</code>, <code>aht_seconds</code>, <code>fcr_rate</code>, <code>deflection_rate</code>, <code>avg_wait_time</code>)</td>
+        <td><code>R^12</code> (5 vars, 3 ODEs) · 100pt (5 dims)</td>
+        <td>6</td>
+        <td class="idea">Cross-channel context envelopes, identity stitching, modality switching (web/app/chat/voice), SIP UUI &amp; token hydration, warm handoff continuity</td>
+      </tr>
+      <tr>
+        <td><strong>A2A</strong> · Agent-to-Agent (A2A) &amp; Multi-Agent Facets</td>
+        <td><code>self_service</code></td>
+        <td>12 terms · 4 facets</td>
+        <td>6 (<code>deflection_rate</code>, <code>fcr_rate</code>, <code>avg_wait_time</code>, <code>sla_compliance_rate</code>, <code>aht_seconds</code>, <code>csat</code>)</td>
+        <td><code>R^16</code> (5 vars, 3 ODEs) · 100pt (5 dims)</td>
+        <td>6</td>
+        <td class="idea">Agent Cards, capability discovery, AI-to-AI task delegation, supervisor/specialist topologies, shared memory provenance, confidence-gated human handoff</td>
+      </tr>
+      <tr>
+        <td><strong>CJM</strong> · Customer Journey Mapping (Prescriptive Blueprint)</td>
+        <td><code>analytics</code></td>
+        <td>12 terms · 4 facets</td>
+        <td>6 (<code>fcr_rate</code>, <code>deflection_rate</code>, <code>sla_compliance_rate</code>, <code>avg_wait_time</code>, <code>aht_seconds</code>, <code>csat</code>)</td>
+        <td><code>R^16</code> (5 vars, 3 ODEs) · 100pt (5 dims)</td>
+        <td>6</td>
+        <td class="idea">Plane 1 (What we HOPE &amp; plan): Golden Path blueprints, persona JTBD stages, Moments of Truth, stage SLA budgets, planned fallback branches</td>
+      </tr>
+      <tr>
+        <td><strong>CJT</strong> · Customer Journey Tracking &amp; Process Mining</td>
+        <td><code>analytics</code></td>
+        <td>12 terms · 4 facets</td>
+        <td>7 (<code>fcr_rate</code>, <code>deflection_rate</code>, <code>sla_compliance_rate</code>, <code>avg_wait_time</code>, <code>aht_seconds</code>, <code>total_contacts</code>, <code>csat</code>)</td>
+        <td><code>R^16</code> (5 vars, 3 ODEs) · 100pt (5 dims)</td>
+        <td>6</td>
+        <td class="idea">Plane 2 (What DID happen): cross-channel event reconstruction, actual path discovery, planned-vs-actual conformance drift, loop &amp; drop-off attribution</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Continuous R^16 Manifold &amp; A2A Spectral Field Benchmark (1,000,000 Trajectories)</h2>
+  <div class="meta">Simulated <strong>1,000,000</strong> continuous trajectories (<strong>8,994,507</strong> assimilated events) across <code>R^16</code> in <strong>452.02 ms</strong> · Throughput: <strong>2,212,276 journeys per sec</strong> (19,898,332 events per sec)</div>
+  <div class="cards">
+    <div class="card"><b>1,000,000</b><span>Trajectories (8,994,507 Events)</span></div>
+    <div class="card"><b>452.02 ms</b><span>Wall Time</span></div>
+    <div class="card"><b class="ok">2,212,276 jps</b><span>Throughput (19,898,332 eps)</span></div>
+    <div class="card"><b>0.8975</b><span>Mahalanobis Drift (p50=0.189, p95=2.9182, p99=3.4262)</span></div>
+    <div class="card"><b class="ok">62.72%</b><span>Lyapunov Convergent (Orb 1.71% · Div 35.57%)</span></div>
+    <div class="card"><b>0.6941</b><span>Context Fidelity I(X_0;X_t) &divide; H(X_0) (H=0.7338)</span></div>
+    <div class="card"><b>0.8062</b><span>A2A Boltzmann Entropy (Loop E=0.1207)</span></div>
+  </div>
+  <table>
+    <thead><tr><th>Plane 3 Control Basis u*(t)</th><th>Maps To Discrete Action</th><th>Mean Continuous Weight</th><th>Dominant Trajectory Share</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><code>autonomous_progression</code></td>
+        <td><code>continue_golden_path</code></td>
+        <td><strong>0.2908</strong></td>
+        <td>35.50% (355,048)</td>
+      </tr>
+      <tr>
+        <td><code>context_rehydration_impulse</code></td>
+        <td><code>hydrate_context_and_resume</code></td>
+        <td><strong>0.1063</strong></td>
+        <td>3.18% (31,829)</td>
+      </tr>
+      <tr>
+        <td><code>a2a_specialist_blend</code></td>
+        <td><code>delegate_a2a_specialist</code></td>
+        <td><strong>0.3290</strong></td>
+        <td>36.44% (364,449)</td>
+      </tr>
+      <tr>
+        <td><code>modality_fluid_shift</code></td>
+        <td><code>steer_to_async_digital</code></td>
+        <td><strong>0.0485</strong></td>
+        <td>0.84% (8,439)</td>
+      </tr>
+      <tr>
+        <td><code>human_advocate_blend</code></td>
+        <td><code>escalate_warm_human_advocate</code></td>
+        <td><strong>0.1998</strong></td>
+        <td>22.08% (220,794)</td>
+      </tr>
+      <tr>
+        <td><code>outreach_damping_factor</code></td>
+        <td><code>suppress_outreach_and_close</code></td>
+        <td><strong>0.0257</strong></td>
+        <td>1.94% (19,441)</td>
+      </tr>
+    </tbody>
+  </table>
+  <br/>
+  <table>
+    <thead><tr><th>A2A Continuous Agent</th><th>Role</th><th>Auth Radius</th><th>Mean Boltzmann Mass</th><th>Top-1 Assignment Share</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>cai_concierge</strong> · <span class="idea">Frontline Conversational AI Concierge</span></td>
+        <td><code>supervisor_and_frontline</code></td>
+        <td><code>0.62</code></td>
+        <td><strong>0.0672</strong></td>
+        <td>0.71% (7,107)</td>
+      </tr>
+      <tr>
+        <td><strong>billing_specialist_agent</strong> · <span class="idea">Autonomous Billing &amp; Ledger Dispute Specialist</span></td>
+        <td><code>domain_specialist</code></td>
+        <td><code>0.78</code></td>
+        <td><strong>0.1118</strong></td>
+        <td>23.25% (232,491)</td>
+      </tr>
+      <tr>
+        <td><strong>tech_diagnostics_agent</strong> · <span class="idea">Autonomous Telemetry &amp; API Diagnostics Specialist</span></td>
+        <td><code>domain_specialist</code></td>
+        <td><code>0.74</code></td>
+        <td><strong>0.0969</strong></td>
+        <td>13.93% (139,286)</td>
+      </tr>
+      <tr>
+        <td><strong>fraud_trust_agent</strong> · <span class="idea">Zero-Trust Fraud, Biometric &amp; ATO Security Agent</span></td>
+        <td><code>domain_specialist</code></td>
+        <td><code>0.92</code></td>
+        <td><strong>0.1083</strong></td>
+        <td>12.88% (128,805)</td>
+      </tr>
+      <tr>
+        <td><strong>retention_negotiator_agent</strong> · <span class="idea">High-LTV Churn Save &amp; Contract Renewal Specialist</span></td>
+        <td><code>domain_specialist</code></td>
+        <td><code>0.84</code></td>
+        <td><strong>0.0778</strong></td>
+        <td>2.35% (23,539)</td>
+      </tr>
+      <tr>
+        <td><strong>context_hydration_fabric_agent</strong> · <span class="idea">Omnichannel Context Re-Hydration &amp; SIP Bridge Agent</span></td>
+        <td><code>continuity_specialist</code></td>
+        <td><code>0.8</code></td>
+        <td><strong>0.0988</strong></td>
+        <td>4.28% (42,840)</td>
+      </tr>
+      <tr>
+        <td><strong>async_modality_shifter_agent</strong> · <span class="idea">Wait-Aware Visual &amp; Async Messaging Shifter Agent</span></td>
+        <td><code>modality_specialist</code></td>
+        <td><code>0.68</code></td>
+        <td><strong>0.0366</strong></td>
+        <td>0.06% (550)</td>
+      </tr>
+      <tr>
+        <td><strong>order_logistics_fulfillment_agent</strong> · <span class="idea">Supply-Chain, Carrier &amp; Order Replacement Specialist</span></td>
+        <td><code>domain_specialist</code></td>
+        <td><code>0.76</code></td>
+        <td><strong>0.0877</strong></td>
+        <td>13.54% (135,395)</td>
+      </tr>
+      <tr>
+        <td><strong>critic_policy_verifier_agent</strong> · <span class="idea">Constitutional Policy Critic &amp; Compliance Verifier</span></td>
+        <td><code>critic_guardrail</code></td>
+        <td><code>0.95</code></td>
+        <td><strong>0.1053</strong></td>
+        <td>8.44% (84,439)</td>
+      </tr>
+      <tr>
+        <td><strong>outreach_suppression_governor</strong> · <span class="idea">Proactive Fatigue &amp; Cooldown Suppression Governor</span></td>
+        <td><code>governance_specialist</code></td>
+        <td><code>0.88</code></td>
+        <td><strong>0.0492</strong></td>
+        <td>2.39% (23,852)</td>
+      </tr>
+      <tr>
+        <td><strong>tier2_human_specialist_copilot</strong> · <span class="idea">Tier-2 Hybrid Human Specialist + AI Co-Pilot Pod</span></td>
+        <td><code>human_hybrid</code></td>
+        <td><code>0.96</code></td>
+        <td><strong>0.0843</strong></td>
+        <td>9.58% (95,823)</td>
+      </tr>
+      <tr>
+        <td><strong>senior_human_advocate</strong> · <span class="idea">Senior Executive &amp; Life-Safety Human Advocate</span></td>
+        <td><code>human_advocate</code></td>
+        <td><code>1</code></td>
+        <td><strong>0.0761</strong></td>
+        <td>8.59% (85,873)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Plane 1 &larr; Plane 2 &amp; Plane 3 Closed-Loop Blueprint Recalibration (6 Attractor Tubes)</h2>
+  <div class="meta">Closed-loop empirical feedback updating Plane 1 Golden Attractor Tubes <code>T*(tau) = (mu*(tau), Sigma*(tau))</code> and SLA budgets from Plane 2 trajectory residuals &amp; Plane 3 Hamiltonian control impulses · Mean Drift: <strong>0.8975 &rarr; 0.5266</strong> (<strong class="ok">-41.33%</strong>) · Lyapunov Convergence Lift: <strong class="ok">+28.95 pp</strong></div>
+  <table>
+    <thead><tr><th>Blueprint Attractor</th><th>Journey Count</th><th>Prior vs. Post-Recalibration Drift</th><th>Drift Reduction %</th><th>Prior vs. Recalibrated SLA Budget</th><th>Top Diverging Manifold Axes</th><th>Prescriptive Blueprint Action</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>bp_billing_dispute_golden_v4</strong><br/><span class="idea">Autonomous Billing Dispute &amp; Ledger Credit Attractor</span></td>
+        <td>166,667</td>
+        <td><code>0.8981</code> &rarr; <code class="ok">0.5302</code></td>
+        <td class="ok"><strong>-40.96%</strong></td>
+        <td><code>180s</code> &rarr; <code>235s</code> (+55s)</td>
+        <td><code>resolution_momentum</code> (-0.175), <code>auth_assurance_level</code> (-0.134), <code>intent_clarity</code> (-0.110)</td>
+        <td>Inject pre-authenticated SIP UUI context token and cryptographic passkey claim via context_hydration_fabric_agent at tau=0.4 (reduces auth_assurance_level drift residual -0.134). · Widen SLA budget from 180s to 235s (+55s) and pre-stage billing_specialist_agent at tau=0.65 to absorb latency_pressure overrun (+0.110).</td>
+      </tr>
+      <tr>
+        <td><strong>bp_card_replace_golden_v3</strong><br/><span class="idea">Zero-Trust Fraud Lock &amp; Expedited Card Replacement Attractor</span></td>
+        <td>166,667</td>
+        <td><code>0.9806</code> &rarr; <code class="ok">0.5539</code></td>
+        <td class="ok"><strong>-43.51%</strong></td>
+        <td><code>150s</code> &rarr; <code>215s</code> (+65s)</td>
+        <td><code>auth_assurance_level</code> (-0.155), <code>resolution_momentum</code> (-0.174), <code>intent_clarity</code> (-0.109)</td>
+        <td>Inject pre-authenticated SIP UUI context token and cryptographic passkey claim via context_hydration_fabric_agent at tau=0.3 (reduces auth_assurance_level drift residual -0.155). · Widen SLA budget from 150s to 215s (+65s) and pre-stage fraud_trust_agent at tau=0.55 to absorb latency_pressure overrun (+0.132).</td>
+      </tr>
+      <tr>
+        <td><strong>bp_enterprise_api_onboarding_v2</strong><br/><span class="idea">Enterprise Webhook &amp; Technical Telemetry Triage Attractor</span></td>
+        <td>166,667</td>
+        <td><code>0.8122</code> &rarr; <code class="ok">0.4882</code></td>
+        <td class="ok"><strong>-39.89%</strong></td>
+        <td><code>300s</code> &rarr; <code>240s</code> (-60s)</td>
+        <td><code>resolution_momentum</code> (-0.167), <code>auth_assurance_level</code> (-0.119), <code>intent_clarity</code> (-0.110)</td>
+        <td>Inject pre-authenticated SIP UUI context token and cryptographic passkey claim via context_hydration_fabric_agent at tau=0.35 (reduces auth_assurance_level drift residual -0.119). · Tighten SLA budget from 300s to 240s (-60s) reflecting fast backstage tech_diagnostics_agent execution (mean elapsed 146.6s) and pre-stage tech_diagnostics_agent at tau=0.25.</td>
+      </tr>
+      <tr>
+        <td><strong>bp_vip_renewal_retention_v5</strong><br/><span class="idea">High-LTV Churn Prevention &amp; Dynamic Retention Attractor</span></td>
+        <td>166,667</td>
+        <td><code>0.8349</code> &rarr; <code class="ok">0.5037</code></td>
+        <td class="ok"><strong>-39.67%</strong></td>
+        <td><code>240s</code> &rarr; <code>205s</code> (-35s)</td>
+        <td><code>resolution_momentum</code> (-0.168), <code>auth_assurance_level</code> (-0.126), <code>intent_clarity</code> (-0.108)</td>
+        <td>Inject pre-authenticated SIP UUI context token and cryptographic passkey claim via context_hydration_fabric_agent at tau=0.45 (reduces auth_assurance_level drift residual -0.126). · Tighten SLA budget from 240s to 205s (-35s) reflecting fast backstage retention_negotiator_agent execution (mean elapsed 146.4s) and pre-stage retention_negotiator_agent at tau=0.25.</td>
+      </tr>
+      <tr>
+        <td><strong>bp_async_claim_submission_v2</strong><br/><span class="idea">Multimodal Voice-to-Visual Claim &amp; Logistics Fulfillment Attractor</span></td>
+        <td>166,666</td>
+        <td><code>0.8627</code> &rarr; <code class="ok">0.5153</code></td>
+        <td class="ok"><strong>-40.27%</strong></td>
+        <td><code>210s</code> &rarr; <code>215s</code> (+5s)</td>
+        <td><code>resolution_momentum</code> (-0.185), <code>intent_clarity</code> (-0.106), <code>auth_assurance_level</code> (-0.118)</td>
+        <td>Inject pre-authenticated SIP UUI context token and cryptographic passkey claim via context_hydration_fabric_agent at tau=0.25 (reduces auth_assurance_level drift residual -0.118). · Widen SLA budget from 210s to 215s (+5s) and pre-stage order_logistics_fulfillment_agent at tau=0.5 to absorb latency_pressure overrun (+0.080).</td>
+      </tr>
+      <tr>
+        <td><strong>bp_critical_outage_life_safety_v4</strong><br/><span class="idea">Life-Safety Medical &amp; Critical Outage Priority Recovery Attractor</span></td>
+        <td>166,666</td>
+        <td><code>0.9964</code> &rarr; <code class="ok">0.5685</code></td>
+        <td class="ok"><strong>-42.94%</strong></td>
+        <td><code>90s</code> &rarr; <code>185s</code> (+95s)</td>
+        <td><code>resolution_momentum</code> (-0.173), <code>latency_pressure</code> (+0.180), <code>auth_assurance_level</code> (-0.141)</td>
+        <td>Inject pre-authenticated SIP UUI context token and cryptographic passkey claim via context_hydration_fabric_agent at tau=0.15 (reduces auth_assurance_level drift residual -0.141). · Widen SLA budget from 90s to 185s (+95s) and pre-stage senior_human_advocate at tau=0.35 to absorb latency_pressure overrun (+0.180).</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Live 3-Plane Journey &amp; A2A Strands 2B Decisions (8 journeys)</h2>
+  <table>
+    <thead><tr><th>Journey</th><th>Tier</th><th>Plane 1 Blueprint</th><th>Plane 2 Elapsed &amp; Loops</th><th>Conformance Drift</th><th>Context Hydration Noul</th><th>Plane 3 Orchestration Action</th><th>Target A2A Owner</th><th>Band</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>jrny-001</strong></td>
+        <td><code>growth</code></td>
+        <td><code>bp_order_modification_self_serve</code></td>
+        <td>48s of 120s (loops: 0)</td>
+        <td class="ok">on_golden_path (<code>0.38</code>)</td>
+        <td class="ok"><code>0.035</code> (intact)</td>
+        <td><code>continue_golden_path</code> (<code>0.908</code>)</td>
+        <td><code>cai_concierge</code> (<code>0.859</code>)</td>
+        <td><strong class="ok">high</strong> · <code>act_immediately</code></td>
+      </tr>
+      <tr>
+        <td><strong>jrny-002</strong></td>
+        <td><code>enterprise_vip</code></td>
+        <td><code>bp_onboarding_api_setup</code></td>
+        <td>395s of 240s (loops: 2)</td>
+        <td class="urg-high">critical_path_break (<code>1.61</code>)</td>
+        <td class="urg-high"><code>0.966</code> (URGENT)</td>
+        <td><code>hydrate_context_and_resume</code> (<code>0.875</code>)</td>
+        <td><code>senior_human_advocate</code> (<code>0.794</code>)</td>
+        <td><strong class="ok">high</strong> · <code>act_immediately</code></td>
+      </tr>
+      <tr>
+        <td><strong>jrny-003</strong></td>
+        <td><code>at_risk_high_ltv</code></td>
+        <td><code>bp_billing_auto_dispute</code></td>
+        <td>640s of 180s (loops: 3)</td>
+        <td class="urg-high">critical_path_break (<code>1.56</code>)</td>
+        <td class="ok"><code>0.303</code> (intact)</td>
+        <td><code>escalate_warm_human_advocate</code> (<code>0.884</code>)</td>
+        <td><code>senior_human_advocate</code> (<code>0.794</code>)</td>
+        <td><strong class="ok">high</strong> · <code>act_immediately</code></td>
+      </tr>
+      <tr>
+        <td><strong>jrny-004</strong></td>
+        <td><code>enterprise_vip</code></td>
+        <td><code>bp_fiber_outage_proactive</code></td>
+        <td>210s of 90s (loops: 0)</td>
+        <td class="urg-high">critical_path_break (<code>1.51</code>)</td>
+        <td class="ok"><code>0.085</code> (intact)</td>
+        <td><code>escalate_warm_human_advocate</code> (<code>0.851</code>)</td>
+        <td><code>senior_human_advocate</code> (<code>0.956</code>)</td>
+        <td><strong class="ok">high</strong> · <code>act_immediately</code></td>
+      </tr>
+      <tr>
+        <td><strong>jrny-005</strong></td>
+        <td><code>at_risk_high_ltv</code></td>
+        <td><code>bp_renewal_save_negotiation</code></td>
+        <td>165s of 300s (loops: 1)</td>
+        <td class="urg-high">critical_path_break (<code>1.43</code>)</td>
+        <td class="ok"><code>0.057</code> (intact)</td>
+        <td><code>delegate_a2a_specialist</code> (<code>0.878</code>)</td>
+        <td><code>retention_negotiator_agent</code> (<code>0.931</code>)</td>
+        <td><strong class="ok">high</strong> · <code>act_immediately</code></td>
+      </tr>
+      <tr>
+        <td><strong>jrny-006</strong></td>
+        <td><code>enterprise_vip</code></td>
+        <td><code>bp_card_fraud_replacement</code></td>
+        <td>95s of 150s (loops: 0)</td>
+        <td class="urg-high">critical_path_break (<code>1.44</code>)</td>
+        <td class="ok"><code>0.104</code> (intact)</td>
+        <td><code>delegate_a2a_specialist</code> (<code>0.805</code>)</td>
+        <td><code>fraud_trust_agent</code> (<code>0.978</code>)</td>
+        <td><strong class="ok">high</strong> · <code>act_immediately</code></td>
+      </tr>
+      <tr>
+        <td><strong>jrny-007</strong></td>
+        <td><code>standard</code></td>
+        <td><code>bp_device_upgrade_tradein</code></td>
+        <td>42s of 180s (loops: 0)</td>
+        <td class="urg-med">minor_deviation (<code>0.85</code>)</td>
+        <td class="ok"><code>0.032</code> (intact)</td>
+        <td><code>steer_to_async_digital</code> (<code>0.894</code>)</td>
+        <td><code>cai_concierge</code> (<code>0.946</code>)</td>
+        <td><strong class="ok">high</strong> · <code>act_immediately</code></td>
+      </tr>
+      <tr>
+        <td><strong>jrny-008</strong></td>
+        <td><code>growth</code></td>
+        <td><code>bp_hipaa_records_request</code></td>
+        <td>35s of 60s (loops: 0)</td>
+        <td class="urg-med">minor_deviation (<code>1.31</code>)</td>
+        <td class="ok"><code>0.051</code> (intact)</td>
+        <td><code>suppress_outreach_and_close</code> (<code>0.921</code>)</td>
+        <td><code>cai_concierge</code> (<code>0.758</code>)</td>
+        <td><strong class="ok">high</strong> · <code>act_immediately</code></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Strands 2B QA Triage &amp; Calibration (8 contacts)</h2>
+  <div class="meta">Strands 2B Decider (<code>StrandsAgents/strands-decider-2B-hobson-v21</code>) · Gold n=10 · Compliance Brier=<strong>0.0387</strong> · ECE=<strong>0.1594</strong> · F1@0.70=<strong>0.857</strong> · Policy agreement=<strong>90%</strong></div>
+  <div class="cards">
+    <div class="card"><b class="urg-high">2</b><span>Targeted Human QA</span></div>
+    <div class="card"><b class="urg-med">2</b><span>Needs Review</span></div>
+    <div class="card"><b class="ok">4</b><span>Auto-QA Only</span></div>
+    <div class="card"><b>0.0387</b><span>Compliance Brier</span></div>
+    <div class="card"><b>90%</b><span>Gold Policy Agreement</span></div>
+  </div>
+  <table>
+    <thead><tr><th>Contact</th><th>Channel</th><th>QA Path</th><th>Compliance Noul</th><th>Severity</th><th>Sev Conf</th><th>Band Reason</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>qa-001</strong></td>
+        <td><code>phone</code></td>
+        <td class="urg-high">targeted_human_qa</td>
+        <td><code>0.954</code></td>
+        <td><code>1.38</code></td>
+        <td><code>0.357</code></td>
+        <td>compliance_risk (noul 0.954)</td>
+      </tr>
+      <tr>
+        <td><strong>qa-008</strong></td>
+        <td><code>phone</code></td>
+        <td class="urg-high">targeted_human_qa</td>
+        <td><code>0.837</code></td>
+        <td><code>1.11</code></td>
+        <td><code>0.338</code></td>
+        <td>compliance_risk (noul 0.837)</td>
+      </tr>
+      <tr>
+        <td><strong>qa-004</strong></td>
+        <td><code>email</code></td>
+        <td class="ok">auto_qa_only</td>
+        <td><code>0.100</code></td>
+        <td><code>0.86</code></td>
+        <td><code>0.416</code></td>
+        <td>clear_low_risk (noul 0.100, score 0.86)</td>
+      </tr>
+      <tr>
+        <td><strong>qa-005</strong></td>
+        <td><code>chat</code></td>
+        <td class="ok">auto_qa_only</td>
+        <td><code>0.084</code></td>
+        <td><code>0.86</code></td>
+        <td><code>0.451</code></td>
+        <td>clear_low_risk (noul 0.084, score 0.86)</td>
+      </tr>
+      <tr>
+        <td><strong>qa-002</strong></td>
+        <td><code>chat</code></td>
+        <td class="ok">auto_qa_only</td>
+        <td><code>0.081</code></td>
+        <td><code>0.63</code></td>
+        <td><code>0.390</code></td>
+        <td>clear_low_risk (noul 0.081, score 0.63)</td>
+      </tr>
+      <tr>
+        <td><strong>qa-007</strong></td>
+        <td><code>in_app</code></td>
+        <td class="ok">auto_qa_only</td>
+        <td><code>0.071</code></td>
+        <td><code>0.72</code></td>
+        <td><code>0.365</code></td>
+        <td>clear_low_risk (noul 0.071, score 0.72)</td>
+      </tr>
+      <tr>
+        <td><strong>qa-006</strong></td>
+        <td><code>phone</code></td>
+        <td class="urg-med">needs_review</td>
+        <td><code>0.278</code></td>
+        <td><code>1.09</code></td>
+        <td><code>0.300</code></td>
+        <td>ambiguous_severity (conf 0.300) — gather_more_info</td>
+      </tr>
+      <tr>
+        <td><strong>qa-003</strong></td>
+        <td><code>phone</code></td>
+        <td class="urg-med">needs_review</td>
+        <td><code>0.143</code></td>
+        <td><code>1.34</code></td>
+        <td><code>0.335</code></td>
+        <td>ambiguous_severity (conf 0.335) — gather_more_info</td>
+      </tr>
+    </tbody>
+  </table>
+<!-- CXOS-ONTOLOGY-DECIDER:END -->
   <footer>CXOS dashboard - offline-safe HTML · no external assets · never auto-mutates prod</footer>
 </body>
 </html>

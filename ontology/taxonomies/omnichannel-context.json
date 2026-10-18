@@ -1,0 +1,675 @@
+{
+  "kind": "cxTaxonomy",
+  "id": "omnichannel_context",
+  "acronym": "OCX",
+  "name": "Omnichannel Orchestration & Context Sharing",
+  "category": "routing",
+  "version": "2026.10.0",
+  "description": "Cross-channel session continuity and state hydration fabric governing canonical Context Envelopes, deterministic and probabilistic identity stitching across anonymous and authenticated touchpoints, seamless modality switching (web and mobile app to voice via SIP UUI and signed JWT session tokens, voice to SMS and visual IVR deflection, asynchronous to synchronous escalation), warm handoff state contracts, slot and intent ledger hydration, and channel parity governance.",
+  "roleInCenter": "Continuity fabric: preserves verified customer identity, intent stack, extracted slots, and conversation history across every channel transition and escalation so customers never repeat themselves.",
+  "glossary": [
+    {
+      "id": "omnichannel_context_envelope",
+      "term": "Canonical Context Envelope",
+      "definition": "Standardized, cryptographically signed JSON state payload propagated across channel switches, bot-to-bot delegations, and live agent escalations containing identity claims, verified authentication assurance, active intent stack, extracted slot ledger, transcript digest, and consent flags",
+      "tags": ["core", "state", "context", "routing"],
+      "aliases": ["Context Envelope", "Session State Envelope"],
+      "seeAlso": ["acd", "cai", "desktop_assist", "a2a_protocol"]
+    },
+    {
+      "id": "cross_channel_identity_stitching",
+      "term": "Cross-Channel Identity Graph Stitching",
+      "definition": "Real-time identity resolution process that merges anonymous digital device telemetry, browser session tokens, messaging handles, and telephony ANI into a unified CRM customer profile and active journey instance",
+      "tags": ["identity", "core", "state"],
+      "aliases": ["Identity Stitching", "Omnichannel Identity Resolution"],
+      "seeAlso": ["crm", "fraud_auth", "journey_tracking"]
+    },
+    {
+      "id": "modality_elevation_handoff",
+      "term": "Modality Elevation & Channel Switching",
+      "definition": "Controlled transition of an active interaction from a lower-bandwidth or asynchronous modality (such as web browse, mobile app, or SMS) to a higher-bandwidth synchronous modality (such as live voice or co-browse) while retaining full session state",
+      "tags": ["modality", "routing", "handoff"],
+      "aliases": ["Channel Elevation", "Modality Pivot"],
+      "seeAlso": ["ccaas", "acd", "ivr"]
+    },
+    {
+      "id": "sip_uui_context_propagation",
+      "term": "SIP UUI & Call Header Token Binding",
+      "definition": "Telephony signaling mechanism that embeds a compact Context Envelope reference token or signed session identifier inside SIP User-to-User Information (UUI) or X-headers during PSTN and WebRTC call setup so the receiving IVR and ACD hydrate prior digital context immediately",
+      "tags": ["telephony", "context", "routing"],
+      "aliases": ["SIP UUI Hydration", "Call Header Context Binding"],
+      "seeAlso": ["ccaas", "ivr", "acd"]
+    },
+    {
+      "id": "warm_handoff_state_contract",
+      "term": "Warm Handoff State Contract",
+      "definition": "Schema-enforced transfer agreement between a sending channel or virtual agent and a receiving queue or human agent that guarantees verified authentication status, summarized problem statement, completed troubleshooting steps, and unfilled slot requirements arrive before media connection",
+      "tags": ["handoff", "governance", "core"],
+      "aliases": ["Warm Transfer Contract", "Handoff SLA Payload"],
+      "seeAlso": ["cai", "acd", "desktop_assist", "a2a_protocol"]
+    },
+    {
+      "id": "slot_and_intent_hydration",
+      "term": "Slot Ledger & Intent Stack Hydration",
+      "definition": "Runtime pre-population of a receiving bot or agent desktop with the hierarchical intent stack and typed entity slots (such as order number, disputed amount, or travel date) already extracted in upstream channels",
+      "tags": ["state", "nlu", "context"],
+      "aliases": ["Slot Pre-Population", "Intent Carryover"],
+      "seeAlso": ["cai", "ivr", "desktop_assist"]
+    },
+    {
+      "id": "async_session_resumption",
+      "term": "Asynchronous Session Persistence & Resumption",
+      "definition": "Long-lived conversation state management allowing customers to pause an interaction on SMS, WhatsApp, or in-app messaging and resume hours or days later with full thread context, slot memory, and dynamic queue re-entry",
+      "tags": ["async", "state", "continuity"],
+      "aliases": ["Persistent Messaging Thread", "Multi-Day Session Continuity"],
+      "seeAlso": ["journey_orchestration", "acd", "crm"]
+    },
+    {
+      "id": "visual_ivr_collab_bridge",
+      "term": "Voice-to-Digital Visual Co-Browsing Bridge",
+      "definition": "Multimodal synchronization bridge that pairs an active voice call with a real-time mobile web view, visual IVR card, or authenticated co-browse session for complex form completion, document upload, or visual seat selection",
+      "tags": ["multimodal", "self_service", "modality"],
+      "aliases": ["Visual IVR Synchronization", "Multimodal Voice-Digital Bridge"],
+      "seeAlso": ["ivr", "cai", "desktop_assist"]
+    },
+    {
+      "id": "auth_assurance_carryover",
+      "term": "Authentication Assurance Carryover Token",
+      "definition": "Short-lived, cryptographically verifiable claim inside the Context Envelope certifying the NIST or enterprise Assurance Level (IAL and AAL) achieved in the originating mobile app or web session so the receiving voice IVR or live agent skips redundant security questioning",
+      "tags": ["security", "identity", "handoff"],
+      "aliases": ["Step-Up Auth Carryover", "Verified Session Claim"],
+      "seeAlso": ["fraud_auth", "ivr", "crm"]
+    },
+    {
+      "id": "channel_state_parity",
+      "term": "Cross-Channel State & Capability Parity",
+      "definition": "Architectural governance ensuring that business rules, policy guardrails, CRM mutations, and customer-visible transaction statuses remain consistent whether the customer interacts via mobile app, web chat, SMS, or voice",
+      "tags": ["governance", "architecture", "parity"],
+      "aliases": ["Omnichannel Policy Parity"],
+      "seeAlso": ["journey_mapping", "journey_orchestration", "km"]
+    },
+    {
+      "id": "conversation_thread_continuity",
+      "term": "Unified Conversation Thread Ledger",
+      "definition": "Chronological, cross-modality interaction ledger that stitches together web clickstreams, virtual agent turns, SMS notifications, and voice call summaries into a single continuous thread visible to both customer and agent",
+      "tags": ["state", "continuity", "core"],
+      "aliases": ["Omnichannel Timeline Ledger", "Single Thread History"],
+      "seeAlso": ["crm", "desktop_assist", "journey_tracking"]
+    },
+    {
+      "id": "anti_repetition_guard",
+      "term": "Zero-Repetition Customer Context Guard",
+      "definition": "Runtime dialog and agent-desktop enforcement rule that suppresses IVR prompts, bot slot questions, and agent verification scripts for any attribute already present and verified in the active Context Envelope",
+      "tags": ["governance", "experience", "handoff"],
+      "aliases": ["Anti-Repetition Policy", "No-Repeat Guardrail"],
+      "seeAlso": ["ivr", "cai", "desktop_assist", "qa"]
+    }
+  ],
+  "facets": [
+    {
+      "id": "ocx_context_envelope_architecture",
+      "name": "Context Envelope & Payload Facets",
+      "description": "Structural layers of the canonical Omnichannel Context Envelope propagated across channel switches and escalations",
+      "root": {
+        "id": "context_envelope_root",
+        "name": "Canonical Context Envelope Layers",
+        "children": [
+          {
+            "id": "envelope_identity_auth_layer",
+            "name": "Identity & Authentication Claims Layer",
+            "description": "Verified customer identity keys and security assurance claims carried across channels",
+            "children": [
+              {
+                "id": "canonical_customer_party_id",
+                "name": "Canonical Customer & Account Party ID",
+                "description": "Resolved master CRM customer identifier and active account or household scope",
+                "seeAlso": ["crm"]
+              },
+              {
+                "id": "nist_assurance_level_claim",
+                "name": "Authentication Assurance & Biometric Claim",
+                "description": "Signed attestation of completed OAuth, passkey, device biometric, or voiceprint verification",
+                "seeAlso": ["fraud_auth", "auth_assurance_carryover"]
+              },
+              {
+                "id": "step_up_token_ttl_scope",
+                "name": "Token TTL & High-Risk Scope Binding",
+                "description": "Expiration window and transaction scope limits governing whether high-risk actions require re-verification",
+                "seeAlso": ["fraud_auth"]
+              }
+            ]
+          },
+          {
+            "id": "envelope_intent_slot_layer",
+            "name": "Intent Stack & Slot Ledger Layer",
+            "description": "Structured semantic state of what the customer is trying to accomplish and parameters already provided",
+            "children": [
+              {
+                "id": "hierarchical_intent_stack",
+                "name": "Active & Suspended Intent Stack",
+                "description": "Ordered stack of primary customer intent, nested sub-intents, and confidence scores across multi-intent sessions",
+                "seeAlso": ["cai", "slot_and_intent_hydration"]
+              },
+              {
+                "id": "validated_slot_key_value_ledger",
+                "name": "Validated Entity & Slot Ledger",
+                "description": "Typed, schema-validated entities (dates, order IDs, dollar amounts, error codes) with source provenance",
+                "seeAlso": ["cai", "ivr"]
+              },
+              {
+                "id": "failed_self_service_attempt_log",
+                "name": "Failed Self-Service & API Attempt Log",
+                "description": "Record of workflow steps or backend tool calls already attempted and their failure reasons to prevent re-running dead paths",
+                "seeAlso": ["cai", "a2a_protocol"]
+              }
+            ]
+          },
+          {
+            "id": "envelope_transcript_telemetry_layer",
+            "name": "Interaction Digest, Telemetry & Governance Layer",
+            "description": "Summarized history, digital struggle breadcrumbs, and regulatory consent state",
+            "children": [
+              {
+                "id": "structured_handoff_digest",
+                "name": "Structured Conversation & Sentiment Digest",
+                "description": "Concise abstractive summary, customer sentiment trajectory, and key commitments made prior to handoff",
+                "seeAlso": ["desktop_assist", "speech_analytics"]
+              },
+              {
+                "id": "digital_breadcrumb_trail",
+                "name": "Web & Mobile Screen Breadcrumb Trail",
+                "description": "Last N screens viewed, form validation errors, cart contents, and rage-click telemetry preceding contact initiation",
+                "seeAlso": ["journey_tracking", "journey_orchestration"]
+              },
+              {
+                "id": "envelope_consent_suppression_flags",
+                "name": "Recording Consent, Privacy & Suppression Flags",
+                "description": "Active TCPA, GDPR, PCI redaction, and recording consent states governing downstream channels",
+                "seeAlso": ["ccaas", "outbound"]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "ocx_modality_transitions",
+      "name": "Cross-Channel Modality Transitions",
+      "description": "Directional switching patterns between digital, messaging, and voice modalities",
+      "root": {
+        "id": "modality_transitions_root",
+        "name": "Omnichannel Modality Pivot Patterns",
+        "children": [
+          {
+            "id": "digital_to_voice_elevation",
+            "name": "Digital-to-Voice Elevation (Web or App to Voice)",
+            "description": "Escalating from authenticated web or mobile app sessions into live or automated voice without context loss",
+            "children": [
+              {
+                "id": "in_app_webrtc_contextual_call",
+                "name": "In-App WebRTC Contextual Voice Call",
+                "description": "Direct VoIP call launched inside the mobile app with signed JWT Context Envelope attached to SIP INVITE headers",
+                "seeAlso": ["ccaas", "sip_uui_context_propagation"]
+              },
+              {
+                "id": "pstn_click_to_call_token_bind",
+                "name": "PSTN Click-to-Call & Scheduled Callback Binding",
+                "description": "Reserves a short-lived context token matched by outbound callback or inbound ANI plus one-time passkey",
+                "seeAlso": ["acd", "ivr"]
+              }
+            ]
+          },
+          {
+            "id": "voice_to_digital_deflection",
+            "name": "Voice-to-Digital Deflection & Multimodal Sync",
+            "description": "Shifting bandwidth-heavy or visually complex tasks from voice to messaging or mobile web",
+            "children": [
+              {
+                "id": "ivr_to_sms_async_pivot",
+                "name": "IVR-to-SMS & Messaging Deflection Pivot",
+                "description": "Transfers a caller waiting in queue or navigating IVR into an authenticated SMS, RCS, or WhatsApp thread with state intact",
+                "seeAlso": ["ivr", "cai"]
+              },
+              {
+                "id": "live_voice_visual_card_sync",
+                "name": "Simultaneous Voice & Visual Card Co-Browsing",
+                "description": "Maintains live voice audio while pushing interactive visual forms, maps, or document capture to the caller smartphone",
+                "seeAlso": ["visual_ivr_collab_bridge", "desktop_assist"]
+              }
+            ]
+          },
+          {
+            "id": "async_to_sync_escalation",
+            "name": "Asynchronous-to-Synchronous Escalation",
+            "description": "Elevating store-and-forward threads into real-time conversational handling",
+            "children": [
+              {
+                "id": "messaging_to_live_chat_or_voice",
+                "name": "Async Messaging to Live Agent or Voice Bridge",
+                "description": " seamlessly elevates an asynchronous messaging thread or email case into a live synchronous chat or voice call",
+                "seeAlso": ["acd", "async_session_resumption"]
+              },
+              {
+                "id": "bot_to_specialist_a2a_pivot",
+                "name": "Frontline Bot to Specialist Agent Handoff",
+                "description": "Delegates specialized resolution steps across autonomous agents or human tier-2 queues using unified context envelopes",
+                "seeAlso": ["a2a_protocol", "cai"]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "ocx_identity_and_session_stitching",
+      "name": "Identity Resolution & Session Continuity",
+      "description": "Mechanisms correlating customer identity and thread state across disparate channel identifiers and time gaps",
+      "root": {
+        "id": "identity_stitching_root",
+        "name": "Identity & Thread Correlation Mechanisms",
+        "children": [
+          {
+            "id": "deterministic_identity_binding",
+            "name": "Deterministic Identity & Token Binding",
+            "description": "Exact-match identity correlation backed by cryptographic tokens or verified credentials",
+            "children": [
+              {
+                "id": "oauth_jwt_session_claim",
+                "name": "Signed OAuth & JWT Session Claim",
+                "description": "Cryptographically signed session assertion linking authenticated mobile or web state directly to contact arrival",
+                "seeAlso": ["fraud_auth", "crm"]
+              },
+              {
+                "id": "verified_ani_and_messaging_handle",
+                "name": "Verified ANI & Messaging Handle Registry",
+                "description": "Matches carrier-attested phone numbers (STIR and SHAKEN) or verified WhatsApp and Apple Business Chat IDs to CRM party records",
+                "seeAlso": ["ccaas", "fraud_auth", "crm"]
+              }
+            ]
+          },
+          {
+            "id": "probabilistic_and_ephemeral_correlation",
+            "name": "Probabilistic & Ephemeral Handoff Correlation",
+            "description": "Fallback correlation when customers cross unauthenticated or out-of-band channels",
+            "children": [
+              {
+                "id": "temporal_ani_web_window_match",
+                "name": "Temporal Web-Abandon to Inbound-ANI Match",
+                "description": "Correlates an inbound call arriving within seconds of an authenticated web error on the same customer profile",
+                "seeAlso": ["journey_tracking", "journey_orchestration"]
+              },
+              {
+                "id": "ephemeral_short_code_pin_bridge",
+                "name": "Ephemeral 6-Digit Session Bridge Code",
+                "description": "Displays a short-lived numeric code on a web screen that the caller speaks or enters in IVR to bind anonymous web state",
+                "seeAlso": ["ivr"]
+              }
+            ]
+          },
+          {
+            "id": "long_horizon_thread_persistence",
+            "name": "Long-Horizon Thread & Journey Persistence",
+            "description": "Maintaining continuity across hours or days of asynchronous customer pauses",
+            "children": [
+              {
+                "id": "multi_day_issue_ledger_binding",
+                "name": "Multi-Day Open Issue Thread Binding",
+                "description": "Automatically attaches returning contacts within an active resolution window to the open journey instance and prior agent affinity",
+                "seeAlso": ["acd", "journey_orchestration", "async_session_resumption"]
+              },
+              {
+                "id": "proactive_outbound_reply_stitching",
+                "name": "Outbound Notification Reply Stitching",
+                "description": "Links a customer SMS reply or inbound call directly to the specific proactive outage, billing, or delivery notification that triggered it",
+                "seeAlso": ["outbound", "journey_orchestration"]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "ocx_handoff_execution_modes",
+      "name": "Handoff Execution & Hydration Modes",
+      "description": "Operational patterns governing how context is delivered and consumed when transferring between bots, channels, and human agents",
+      "root": {
+        "id": "handoff_modes_root",
+        "name": "Channel & Resource Handoff Modes",
+        "children": [
+          {
+            "id": "cold_blind_transfer_antipattern",
+            "name": "Cold Blind Transfer (Degraded Anti-Pattern)",
+            "description": "Media-only transfer where signaling drops the Context Envelope, forcing re-authentication and problem restatement",
+            "seeAlso": ["acd", "qa"]
+          },
+          {
+            "id": "warm_screen_pop_hydration",
+            "name": "Warm Screen-Pop & Slot Hydration Handoff",
+            "description": "Pre-delivers the Context Envelope to the receiving ACD queue and agent co-pilot workspace prior to media answer",
+            "children": [
+              {
+                "id": "pre_answer_copilot_briefing_card",
+                "name": "Pre-Answer Co-Pilot Briefing Card",
+                "description": "Renders a 3-bullet intent, sentiment, and verified-slot digest on the agent desktop during contact ring or reservation",
+                "seeAlso": ["desktop_assist", "warm_handoff_state_contract"]
+              },
+              {
+                "id": "ivr_anti_repetition_menu_bypass",
+                "name": "IVR Menu & Auth Bypass Hydration",
+                "description": "Fast-forwards the caller past root IVR menus and ID verification directly into the target skill queue using envelope claims",
+                "seeAlso": ["ivr", "acd", "anti_repetition_guard"]
+              }
+            ]
+          },
+          {
+            "id": "consultative_and_shadowed_handoff",
+            "name": "Whisper-Briefed & Co-Pilot Shadowed Transition",
+            "description": "Interactive handoff where AI or sending specialist briefs the receiving resource and validates continuity",
+            "children": [
+              {
+                "id": "ai_whisper_coach_bridge",
+                "name": "AI Whisper Audio & Transcript Bridge",
+                "description": "Synthesizes a concise spoken or visual whisper briefing to the receiving agent before bridging the customer audio",
+                "seeAlso": ["desktop_assist", "cai"]
+              },
+              {
+                "id": "shadowed_copilot_post_handoff_guard",
+                "name": "Post-Handoff Co-Pilot Auto-Fill & Guard",
+                "description": "Pre-fills CRM wrap-up fields and alerts the live agent in real time if they ask a question already answered in the envelope",
+                "seeAlso": ["desktop_assist", "anti_repetition_guard", "qa"]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "metrics": [
+    {
+      "id": "context_hydration_success_rate",
+      "name": "Context Envelope Hydration Success Rate",
+      "unit": "percent",
+      "direction": "higher_is_better",
+      "definition": "Percentage of cross-channel switches and bot-to-agent escalations where the full Context Envelope (identity, auth claim, intent stack, and extracted slots) is intact and rendered at the receiving endpoint before first turn",
+      "mapsToKpi": "sla_compliance_rate"
+    },
+    {
+      "id": "zero_repetition_interaction_rate",
+      "name": "Zero-Repetition Customer Experience Rate",
+      "unit": "percent",
+      "direction": "higher_is_better",
+      "definition": "Share of escalated or channel-switched contacts in which speech and text analytics verify the customer was never asked to repeat verified identity or previously stated slot values",
+      "mapsToKpi": "csat"
+    },
+    {
+      "id": "hydrated_handoff_aht_seconds",
+      "name": "Context-Hydrated Escalation Handle Time",
+      "unit": "seconds",
+      "direction": "lower_is_better",
+      "definition": "Average live-agent handle time on cross-channel or bot-escalated contacts arriving with a populated Context Envelope, reflecting time saved on re-authentication and discovery",
+      "mapsToKpi": "aht_seconds"
+    },
+    {
+      "id": "cross_channel_journey_fcr_rate",
+      "name": "Omnichannel Seamless Resolution Rate",
+      "unit": "percent",
+      "direction": "higher_is_better",
+      "definition": "Percentage of contacts that pivot across two or more modalities (such as mobile app to voice or IVR to SMS) and achieve full issue resolution without subsequent repeat contacts",
+      "mapsToKpi": "fcr_rate"
+    },
+    {
+      "id": "voice_to_digital_deflection_completion",
+      "name": "Voice-to-Digital Modality Pivot Containment Rate",
+      "unit": "percent",
+      "direction": "higher_is_better",
+      "definition": "Percentage of voice callers accepting an SMS, visual IVR, or mobile app modality pivot who complete their transaction digitally without returning to the voice queue",
+      "mapsToKpi": "deflection_rate"
+    },
+    {
+      "id": "modality_switch_sync_latency_seconds",
+      "name": "Cross-Channel State Synchronization Latency",
+      "unit": "seconds",
+      "direction": "lower_is_better",
+      "definition": "P95 end-to-end latency required to persist, transmit, and hydrate the Context Envelope when switching from one channel or agent to another",
+      "mapsToKpi": "avg_wait_time"
+    }
+  ],
+  "failureModes": [
+    {
+      "id": "handoff_context_amnesia",
+      "name": "Omnichannel Handoff Context Amnesia",
+      "signal": "Customers escalating from web chat or voicebot to a live agent are greeted with 'How can I help you today?' and forced to restate their entire issue; CSAT on escalated contacts drops sharply",
+      "mitigation": "Enforce mandatory Warm Handoff State Contracts in ACD routing and auto-pop the structured Handoff Digest and filled slots inside the agent co-pilot before call answer"
+    },
+    {
+      "id": "redundant_reauthentication_friction",
+      "name": "Cross-Channel Re-Authentication Loop",
+      "signal": "Callers initiating contact from an already-authenticated mobile banking or healthcare app are challenged again by IVR and live agents for date of birth, PIN, or KBA",
+      "mitigation": "Propagate signed Authentication Assurance Carryover Tokens via WebRTC headers or SIP UUI and configure IVR and desktop flows to honor valid AAL claims within their TTL window"
+    },
+    {
+      "id": "sip_trunk_uui_header_stripping",
+      "name": "Carrier SIP Trunk UUI & Header Stripping",
+      "signal": "Voice calls transferred across PSTN interconnect or regional SBC boundaries arrive at the ACD with empty UUI headers and orphaned Context Envelope lookups",
+      "mitigation": "Implement dual-path context resolution combining RFC-compliant SIP UUI transport with out-of-band cloud session ledger lookup keyed by ANI, DNIS, and sub-second arrival window"
+    },
+    {
+      "id": "stale_slot_ledger_overwrite",
+      "name": "Stale Context & Zombie Slot Overwrite",
+      "signal": "Returning customer starting a new inquiry has their current session polluted by slots (such as an old order ID or travel date) from a resolved ticket days earlier",
+      "mitigation": "Attach strict domain-specific TTLs and journey-disposition lifecycle hooks to every slot in the Context Envelope, archiving closed-intent slots upon resolution"
+    },
+    {
+      "id": "split_brain_async_thread_collision",
+      "name": "Split-Brain Simultaneous Channel Collision",
+      "signal": "Customer sends an SMS reply while simultaneously calling into the voice queue, resulting in two agents or bots working conflicting mutations on the same case",
+      "mitigation": "Maintain an atomic distributed session lock on the Unified Conversation Thread Ledger so active synchronous voice handling pauses automated async bot turns and merges both streams into one workspace"
+    },
+    {
+      "id": "dead_end_modality_deflection",
+      "name": "Dead-End Voice-to-Digital Deflection Link",
+      "signal": "Caller accepts an IVR-to-SMS deflection link, clicks the URL, and lands on a generic login page or unhydrated web home screen, triggering immediate angry repeat calls",
+      "mitigation": "Bind deflection deep links to pre-authenticated, single-use session continuity tokens that open directly into the target workflow step with all IVR-captured slots pre-filled"
+    }
+  ],
+  "scoringModel": {
+    "id": "ocx_continuity_integrity_rubric",
+    "name": "Omnichannel Context Continuity & Handoff Rubric",
+    "scaleType": "weighted_rubric",
+    "maxPoints": 100,
+    "autoFailItems": [
+      "unauthenticated_pii_leak_across_channel",
+      "consent_or_suppression_flag_dropped_on_handoff",
+      "session_bound_to_wrong_customer_party"
+    ],
+    "note": "Evaluates the end-to-end fidelity of cross-channel modality transitions and bot-to-human escalations across authentication preservation, slot hydration, zero customer repetition, transition speed, and summary grounding.",
+    "dimensions": [
+      {
+        "id": "identity_and_auth_carryover",
+        "name": "Identity & Authentication Assurance Carryover",
+        "weightPercent": 25,
+        "description": "Preservation of resolved CRM customer identity and verified authentication assurance level across channel switches without redundant security challenges",
+        "sampleCriteria": [
+          "Customer party ID and account context resolved automatically upon arrival",
+          "Valid upstream mobile or web authentication assurance token honored without re-prompting",
+          "Step-up verification triggered only when transaction risk exceeds current assurance claim"
+        ]
+      },
+      {
+        "id": "intent_and_slot_hydration",
+        "name": "Intent Stack & Validated Slot Hydration",
+        "weightPercent": 25,
+        "description": "Completeness and accuracy of active intent hierarchy, extracted entity slots, and prior tool execution outcomes hydrated into the receiving channel or desktop",
+        "sampleCriteria": [
+          "All upstream-extracted slots pre-populated in receiving workflow or agent desktop",
+          "Primary and nested customer intents preserved across modality pivot",
+          "Prior failed self-service attempts logged so receiving resource does not repeat dead-end steps"
+        ]
+      },
+      {
+        "id": "zero_customer_repetition",
+        "name": "Zero-Repetition Customer Experience",
+        "weightPercent": 25,
+        "description": "Elimination of redundant IVR menus, duplicate bot slot prompts, and repetitive live-agent discovery questions",
+        "sampleCriteria": [
+          "IVR root menus bypassed when intent is already known from digital click-to-call",
+          "Receiving agent greets customer with explicit acknowledgment of their stated issue",
+          "Zero questions asked for information already present in the Context Envelope"
+        ]
+      },
+      {
+        "id": "modality_transition_latency",
+        "name": "Modality Transition & Hydration Speed",
+        "weightPercent": 15,
+        "description": "Sub-second technical synchronization of the Context Envelope and seamless media continuity during channel switches",
+        "sampleCriteria": [
+          "Context Envelope hydrated on agent desktop prior to media connection",
+          "Voice-to-SMS or visual co-browse link delivered and active within 2 seconds",
+          "Asynchronous thread resumption restores full history with zero noticeable lag"
+        ]
+      },
+      {
+        "id": "transcript_summary_fidelity",
+        "name": "Handoff Digest & Provenance Fidelity",
+        "weightPercent": 10,
+        "description": "Conciseness, factual grounding, and actionability of the conversation digest and sentiment trajectory presented to the receiving resource",
+        "sampleCriteria": [
+          "Handoff summary accurately reflects customer problem, sentiment, and promises made",
+          "Digital struggle breadcrumbs clearly highlight exact screen or error code encountered",
+          "Wrap-up disposition and timeline updates persist back to the unified conversation ledger"
+        ]
+      }
+    ]
+  },
+  "integrations": [
+    {
+      "with": "acd",
+      "exchanges": [
+        "Canonical Context Envelope, verified auth level, and intent stack passed at queue arrival to drive skills and priority routing",
+        "Queue wait estimates and agent reservation events consumed to trigger pre-answer desktop context hydration"
+      ]
+    },
+    {
+      "with": "ivr",
+      "exchanges": [
+        "Digital-to-voice continuity tokens read at call arrival to bypass redundant IVR menus and authentication prompts",
+        "IVR-captured DTMF and ASR slots packaged into Context Envelopes for voice-to-SMS deflection or agent transfer"
+      ]
+    },
+    {
+      "with": "cai",
+      "exchanges": [
+        "Dialog state tracker slots, intent stack, and tool execution outcomes serialized into the Context Envelope on escalation",
+        "Returning asynchronous threads hydrated back into virtual agent memory for multi-day conversation continuity"
+      ]
+    },
+    {
+      "with": "crm",
+      "exchanges": [
+        "Cross-channel identity graph resolves anonymous device tokens, messaging handles, and ANIs against master customer records",
+        "Unified conversation thread ledger and disposition outcomes written back to the canonical customer timeline"
+      ]
+    },
+    {
+      "with": "desktop_assist",
+      "exchanges": [
+        "Structured handoff digest, filled slot ledger, and digital struggle breadcrumbs rendered in the live agent co-pilot workspace",
+        "Real-time anti-repetition guard alerts fired if the agent prompts for already-verified envelope attributes"
+      ]
+    },
+    {
+      "with": "journey_orchestration",
+      "exchanges": [
+        "Active journey instance ID, blueprint stage, and Next-Best-Action arbitration payload embedded inside the Context Envelope",
+        "Modality switch outcomes and channel abandonment events streamed back to update real-time journey state"
+      ]
+    },
+    {
+      "with": "a2a_protocol",
+      "exchanges": [
+        "Omnichannel Context Envelope bound to A2A task delegation payloads so specialist agents inherit customer identity and slot state",
+        "Multi-agent provenance chain and specialist execution artifacts appended to the envelope prior to human escalation"
+      ]
+    },
+    {
+      "with": "ccaas",
+      "exchanges": [
+        "SIP UUI headers, WebRTC session metadata, and carrier STIR and SHAKEN attestations extracted and bound to the cloud Context Envelope",
+        "Recording consent and PCI redaction flags propagated across voice and digital media planes"
+      ]
+    }
+  ],
+  "continuousDynamics": {
+    "stateSpaceDimension": 12,
+    "manifoldCoordinates": [
+      "identity_assurance_fidelity",
+      "intent_stack_coherence",
+      "slot_ledger_completeness",
+      "semantic_digest_grounding",
+      "breadcrumb_telemetry_freshness",
+      "consent_state_certainty"
+    ],
+    "stateVariables": [
+      {
+        "id": "context_fidelity_tensor",
+        "symbol": "F(t)",
+        "domain": "[0, 1]^K",
+        "unit": "ratio",
+        "description": "Continuous K-dimensional context fidelity vector tracking real-time retention of verified identity, authentication assurance, intent hierarchy, and slot values across time and modality switches"
+      },
+      {
+        "id": "slot_decay_rate_vector",
+        "symbol": "lambda_k",
+        "domain": "R_+",
+        "unit": "per_second",
+        "description": "Domain-specific exponential decay constant governing half-life expiration of ephemeral authentication tokens, transient error breadcrumbs, and time-sensitive slot claims"
+      },
+      {
+        "id": "mutual_information_retention",
+        "symbol": "I_ret(t)",
+        "domain": "[0, 1]",
+        "unit": "bits_ratio",
+        "description": "Normalized Shannon mutual information ratio between originating session state X_0 and hydrated endpoint state X_t after channel transition or bot-to-human escalation"
+      },
+      {
+        "id": "hydration_impulse_intensity",
+        "symbol": "u_hyd(t)",
+        "domain": "[0, 1]^K",
+        "unit": "impulse_per_sec",
+        "description": "Continuous control impulse injected via SIP UUI headers, WebRTC JWT claims, or desktop co-pilot hydration streams to restore decayed or dropped context dimensions"
+      },
+      {
+        "id": "crdt_divergence_norm",
+        "symbol": "Delta_crdt(t)",
+        "domain": "R_+",
+        "unit": "l2_norm",
+        "description": "Distributed state-vector divergence norm across concurrent multi-region replicas during simultaneous voice and asynchronous digital customer interactions"
+      }
+    ],
+    "differentialEquations": [
+      {
+        "id": "context_fidelity_decay_hydration_ode",
+        "name": "Continuous Context Fidelity Decay & Hydration SDE",
+        "formula": "dF_k(t) = ( -lambda_k * F_k(t) + u_hyd,k(t) * (1 - F_k(t)) ) * dt - gamma_switch * F_k(t) * dN_switch(t)",
+        "interpretation": "Each context dimension k decays exponentially at rate lambda_k during asynchronous pauses, suffers discrete drop loss gamma_switch on unhydrated channel switches dN_switch(t), and is actively restored toward 1.0 by continuous hydration impulse u_hyd,k(t)"
+      },
+      {
+        "id": "shannon_channel_capacity_retention",
+        "name": "Modality Handoff Mutual Information Retention",
+        "formula": "I_ret(t) = I(X_0 ; X_t) * inv(H(X_0)) = exp( -integral_0^t ( lambda_eff(s) - C_bridge(s) ) ds )",
+        "interpretation": "Quantifies zero-repetition continuity as the ratio of preserved mutual information I(X_0; X_t) to initial customer state entropy H(X_0), bounded by signaling bridge capacity C_bridge(s) (such as SIP UUI payload limits versus full cloud envelope hydration)"
+      },
+      {
+        "id": "crdt_state_convergence_dynamics",
+        "name": "Distributed CRDT Thread Ledger Convergence",
+        "formula": "dDelta_crdt(t) * inv(dt) = -mu_sync * Delta_crdt(t) + sigma_write * xi(t)",
+        "interpretation": "Guarantees strong eventual consistency across concurrent voice, SMS, and mobile app mutations with exponential convergence rate mu_sync exceeding stochastic multi-channel write arrival noise sigma_write"
+      }
+    ],
+    "scaleInvariants": [
+      "O(1) constant-time Context Envelope lookup and sub-15ms hydration P99 across 10,000,000+ concurrent omnichannel sessions via partitioned in-memory CRDT state shards",
+      "Monotonic semilattice slot-merge idempotency ensuring out-of-order webhook, SIP, and async messaging arrivals converge deterministically without distributed lock contention",
+      "Zero-repetition information bound: whenever I_ret(t) >= 0.95 at handoff, downstream dialog policies provably suppress 100% of redundant identity and slot prompts"
+    ]
+  }
+}

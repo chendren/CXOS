@@ -1,0 +1,44 @@
+[
+  {
+    "id": "rt-001",
+    "channel": "voice",
+    "customer_tier": "enterprise_vip",
+    "estimated_wait_sec": 45,
+    "summary": "Enterprise account CFO calling about an unauthorized wire card charge of 4,800 dollars that appeared two hours ago on their corporate statement. Caller states the card is still in their possession and wants the card frozen and Fraud Operations engaged immediately."
+  },
+  {
+    "id": "rt-002",
+    "channel": "chat",
+    "customer_tier": "standard",
+    "estimated_wait_sec": 420,
+    "summary": "Customer says they were double-billed for their monthly fiber internet plan after upgrading tiers mid-cycle and requests a ledger credit for the prorated overlap."
+  },
+  {
+    "id": "rt-003",
+    "channel": "voice",
+    "customer_tier": "premier",
+    "estimated_wait_sec": 310,
+    "summary": "Long-tenured subscriber states a competitor offered a 40 percent lower rate for 1 Gbps service and says they want to cancel their account at the end of this billing cycle unless loyalty pricing is matched."
+  },
+  {
+    "id": "rt-004",
+    "channel": "voice",
+    "customer_tier": "standard",
+    "estimated_wait_sec": 540,
+    "summary": "Customer troubleshooting intermittent packet loss and red optical alarm LED on their ONT gateway after a storm. Automated line test failed to reach the CPE device."
+  },
+  {
+    "id": "rt-005",
+    "channel": "chat",
+    "customer_tier": "standard",
+    "estimated_wait_sec": 480,
+    "summary": "Customer placed an equipment upgrade order four days ago; tracking still shows label created with no carrier scan, and the customer wants to know when the router will ship."
+  },
+  {
+    "id": "rt-006",
+    "channel": "voice",
+    "customer_tier": "enterprise_vip",
+    "estimated_wait_sec": 390,
+    "summary": "Multi-site hospital clinic IT director reporting total SIP trunk outage across 12 regional clinics; inbound patient appointment lines are failing with 503 service unavailable."
+  }
+]

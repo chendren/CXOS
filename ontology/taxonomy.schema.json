@@ -1,0 +1,195 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/chendren/CXOS/main/ontology/taxonomy.schema.json",
+  "title": "CXOS CX Taxonomy",
+  "description": "Uniform schema for CXOS domain-specific CX taxonomies (IVR, ACD, WFM, QA, CRM, KM, Speech Analytics, Outbound, VOC). Every taxonomy file must satisfy this schema and pass scripts/validate-ontology.mjs.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["kind", "id", "acronym", "name", "category", "version", "description", "glossary", "facets", "metrics"],
+  "properties": {
+    "kind": { "const": "cxTaxonomy" },
+    "id": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$", "description": "snake_case identifier, unique across the ontology" },
+    "acronym": { "type": "string", "pattern": "^[A-Z][A-Za-z0-9-]*$", "description": "Industry acronym, e.g. IVR, ACD, WFM, QA" },
+    "name": { "type": "string", "minLength": 3 },
+    "category": {
+      "enum": ["self_service", "routing", "workforce", "quality", "customer_data", "knowledge", "analytics", "outreach", "feedback"]
+    },
+    "version": { "type": "string", "pattern": "^\\d{4}\\.\\d{2}\\.\\d+$", "description": "Calendar versioning: YYYY.MM.N" },
+    "description": { "type": "string", "minLength": 20 },
+    "roleInCenter": { "type": "string", "description": "One-sentence statement of the system's job in the contact center" },
+    "glossary": {
+      "type": "array",
+      "minItems": 4,
+      "items": { "$ref": "#/$defs/glossaryEntry" }
+    },
+    "facets": {
+      "type": "array",
+      "minItems": 2,
+      "items": { "$ref": "#/$defs/facet" }
+    },
+    "metrics": {
+      "type": "array",
+      "minItems": 3,
+      "items": { "$ref": "#/$defs/metricEntry" }
+    },
+    "failureModes": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/failureMode" }
+    },
+    "scoringModel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "scaleType", "maxPoints", "dimensions"],
+      "properties": {
+        "id": { "$ref": "#/$defs/idSnake" },
+        "name": { "type": "string" },
+        "scaleType": { "enum": ["binary", "likert_3", "likert_5", "weighted_rubric"] },
+        "maxPoints": { "type": "number", "exclusiveMinimum": 0 },
+        "autoFailItems": { "type": "array", "items": { "$ref": "#/$defs/idSnake" }, "description": "Scorecard items that zero the evaluation regardless of other scores" },
+        "note": { "type": "string", "description": "Design rationale or extension guidance" },
+        "dimensions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "name", "weightPercent", "description"],
+            "properties": {
+              "id": { "$ref": "#/$defs/idSnake" },
+              "name": { "type": "string" },
+              "weightPercent": { "type": "number", "minimum": 0, "maximum": 100 },
+              "description": { "type": "string", "minLength": 10 },
+              "sampleCriteria": { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        }
+      }
+    },
+    "integrations": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/integration" }
+    },
+    "continuousDynamics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["stateSpaceDimension", "stateVariables", "differentialEquations", "scaleInvariants"],
+      "properties": {
+        "stateSpaceDimension": { "type": "integer", "minimum": 1 },
+        "manifoldCoordinates": { "type": "array", "minItems": 2, "items": { "$ref": "#/$defs/idSnake" } },
+        "stateVariables": {
+          "type": "array",
+          "minItems": 3,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "symbol", "domain", "description"],
+            "properties": {
+              "id": { "$ref": "#/$defs/idSnake" },
+              "symbol": { "type": "string", "minLength": 1 },
+              "domain": { "type": "string", "minLength": 2 },
+              "unit": { "type": "string" },
+              "description": { "type": "string", "minLength": 10 }
+            }
+          }
+        },
+        "differentialEquations": {
+          "type": "array",
+          "minItems": 2,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "name", "formula", "interpretation"],
+            "properties": {
+              "id": { "$ref": "#/$defs/idSnake" },
+              "name": { "type": "string", "minLength": 3 },
+              "formula": { "type": "string", "minLength": 5 },
+              "interpretation": { "type": "string", "minLength": 10 }
+            }
+          }
+        },
+        "scaleInvariants": {
+          "type": "array",
+          "minItems": 2,
+          "items": { "type": "string", "minLength": 10 }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "idSnake": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+    "glossaryEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "term", "definition"],
+      "properties": {
+        "id": { "$ref": "#/$defs/idSnake" },
+        "term": { "type": "string", "minLength": 2 },
+        "definition": { "type": "string", "minLength": 10 },
+        "tags": { "type": "array", "items": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" } },
+        "aliases": { "type": "array", "items": { "type": "string" } },
+        "seeAlso": { "type": "array", "items": { "$ref": "#/$defs/idSnake" } }
+      }
+    },
+    "taxonNode": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name"],
+      "properties": {
+        "id": { "$ref": "#/$defs/idSnake" },
+        "name": { "type": "string", "minLength": 2 },
+        "description": { "type": "string" },
+        "aliases": { "type": "array", "items": { "type": "string" } },
+        "seeAlso": { "type": "array", "items": { "$ref": "#/$defs/idSnake" }, "description": "Cross-references to taxonomy ids or glossary ids in other files" },
+        "children": { "type": "array", "items": { "$ref": "#/$defs/taxonNode" } }
+      }
+    },
+    "facet": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "root"],
+      "properties": {
+        "id": { "$ref": "#/$defs/idSnake" },
+        "name": { "type": "string", "minLength": 3 },
+        "description": { "type": "string" },
+        "root": { "$ref": "#/$defs/taxonNode" }
+      }
+    },
+    "metricEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "unit", "definition", "direction"],
+      "properties": {
+        "id": { "$ref": "#/$defs/idSnake" },
+        "name": { "type": "string", "minLength": 3 },
+        "unit": { "type": "string", "minLength": 1 },
+        "definition": { "type": "string", "minLength": 10 },
+        "direction": { "enum": ["higher_is_better", "lower_is_better", "neutral"] },
+        "mapsToKpi": {
+          "type": "string",
+          "enum": ["total_contacts", "sla_compliance_rate", "avg_wait_time", "deflection_rate", "avg_contact_value", "high_priority_contacts", "fcr_rate", "aht_seconds", "csat"],
+          "description": "Must reference an engine KPI id from packages/cx-core/src/ontology/catalogs/default.json"
+        }
+      }
+    },
+    "failureMode": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "signal", "mitigation"],
+      "properties": {
+        "id": { "$ref": "#/$defs/idSnake" },
+        "name": { "type": "string" },
+        "signal": { "type": "string", "description": "Observable symptom in telemetry" },
+        "mitigation": { "type": "string", "description": "Named control or playbook action" }
+      }
+    },
+    "integration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["with", "exchanges"],
+      "properties": {
+        "with": { "type": "string", "description": "Taxonomy id of the counterpart system, or 'crm'/'engine' style external id" },
+        "exchanges": { "type": "array", "minItems": 1, "items": { "type": "string" } }
+      }
+    }
+  }
+}

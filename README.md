@@ -119,6 +119,7 @@ pnpm cox cx run travel-core \
 | Path / surface | Purpose |
 |---|---|
 | `.cox/cx/<name>/` | Program state (created by `cx run` / `cx new`) |
+| `ontology/` | JSON CX ontology: closed-world system taxonomies (IVR, ACD, WFM, QA, CRM, KM, Speech Analytics, Outbound, VOC) + schema + validator — see [docs/CX-ONTOLOGY.md](./docs/CX-ONTOLOGY.md) |
 | `cx-cab-*/` or `./cx-cab/` | CAB export packages |
 | `cxos-dashboard*.html` | Fleet HTML dashboards |
 | `docs/` | Architecture diagrams, PRFAQ, user scenarios |
@@ -187,6 +188,8 @@ Order is always **artifacts first**, then local and aws.
 | Adoption | [coxswain/docs/ADOPTION.md](https://github.com/chendren/coxswain/blob/main/docs/ADOPTION.md) |
 | Pack authoring | [coxswain/docs/PACK-AUTHORING.md](https://github.com/chendren/coxswain/blob/main/docs/PACK-AUTHORING.md) |
 | PRFAQ | [docs/PRFAQ-CXOS-Coxswain.md](./docs/PRFAQ-CXOS-Coxswain.md) |
+| CX Ontology | [docs/CX-ONTOLOGY.md](./docs/CX-ONTOLOGY.md) — system taxonomies, engine KPI alignment, `npm run validate:ontology` |
+| Strands Decider | [docs/DECIDER.md](./docs/DECIDER.md) — local calibrated decision model, `npm run decide` |
 | OSS plan | [docs/OSS-RELEASE-SUPERHEAVY-PLAN.md](./docs/OSS-RELEASE-SUPERHEAVY-PLAN.md) |
 
 ---

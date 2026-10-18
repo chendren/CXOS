@@ -1,0 +1,234 @@
+{
+  "kind": "cxTaxonomy",
+  "id": "speech_analytics",
+  "acronym": "SA",
+  "name": "Speech & Text Analytics",
+  "category": "analytics",
+  "version": "2026.10.0",
+  "description": "Transcription and classification layer that turns every recorded interaction into analyzable structure: topics, sentiment, emotion, compliance events, and machine-proposed dispositions across voice and text channels.",
+  "roleInCenter": "Listening layer: converts raw interaction media into labeled, queryable events for QA automation, driver analysis, and risk spotting.",
+  "glossary": [
+    { "id": "transcription", "term": "Transcription", "definition": "Speech-to-text rendering of call audio, the base layer for all other analytes", "aliases": ["STT"], "tags": ["core"] },
+    { "id": "diarization", "term": "Speaker Diarization", "definition": "Separation of who spoke when: agent, customer, or third party", "tags": ["structure"] },
+    { "id": "keyword_spotting", "term": "Keyword Spotting", "definition": "Detection of mandated or forbidden phrases in transcripts and audio", "tags": ["compliance"] },
+    { "id": "topic_model", "term": "Topic / Category Model", "definition": "Controlled taxonomy of conversation themes used to classify every interaction", "tags": ["classification"] },
+    { "id": "sentiment_analysis", "term": "Sentiment Analysis", "definition": "Polarity scoring of customer expression; distinct from acoustic emotion detection", "tags": ["affect"], "seeAlso": ["voc"] },
+    { "id": "emotion_detection", "term": "Emotion Detection", "definition": "Acoustic-model classification of anger, frustration, laughter beyond word-level sentiment", "tags": ["affect"] },
+    { "id": "talk_ratio", "term": "Talk Ratio & Dead Air", "definition": "Conversational structure metrics: agent-vs-customer airtime and silence spans", "tags": ["structure"] },
+    { "id": "auto_disposition", "term": "Auto-Disposition", "definition": "Model-proposed outcome label attached to interactions; feeds wrap audit and QA", "tags": ["classification"], "seeAlso": ["qa"] },
+    { "id": "redaction", "term": "Automated Redaction", "definition": "Muting or masking PCI/HIPAA segments in audio and transcripts before analysis", "tags": ["compliance"] },
+    { "id": "alert_precision", "term": "Alert Precision", "definition": "Share of flagged interactions that reviewers confirm as true findings", "tags": ["measurement"] }
+  ],
+  "facets": [
+    {
+      "id": "sa_analyte_classes",
+      "name": "Analyte Classes",
+      "root": {
+        "id": "analytes",
+        "name": "What Gets Measured",
+        "children": [
+          { "id": "lexical", "name": "Lexical", "description": "Words: keywords, entities, topics", "children": [
+            { "id": "topics", "name": "Topics / Contact Drivers" },
+            { "id": "compliance_phrases", "name": "Compliance Phrase Detection" }
+          ] },
+          { "id": "acoustic", "name": "Acoustic", "children": [
+            { "id": "silence_bands", "name": "Silence & Dead Air" },
+            { "id": "energy_agitation", "name": "Energy / Agitation Signals" },
+            { "id": "overtalk", "name": "Overtalk & Interruptions" }
+          ] },
+          { "id": "semantic_affect", "name": "Semantic Affect", "children": [
+            { "id": "sentiment", "name": "Sentiment" },
+            { "id": "emotion", "name": "Emotion Classes" }
+          ] },
+          { "id": "conversational_structure", "name": "Conversational Structure", "children": [
+            { "id": "hold_patterns", "name": "Hold Patterns" },
+            { "id": "talk_ratio", "name": "Talk Ratio" }
+          ] }
+        ]
+      }
+    },
+    {
+      "id": "sa_use_cases",
+      "name": "Primary Use Cases",
+      "root": {
+        "id": "use_cases",
+        "name": "Speech & Text Analytics Use Cases",
+        "children": [
+          { "id": "auto_qa_engine", "name": "Auto-QA / Full-Coverage Scoring", "seeAlso": ["qa"] },
+          { "id": "compliance_monitoring", "name": "Compliance Monitoring", "description": "Disclosure presence, forbidden-phrase detection, regulated process drift" },
+          { "id": "contact_driver_discovery", "name": "Contact-Driver Discovery", "description": "Volume themes feeding CX improvement backlog" },
+          { "id": "churn_intent_signals", "name": "Churn & Risk Signals", "description": "Cancellation language, competitor mentions, escalation threats", "seeAlso": ["crm"] },
+          { "id": "script_adherence", "name": "Script Adherence" },
+          { "id": "disposition_audit", "name": "Disposition Audit", "description": "Verify wrap codes against actual conversation outcome", "seeAlso": ["qa"] }
+        ]
+      }
+    }
+  ],
+  "metrics": [
+    { "id": "transcription_accuracy_percent", "name": "Transcription Accuracy", "unit": "percent", "direction": "higher_is_better", "definition": "Word error rate inverted; gates all downstream analytes" },
+    { "id": "topic_coverage_percent", "name": "Topic Classification Coverage", "unit": "percent", "direction": "higher_is_better", "definition": "Share of interactions confidently assigned a primary topic" },
+    { "id": "flag_precision_percent", "name": "Alert Precision", "unit": "percent", "direction": "higher_is_better", "definition": "Reviewer-confirmed findings over total flagged" },
+    { "id": "auto_disposition_accuracy", "name": "Auto-Disposition Agreement", "unit": "percent", "direction": "higher_is_better", "definition": "Model label agreement with QA-verified human disposition", "mapsToKpi": "fcr_rate" },
+    { "id": "negative_sentiment_share", "name": "Negative Sentiment Share", "unit": "percent", "direction": "lower_is_better", "definition": "Interactions scored negative-negative trend; leading indicator for csat", "mapsToKpi": "csat" }
+  ],
+  "failureModes": [
+    { "id": "transcript_fidelity_drift", "name": "Transcript Fidelity Drift", "signal": "Acoustic-heavy accents or crosstalk degrade WER silently; topic confidence falls", "mitigation": "Sample human WER audit per channel; recalibration with domain lexicon" },
+    { "id": "alert_fatigue", "name": "Alert Fatigue", "signal": "Reviewers clear alerts in bulk; precision unmeasured", "mitigation": "Alert precision scorecard; thresholds tuned to reviewer feedback loop" },
+    { "id": "sentiment_theater", "name": "Sentiment Theater", "signal": "Agent sentiment scores improve while customer measures worsen", "mitigation": "Score customer side only for CX; ban agent-sentiment from QA scores by default" },
+    { "id": "redaction_gaps", "name": "Redaction Gaps", "signal": "QA finds unredacted PCI in evaluation samples", "mitigation": "Redaction verification as auto-QA artifact before analyst access" }
+  ],
+  "integrations": [
+    { "with": "qa", "exchanges": ["Auto-QA scoring and targeted sampling", "Auto-disposition verification samples"] },
+    { "with": "acd", "exchanges": ["Interaction records with queue and agent metadata"] },
+    { "with": "voc", "exchanges": ["Unsolicited verbatims mined as VOC listening post"] },
+    { "with": "km", "exchanges": ["Driver topics without good answers become content backlog"] }
+  ],
+  "scoringModel": {
+    "id": "sa_prosodic_telemetry_precision_scorecard",
+    "name": "Speech & Prosodic Telemetry Precision Scorecard",
+    "scaleType": "weighted_rubric",
+    "maxPoints": 100,
+    "autoFailItems": [
+      "unredacted_pci_or_hipaa_audio_persisted",
+      "agent_customer_channel_swap_in_diarization",
+      "missed_mandatory_regulatory_disclosure_flag"
+    ],
+    "note": "Evaluates streaming transcription fidelity, speaker diarization & talk-over dynamics, continuous valence-arousal-dominance (VAD) prosodic trajectory tracking, and compliance keyword spotter precision.",
+    "dimensions": [
+      {
+        "id": "transcription_diarization_fidelity",
+        "name": "Streaming Transcription & Speaker Diarization Fidelity",
+        "weightPercent": 25,
+        "description": "Low word error rate on domain vocabulary and clean separation of customer and agent audio channels including overtalk spans",
+        "sampleCriteria": [
+          "Word accuracy exceeds 92 percent across domain-specific product and billing terms",
+          "Dual-channel or neural diarization achieves <2 percent speaker attribution error",
+          "Talk-over, hold silence, and dead-air spans timestamped to 50-millisecond resolution"
+        ]
+      },
+      {
+        "id": "prosodic_vad_emotion_tracking",
+        "name": "Continuous VAD Prosodic & Acoustic Stress Tracking",
+        "weightPercent": 25,
+        "description": "Real-time estimation of customer Valence-Arousal-Dominance (VAD) trajectories and acoustic stress velocity independent of lexical sentiment",
+        "sampleCriteria": [
+          "Customer valence-arousal-dominance vector updates every 250 milliseconds on [-1, 1]^3",
+          "Acoustic stress velocity spikes trigger supervisor or co-pilot empathy alerts within 1.5 seconds",
+          "CX affect scoring strictly isolates customer prosody from scripted agent politeness"
+        ]
+      },
+      {
+        "id": "compliance_keyword_spotter_precision",
+        "name": "Compliance Keyword Spotting & Alert Precision",
+        "weightPercent": 20,
+        "description": "Calibrated log-odds detection of mandatory disclosures, forbidden commitments, and escalation threats without inducing reviewer alert fatigue",
+        "sampleCriteria": [
+          "Reviewer-confirmed alert precision exceeds 85 percent across compliance flags",
+          "Mandatory disclosure verification accounts for allowed lexical paraphrases and sequence order",
+          "High-risk churn and legal-threat utterances route immediately to targeted QA sampling"
+        ]
+      },
+      {
+        "id": "topic_driver_auto_disposition",
+        "name": "Topic Classification & Auto-Disposition Concordance",
+        "weightPercent": 15,
+        "description": "Coverage of primary contact drivers and concordance between model-proposed dispositions and human QA ground truth",
+        "sampleCriteria": [
+          "Primary and secondary contact driver topics assigned on >95 percent of interactions",
+          "Auto-disposition agreement with QA-verified human wrap codes exceeds 88 percent",
+          "Emerging unindexed topic clusters automatically open KM and VOC discovery items"
+        ]
+      },
+      {
+        "id": "automated_redaction_privacy_hygiene",
+        "name": "Automated PCI & PII Redaction Hygiene",
+        "weightPercent": 15,
+        "description": "Deterministic scrubbing of payment card digits, SSNs, and protected health data across both audio tracks and text transcripts prior to storage",
+        "sampleCriteria": [
+          "100 percent of PAN, CVV, and SSN spans masked in both stereo audio and transcript JSON",
+          "Redaction latency adds zero blocking delay to downstream post-call wrap workflows",
+          "Automated redaction audit artifact verified before analyst or LLM access"
+        ]
+      }
+    ]
+  },
+  "continuousDynamics": {
+    "stateSpaceDimension": 12,
+    "manifoldCoordinates": [
+      "prosodic_valence",
+      "prosodic_arousal",
+      "prosodic_dominance",
+      "acoustic_stress_velocity",
+      "compliance_keyword_log_odds",
+      "diarization_talk_over_ratio",
+      "dead_air_silence_hazard",
+      "lexical_sentiment_polarity",
+      "wer_uncertainty_entropy",
+      "topic_posterior_margin",
+      "agent_empathy_coupling",
+      "redaction_mask_state"
+    ],
+    "stateVariables": [
+      {
+        "id": "vad_prosodic_trajectory",
+        "symbol": "e(t)",
+        "domain": "[-1, 1]^3",
+        "unit": "vad_vector",
+        "description": "Continuous 3D Valence-Arousal-Dominance (VAD) prosodic affect vector e(t) = (v(t), a(t), d(t)) in [-1, 1]^3 extracted from pitch, jitter, shimmer, and spectral energy"
+      },
+      {
+        "id": "acoustic_stress_velocity",
+        "symbol": "v_stress(t)",
+        "domain": "(-inf, inf)",
+        "unit": "s^-1",
+        "description": "Instantaneous rate of change of customer arousal-minus-valence acoustic tension along the conversation trajectory"
+      },
+      {
+        "id": "compliance_keyword_log_odds",
+        "symbol": "ell_kw(t)",
+        "domain": "(-inf, inf)",
+        "unit": "nats",
+        "description": "Sequential Bayesian log-odds evidence for mandatory disclosure completion or prohibited phrase occurrence up to time t"
+      },
+      {
+        "id": "diarization_talk_over_ratio",
+        "symbol": "r_over(t)",
+        "domain": "[0, 1]",
+        "unit": "ratio",
+        "description": "Instantaneous smoothed fraction of active speech frames exhibiting simultaneous agent-customer acoustic overlap (overtalk)"
+      },
+      {
+        "id": "dead_air_silence_accum",
+        "symbol": "S_sil(t)",
+        "domain": "[0, inf)",
+        "unit": "seconds",
+        "description": "Continuous unannounced silence duration since last vocal activity across either speaker channel"
+      }
+    ],
+    "differentialEquations": [
+      {
+        "id": "vad_prosodic_langevin_sde",
+        "name": "Continuous Valence-Arousal-Dominance (VAD) Prosodic Trajectory SDE",
+        "formula": "de(t) = - Gamma_vad cdot (e(t) - e_base) dt + B_emp cdot u_agent(t) dt - kappa_over cdot r_over(t) cdot e_val dt + Sigma_vad cdot sqrt(1 - e(t)^2) dW_t",
+        "interpretation": "Customer prosodic vector e(t) in [-1, 1]^3 mean-reverts at rate Gamma_vad, shifts toward positive valence under agent empathy control u_agent(t), degrades under talk-over collisions r_over(t), and remains bounded on [-1, 1]^3 via Jacobi diffusion"
+      },
+      {
+        "id": "acoustic_stress_velocity_evolution",
+        "name": "Real-Time Acoustic Stress Velocity & Talk-Over Coupling",
+        "formula": "v_stress(t) = w_arousal cdot (da(t) cdot dt^-1) - w_valence cdot (dv(t) cdot dt^-1) + alpha_over cdot r_over(t), with dr_over(t) cdot dt^-1 = -lambda_over cdot r_over(t) + I_collision(t)",
+        "interpretation": "Acoustic stress velocity combines positive arousal acceleration and negative valence drop with exponentially smoothed speaker diarization talk-over collisions I_collision(t)"
+      },
+      {
+        "id": "compliance_keyword_wald_sprt",
+        "name": "Compliance Keyword Spotter Sequential Log-Odds Flow",
+        "formula": "dell_kw(t) = log(p_acoustic(y_t | H_phrase) cdot p_acoustic(y_t | H_null)^-1) dt",
+        "interpretation": "Continuous Wald Sequential Probability Ratio Test (SPRT) integrates frame-level acoustic-lexical likelihood ratios into log-odds ell_kw(t) for low-latency compliance alerting"
+      }
+    ],
+    "scaleInvariants": [
+      "O(1) constant-memory streaming inference per audio channel via causal state-space recurrence at 20ms frame stride",
+      "Speaker-channel permutation equivariance: diarization separation and overtalk ratio r_over(t) remain invariant to gain scaling and codec bitrate adaptation",
+      "Bounded manifold invariance: Jacobi diffusion volatility sqrt(1 - e_i(t)^2) vanishes at boundaries plus or minus 1, guaranteeing e(t) stays strictly inside [-1, 1]^3 for all t >= 0"
+    ]
+  }
+}

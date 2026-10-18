@@ -1,0 +1,370 @@
+{
+  "kind": "cxTaxonomy",
+  "id": "desktop_assist",
+  "acronym": "DA",
+  "name": "Agent Desktop & Real-Time Co-Pilot",
+  "category": "knowledge",
+  "version": "2026.10.0",
+  "description": "Unified single-pane-of-glass agent workspace augmented with a real-time AI co-pilot that listens to live transcripts, surfaces next-best-response knowledge cards, enforces compliance checklists, and automates after-call work (ACW) summarization.",
+  "roleInCenter": "Frontline cockpit and co-pilot: eliminates swivel-chair app switching, drafts grounded responses in real time, and automates wrap-up notes and dispositions so agents focus on the customer.",
+  "glossary": [
+    {
+      "id": "unified_agent_desktop",
+      "term": "Unified Agent Workspace",
+      "definition": "Single-pane-of-glass interface consolidating omnichannel media controls, customer 360 context, knowledge assist, and core transaction forms",
+      "tags": ["desktop", "core"],
+      "seeAlso": ["crm", "acd"]
+    },
+    {
+      "id": "real_time_call_summarization",
+      "term": "Automated Post-Contact Summarization",
+      "definition": "Generative LLM synthesis producing structured problem-action-resolution notes, extracted entities, and recommended wrap codes at interaction end",
+      "tags": ["generative", "acw", "core"],
+      "seeAlso": ["speech_analytics", "crm"]
+    },
+    {
+      "id": "next_best_response_card",
+      "term": "Next-Best-Response Whisper Card",
+      "definition": "Contextual knowledge snippet or drafted reply pushed to the agent screen within seconds of a detected customer question or objection",
+      "tags": ["knowledge", "generative"],
+      "seeAlso": ["km", "journey_orchestration"]
+    },
+    {
+      "id": "acw_automation",
+      "term": "After-Call Work (ACW) Automation",
+      "definition": "Automated execution of wrap-up tasks including disposition tagging, CRM case field population, and follow-up email drafting",
+      "tags": ["acw", "efficiency"],
+      "aliases": ["Auto-Wrap"]
+    },
+    {
+      "id": "swivel_chair_elimination",
+      "term": "Swivel-Chair Integration",
+      "definition": "Composite UI widgets and background API orchestrations that replace manual copy-pasting across 5 to 15 legacy billing, order, and ticketing screens",
+      "tags": ["desktop", "efficiency"],
+      "seeAlso": ["wfo"]
+    },
+    {
+      "id": "live_compliance_checklist",
+      "term": "Real-Time Compliance Checklist",
+      "definition": "Dynamic on-screen tracker that checks off mandatory disclosures and verification phrases as the agent speaks them during the live call",
+      "tags": ["compliance", "quality"],
+      "seeAlso": ["qa"]
+    },
+    {
+      "id": "handoff_context_brief",
+      "term": "Pre-Answer Context Brief",
+      "definition": "Concise visual card displayed on screen pop summarizing prior IVR or virtual agent turns, authentication status, and customer sentiment",
+      "tags": ["desktop", "routing"],
+      "seeAlso": ["cai", "ivr", "fraud_auth"]
+    },
+    {
+      "id": "empathy_tone_cue",
+      "term": "Real-Time Empathy & Pacing Cue",
+      "definition": "Non-intrusive desktop indicator alerting the agent to slow speech rate, avoid interruption, or acknowledge frustration when customer stress rises",
+      "tags": ["coaching", "quality"],
+      "seeAlso": ["speech_analytics", "wfo"]
+    }
+  ],
+  "facets": [
+    {
+      "id": "da_workspace_unification",
+      "name": "Unified Workspace & Swivel-Chair Elimination",
+      "description": "Composite desktop architecture uniting channels, customer context, and guided workflows",
+      "root": {
+        "id": "workspace_unification_root",
+        "name": "Unified Agent Desktop Layers",
+        "children": [
+          {
+            "id": "omnichannel_interaction_bar",
+            "name": "Omnichannel Media & State Bar",
+            "children": [
+              { "id": "embedded_webrtc_controls", "name": "Embedded Voice & Hold Controls", "description": "In-browser call control, warm consult directory, and PCI pause triggers", "seeAlso": ["ccaas", "acd"] },
+              { "id": "blended_digital_inbox", "name": "Concurrent Chat, SMS & Email Tabs", "description": "Multi-session digital workspace with unread turn indicators and SLA timers" }
+            ]
+          },
+          {
+            "id": "composite_workflow_views",
+            "name": "Swivel-Chair Elimination Widgets",
+            "children": [
+              { "id": "unified_customer_360_pane", "name": "Consolidated Customer & Journey Pane", "description": "Single view combining CRM profile, recent orders, and active journey stage", "seeAlso": ["crm", "journey_orchestration"] },
+              { "id": "guided_action_wizards", "name": "One-Click Transaction Wizards", "description": "Step-by-step micro-apps that update billing, shipping, and ERP systems in one submit" }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "da_realtime_copilot",
+      "name": "Real-Time In-Call AI Co-Pilot",
+      "description": "Live listening intelligence that assists agents during active customer conversations",
+      "root": {
+        "id": "realtime_copilot_root",
+        "name": "In-Call Co-Pilot Capabilities",
+        "children": [
+          {
+            "id": "proactive_knowledge_whisper",
+            "name": "Live Knowledge & Response Assist",
+            "children": [
+              { "id": "intent_triggered_kb_card", "name": "Transcript-Triggered Knowledge Card", "description": "Auto-retrieves exact policy passage from KM as customer states their question", "seeAlso": ["km"] },
+              { "id": "one_click_chat_draft", "name": "Grounded Digital Reply Drafting", "description": "Pre-fills editable, brand-aligned chat or email responses grounded in CRM and KM data" }
+            ]
+          },
+          {
+            "id": "live_guardrail_prompts",
+            "name": "In-Call Quality & Compliance Prompts",
+            "children": [
+              { "id": "disclosure_script_tracker", "name": "Mandatory Disclosure Auto-Check", "description": "Highlights unread regulatory scripts before call wrap is permitted", "seeAlso": ["qa"] },
+              { "id": "de_escalation_coaching_card", "name": "Live De-Escalation Whisper", "description": "Surfaces empathy phrasing and supervisor-alert button when customer anger spikes", "seeAlso": ["speech_analytics"] }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "da_acw_wrap_automation",
+      "name": "After-Call Work & Wrap-Up Automation",
+      "description": "Post-interaction automation compressing wrap-up time and improving CRM hygiene",
+      "root": {
+        "id": "acw_automation_root",
+        "name": "Post-Contact Automation",
+        "children": [
+          { "id": "structured_call_summary", "name": "Structured Problem-Action-Outcome Summary", "description": "Consistent bulleted interaction note written directly to CRM upon agent review", "seeAlso": ["crm"] },
+          { "id": "auto_disposition_prediction", "name": "Automated Wrap & Reason Code Selection", "description": "Predicts primary and secondary contact reason codes from full transcript", "seeAlso": ["speech_analytics"] },
+          { "id": "automated_followup_draft", "name": "Post-Call Confirmation Email & Task Generator", "description": "Drafts customer recap message and schedules promised back-office follow-up tasks" }
+        ]
+      }
+    }
+  ],
+  "metrics": [
+    {
+      "id": "copilot_assisted_aht_seconds",
+      "name": "Co-Pilot Assisted Average Handle Time",
+      "unit": "seconds",
+      "direction": "lower_is_better",
+      "definition": "Combined talk, hold, and wrap-up duration on interactions supported by real-time knowledge cards and automated ACW summarization",
+      "mapsToKpi": "aht_seconds"
+    },
+    {
+      "id": "assisted_first_contact_resolution",
+      "name": "Co-Pilot Assisted FCR Rate",
+      "unit": "percent",
+      "direction": "higher_is_better",
+      "definition": "First contact resolution rate on interactions where agents adopted surfaced knowledge or next-best-response cards",
+      "mapsToKpi": "fcr_rate"
+    },
+    {
+      "id": "desktop_assisted_csat",
+      "name": "Co-Pilot Assisted Interaction CSAT",
+      "unit": "score_1_to_5",
+      "direction": "higher_is_better",
+      "definition": "Customer satisfaction score on contacts handled with real-time co-pilot guidance and zero repeat context questions",
+      "mapsToKpi": "csat"
+    },
+    {
+      "id": "nba_card_conversion_value",
+      "name": "Desktop NBA Card Realized Value",
+      "unit": "currency_usd",
+      "direction": "higher_is_better",
+      "definition": "Mean contact value generated when agents execute real-time retention or expansion prompts surfaced in the desktop co-pilot",
+      "mapsToKpi": "avg_contact_value"
+    },
+    {
+      "id": "acw_summary_edit_distance_rate",
+      "name": "Auto-Summary Agent Acceptance Rate",
+      "unit": "percent",
+      "direction": "higher_is_better",
+      "definition": "Percentage of AI-generated call summaries accepted by agents with minimal manual editing prior to CRM commit"
+    }
+  ],
+  "failureModes": [
+    {
+      "id": "copilot_notification_overload",
+      "name": "Co-Pilot Card Spam & Cognitive Overload",
+      "signal": "Agents ignore or minimize the co-pilot panel because noisy, low-relevance cards pop up on every sentence",
+      "mitigation": "Gate card pops on high intent-shift confidence, cap active cards to two on screen, and suppress duplicates"
+    },
+    {
+      "id": "rubber_stamped_summary_error",
+      "name": "Unreviewed Auto-Summary Factual Drift",
+      "signal": "Incorrect dollar amounts or promised dates appear in CRM case notes because agents click save without reviewing the generated summary",
+      "mitigation": "Highlight extracted numbers and commitments in bold review chips requiring explicit agent confirmation before CRM write"
+    },
+    {
+      "id": "whisper_latency_miss",
+      "name": "Late Knowledge Card Arrival",
+      "signal": "Co-pilot surfaces the correct policy card 15 seconds after the agent already placed the customer on hold to search manually",
+      "mitigation": "Stream partial ASR transcripts with sub-2-second semantic cache lookup on top 200 recurring intents"
+    },
+    {
+      "id": "broken_screen_pop_hydration",
+      "name": "Incomplete Screen-Pop Context Hydration",
+      "signal": "Agent answers call to a blank workspace or spinning loader, forcing manual account lookup and extending handle time",
+      "mitigation": "Pre-hydrate CRM profile and bot handoff brief during ACD ring state with cached fallback views"
+    }
+  ],
+  "scoringModel": {
+    "id": "desktop_copilot_precision_scorecard",
+    "name": "Co-Pilot Precision & Cognitive Load Reduction Scorecard",
+    "scaleType": "weighted_rubric",
+    "maxPoints": 100,
+    "autoFailItems": [
+      "unverified_commitment_written_to_crm_summary",
+      "missed_mandatory_compliance_disclosure_gate",
+      "pii_exposed_in_copilot_prompt_context"
+    ],
+    "note": "Evaluates unified agent workspace and AI co-pilot performance across real-time whisper relevance, swivel-chair cognitive load reduction, live compliance guidance, and ACW auto-summarization fidelity.",
+    "dimensions": [
+      {
+        "id": "realtime_whisper_precision_latency",
+        "name": "Real-Time Whisper Precision & Latency",
+        "weightPercent": 30,
+        "description": "Sub-2-second delivery of highly relevant, grounded KM answer cards and next-best-response drafts without notification spam",
+        "sampleCriteria": [
+          "Knowledge whisper card surfaces within 2 seconds of detected customer intent",
+          "Active co-pilot cards capped at 2 on screen to prevent cognitive overload",
+          "Surfaced answer snippet is grounded in current approved KM article"
+        ]
+      },
+      {
+        "id": "cognitive_load_swivel_chair_reduction",
+        "name": "Cognitive Load & Swivel-Chair Reduction",
+        "weightPercent": 25,
+        "description": "Pre-answer context hydration and unified transaction wizards that eliminate multi-app toggling and redundant customer interrogation",
+        "sampleCriteria": [
+          "Customer 360 and prior CAI or IVR handoff brief fully hydrated before call answer",
+          "One-click composite workflow wizard executes cross-system updates without copy-paste",
+          "Application context switches per interaction held below ergonomic target"
+        ]
+      },
+      {
+        "id": "acw_summarization_disposition_fidelity",
+        "name": "ACW Auto-Summarization & Disposition Fidelity",
+        "weightPercent": 25,
+        "description": "Accurate problem-action-outcome interaction summaries, extracted commitment verification chips, and automated wrap-code prediction",
+        "sampleCriteria": [
+          "Generated summary captures problem, action taken, and resolution with zero factual drift",
+          "Extracted monetary amounts and dates confirmed via agent review chips before commit",
+          "Auto-predicted primary and secondary disposition codes match QA truth"
+        ]
+      },
+      {
+        "id": "live_compliance_empathy_guardrails",
+        "name": "Live Compliance Checklist & Empathy Cues",
+        "weightPercent": 20,
+        "description": "Real-time tracking of mandatory regulatory disclosures and non-intrusive acoustic pacing and de-escalation cues",
+        "sampleCriteria": [
+          "Live compliance checklist verifies required disclosures before wrap-up unlocks",
+          "Empathy and speech-pacing cue surfaces accurately when caller stress rises",
+          "PCI sensitive field focus automatically triggers recording and transcript masking"
+        ]
+      }
+    ]
+  },
+  "integrations": [
+    {
+      "with": "km",
+      "exchanges": [
+        "Real-time semantic search queries from live transcript turns retrieve grounded answer cards",
+        "Agent thumbs-up, copy, and flag feedback on surfaced cards sent back to KM curation"
+      ]
+    },
+    {
+      "with": "crm",
+      "exchanges": [
+        "Customer 360 profile, open cases, and interaction history hydrated into unified workspace",
+        "AI-generated call summary, extracted entities, and wrap-up disposition committed at contact close"
+      ]
+    },
+    {
+      "with": "speech_analytics",
+      "exchanges": [
+        "Streaming real-time transcript, speaker diarization, and live sentiment cues fed to co-pilot",
+        "Verified compliance checklist completions and auto-disposition labels shared"
+      ]
+    },
+    {
+      "with": "cai",
+      "exchanges": [
+        "Pre-escalation bot summary, verified customer slots, and failed tool attempts displayed on screen pop",
+        "Agent-resolved Q&A pairs fed back to expand virtual agent RAG coverage"
+      ]
+    }
+  ],
+  "continuousDynamics": {
+    "stateSpaceDimension": 10,
+    "manifoldCoordinates": [
+      "agent_cognitive_load_state",
+      "app_context_switch_frequency",
+      "copilot_whisper_relevance_margin",
+      "whisper_arrival_latency_lag",
+      "summary_compression_fidelity",
+      "acw_wrap_completion_hazard",
+      "screen_pop_hydration_completeness",
+      "compliance_checklist_coverage",
+      "empathy_pacing_alignment",
+      "nba_card_adoption_elasticity"
+    ],
+    "stateVariables": [
+      {
+        "id": "agent_cognitive_load_state",
+        "symbol": "L_cog(t)",
+        "domain": "[0, 1]",
+        "unit": "cognitive_load_index",
+        "description": "Continuous agent working-memory and cognitive load state driven by application context-switch frequency, customer emotional intensity, and unassisted knowledge search"
+      },
+      {
+        "id": "copilot_whisper_relevance_score",
+        "symbol": "R_whisp(t)",
+        "domain": "[0, 1]",
+        "unit": "relevance_probability",
+        "description": "Real-time semantic precision and utility score of surfaced co-pilot knowledge cards conditioned on the live conversation state and agent screen focus"
+      },
+      {
+        "id": "streaming_summary_compression_fidelity",
+        "symbol": "F_sum(t)",
+        "domain": "[0, 1]",
+        "unit": "mutual_information_ratio",
+        "description": "Information-theoretic compression fidelity quantifying the fraction of decision-critical interaction facts and commitments preserved in the streaming ACW summary"
+      },
+      {
+        "id": "acw_wrap_up_hazard_rate",
+        "symbol": "h_acw(t)",
+        "domain": "R_+",
+        "unit": "completion_rate",
+        "description": "Instantaneous post-contact wrap-up completion hazard rate governing how rapidly after-call work terminates once call audio ends"
+      },
+      {
+        "id": "swivel_chair_switch_intensity",
+        "symbol": "nu_switch(t)",
+        "domain": "R_+",
+        "unit": "switches_per_minute",
+        "description": "Instantaneous rate of window focus transitions and manual clipboard operations across disparate desktop applications"
+      }
+    ],
+    "differentialEquations": [
+      {
+        "id": "agent_cognitive_load_evolution_ode",
+        "name": "Agent Cognitive Load & Context-Switch Damping ODE",
+        "formula": "dL_cog(t) * inv(dt) = -alpha_relax * (L_cog(t) - L_0) + beta_swivel * nu_switch(t) + beta_noise * I_spam_card(t) - gamma_assist * R_whisp(t) * I_card_used(t)",
+        "interpretation": "Models working-memory load L_cog(t) rising under swivel-chair switching nu_switch(t) and noisy low-relevance card pops I_spam_card(t), while high-precision adopted whisper cards R_whisp(t) actively offload memory retrieval and reduce cognitive strain"
+      },
+      {
+        "id": "streaming_summary_information_bottleneck_ode",
+        "name": "Streaming Summarization Information-Bottleneck Fidelity Flow",
+        "formula": "dF_sum(t) * inv(dt) = kappa_ext * (1 - F_sum(t)) * I_salient(du_t; Y_crm) - delta_drift * max(0, L_transcript(t) - L_window)",
+        "interpretation": "Tracks how streaming entity and commitment extraction accumulates salient CRM mutual information I_salient(du_t; Y_crm) toward F_sum(t) -> 1 during the live call, eliminating end-of-call summarization wait time"
+      },
+      {
+        "id": "acw_wrap_up_hazard_acceleration_law",
+        "name": "After-Contact Work (ACW) Wrap-Up Hazard Acceleration Law",
+        "formula": "h_acw(t) = h_base * exp( eta_sum * F_sum(t_end) + eta_disp * P_auto_disp(t_end) - zeta_cog * L_cog(t_end) )",
+        "interpretation": "Demonstrates that high streaming summary fidelity F_sum(t_end) and confident auto-disposition prediction P_auto_disp(t_end) at call disconnect exponentially accelerate wrap-up completion hazard h_acw(t), compressing ACW duration by 50% to 70%"
+      }
+    ],
+    "scaleInvariants": [
+      "Card-spam cognitive bound: gating whisper emission on R_whisp(t) >= theta_rel and active card count <= 2 guarantees net negative cognitive load contribution from the co-pilot",
+      "Pre-answer hydration invariant: 100% of prior CAI slots and CRM 360 context hydrate within the ACD ring window (< 400ms), driving initial swivel-chair rate nu_switch(0) -> 0",
+      "Zero-hallucination CRM commit invariant: mandatory entity-confirmation chips ensure 100% of numeric and date commitments in auto-summaries are verified prior to persistence"
+    ]
+  }
+}

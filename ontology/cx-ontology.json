@@ -1,0 +1,162 @@
+{
+  "kind": "cxOntology",
+  "id": "cx-ontology",
+  "version": "2026.10.0",
+  "name": "CX Ontology",
+  "license": "Apache-2.0",
+  "description": "Closed-world CX ontology for the CXOS workspace: system-level, domain-specific taxonomies for the contact center stack (IVR, ACD, WFM, QA, CRM, KM, Speech Analytics, Outbound, VOC, CCaaS, CAI, WFO, Journey Orchestration, Fraud & Auth, Desktop Assist), aligned with the Coxswain engine ontology so model proposals stay inside a deterministic vocabulary.",
+  "engineAlignment": {
+    "engine": "coxswain",
+    "ontologyCatalog": "packages/cx-core/src/ontology/catalogs/default.json",
+    "engineVersion": "2026.08.0",
+    "kpiIds": [
+      "total_contacts",
+      "sla_compliance_rate",
+      "avg_wait_time",
+      "deflection_rate",
+      "avg_contact_value",
+      "high_priority_contacts",
+      "fcr_rate",
+      "aht_seconds",
+      "csat"
+    ],
+    "actionTypes": ["escalation", "routing", "protocol", "deflection", "retention", "proactive", "recovery", "sales", "onboarding", "engagement"],
+    "channels": ["chat", "email", "phone", "phone_transcript", "social_media", "in_app", "sms"],
+    "sentiments": ["angry", "frustrated", "confused", "neutral", "satisfied", "demanding"],
+    "urgencies": ["critical", "high", "medium", "low"],
+    "confidenceBands": {
+      "high": { "min": 0.7, "strategy": "act_immediately" },
+      "medium": { "min": 0.4, "strategy": "act_with_verification" },
+      "low": { "min": 0.0, "strategy": "gather_more_info" }
+    }
+  },
+  "categories": {
+    "self_service": "Automated systems that resolve or advance contacts without a live agent",
+    "routing": "Systems that assign, queue, and connect contacts to the right resource",
+    "workforce": "Systems that forecast, staff, and manage agent time",
+    "quality": "Systems that evaluate and improve interaction quality",
+    "customer_data": "Systems of record for customer context",
+    "knowledge": "Systems that supply answers to agents and customers",
+    "analytics": "Systems that extract meaning from interaction content",
+    "outreach": "Systems that initiate contact toward customers",
+    "feedback": "Systems that capture customer perception"
+  },
+  "core": {
+    "interactionLifecycle": [
+      { "id": "arrival", "name": "Arrival", "description": "Contact enters on a channel; identity captured via ANI, login, or form" },
+      { "id": "identity", "name": "Identify & Authenticate", "description": "System matches customer to CRM record and applies authentication strength rules" },
+      { "id": "self_service", "name": "Self-Service", "description": "IVR/automated channels attempt containment before queueing" },
+      { "id": "queue", "name": "Queue", "description": "Contact waits under ACD service-level rules; callback or overflow may apply" },
+      { "id": "routing", "name": "Routing", "description": "ACD selects resource by skills, priority, and availability" },
+      { "id": "handling", "name": "Handling", "description": "Agent (or bot) resolves using CRM context and KM answers; QA may sample later" },
+      { "id": "wrap_up", "name": "Wrap-Up", "description": "After-contact work: disposition, CRM logging, follow-up tasks" },
+      { "id": "resolution", "name": "Resolution", "description": "Customer need closed; FCR determined by downstream contact behavior" },
+      { "id": "feedback", "name": "Feedback", "description": "VOC survey or listening post captures perception; results feed drivers analysis" }
+    ],
+    "channelFacets": [
+      {
+        "id": "direction",
+        "name": "Direction",
+        "values": {
+          "inbound": "Customer-initiated contact (IVR, chat, email)",
+          "outbound": "Center-initiated contact (collections, reminders, notifications)"
+        }
+      },
+      {
+        "id": "synchronicity",
+        "name": "Synchronicity",
+        "values": {
+          "synchronous": "Real-time conversations: phone, chat, video, callback",
+          "asynchronous": "Store-and-forward: email, sms, social_media, in_app"
+        }
+      },
+      {
+        "id": "automation_level",
+        "name": "Automation Level",
+        "values": {
+          "automated": "Resolved by machine: IVR, bot, notification broadcast",
+          "assisted": "Human-held with system support: agent + KM/CRM",
+          "unattended": "No live resource at delivery time: voicemail drops, automated sms",
+          "multi_agent_a2a": "Coordinated across multiple autonomous and specialist agents via A2A protocol with human-in-the-loop escalation"
+        }
+      }
+    ],
+    "journeyTriad": {
+      "description": "Three-plane closed-loop architecture unifying prescriptive design, empirical telemetry, and real-time intervention across customer journeys.",
+      "planes": [
+        {
+          "id": "prescriptive_mapping",
+          "taxonomyId": "journey_mapping",
+          "temporalFocus": "what_we_hope_and_plan",
+          "name": "Plane 1: Customer Journey Mapping (Prescriptive Blueprint)",
+          "question": "What do we HOPE will happen and plan for?",
+          "artifacts": ["golden_path_blueprint", "stage_sla_budget", "moment_of_truth_contract", "planned_fallback_branch", "expected_emotion_curve"]
+        },
+        {
+          "id": "descriptive_tracking",
+          "taxonomyId": "journey_tracking",
+          "temporalFocus": "what_did_happen",
+          "name": "Plane 2: Customer Journey Tracking & Process Mining (Empirical Reality)",
+          "question": "What DID actually happen across channels and agents?",
+          "artifacts": ["stitched_event_trace", "discovered_process_graph", "conformance_drift_delta", "channel_ping_pong_loop", "silent_dropoff_attribution"]
+        },
+        {
+          "id": "interventionist_orchestration",
+          "taxonomyId": "journey_orchestration",
+          "temporalFocus": "what_is_happening_and_should_happen",
+          "name": "Plane 3: Real-Time Journey Orchestration (Active Intervention)",
+          "question": "What IS happening right now and what SHOULD happen next?",
+          "artifacts": ["live_conformance_Check", "nba_arbitration_decision", "dynamic_channel_steering", "a2a_specialist_handoff", "suppression_ledger_gate"]
+        }
+      ]
+    },
+    "contextEnvelopeSpec": {
+      "description": "Canonical Omnichannel & A2A Context Envelope propagated across channel switches, bot-to-bot (A2A) delegations, and bot-to-human escalations.",
+      "requiredFields": [
+        "envelope_id",
+        "journey_instance_id",
+        "blueprint_id",
+        "customer_identity_ref",
+        "origin_channel",
+        "active_channel",
+        "intent_stack",
+        "verified_auth_level",
+        "extracted_slots",
+        "a2a_provenance_chain",
+        "conformance_status",
+        "suppression_and_consent_flags"
+      ]
+    },
+    "crossCuttingConcerns": [
+      "compliance_pci",
+      "compliance_hipaa",
+      "compliance_tcpa",
+      "consent_recording",
+      "pii_redaction",
+      "accessibility",
+      "business_continuity",
+      "language_access"
+    ]
+  },
+  "taxonomies": [
+    { "id": "ivr", "acronym": "IVR", "name": "Interactive Voice Response", "category": "self_service", "path": "taxonomies/ivr.json", "summary": "Voice self-service: menus, DTMF/ASR, transactions, containment" },
+    { "id": "acd", "acronym": "ACD", "name": "Automatic Call Distributor", "category": "routing", "path": "taxonomies/acd.json", "summary": "Queueing, skills-based routing, service level, transfers, overflow" },
+    { "id": "wfm", "acronym": "WFM", "name": "Workforce Management", "category": "workforce", "path": "taxonomies/wfm.json", "summary": "Forecasting, scheduling, shrinkage, intraday adherence, occupancy" },
+    { "id": "qa", "acronym": "QA", "name": "Quality Assurance", "category": "quality", "path": "taxonomies/qa.json", "summary": "Transaction evaluation, scorecards, calibration, auto-fail compliance items" },
+    { "id": "crm", "acronym": "CRM", "name": "Customer Relationship Management", "category": "customer_data", "path": "taxonomies/crm.json", "summary": "Customer context: record hierarchy, screen pops, consent states, data quality" },
+    { "id": "km", "acronym": "KM", "name": "Knowledge Management", "category": "knowledge", "path": "taxonomies/km.json", "summary": "Curated answers: article lifecycle, agent assist, customer-facing help" },
+    { "id": "speech_analytics", "acronym": "SA", "name": "Speech & Text Analytics", "category": "analytics", "path": "taxonomies/speech-analytics.json", "summary": "Transcription, topics, sentiment, emotion, auto-disposition, compliance spotting" },
+    { "id": "outbound", "acronym": "OB", "name": "Outbound Dialer & Campaigns", "category": "outreach", "path": "taxonomies/outbound.json", "summary": "Dialing modes, campaign types, list management, regulatory controls" },
+    { "id": "voc", "acronym": "VOC", "name": "Voice of the Customer", "category": "feedback", "path": "taxonomies/voc.json", "summary": "Surveys, listening posts, NPS/CSAT/CES instruments, close-the-loop" },
+    { "id": "ccaas", "acronym": "CCaaS", "name": "Contact Center as a Service & Telephony Fabric", "category": "routing", "path": "taxonomies/ccaas.json", "summary": "SIP trunks, SBC, WebRTC endpoints, media recording, carrier failover, region resilience" },
+    { "id": "cai", "acronym": "CAI", "name": "Conversational AI & Virtual Agents", "category": "self_service", "path": "taxonomies/cai.json", "summary": "Intent NLU, slot filling, LLM RAG grounding, hallucination guardrails, containment handoff, turn latency" },
+    { "id": "wfo", "acronym": "WFO", "name": "Workforce Optimization & Engagement", "category": "workforce", "path": "taxonomies/wfo.json", "summary": "Coaching workflows, gamification, skill progression matrices, agent attrition risk, desktop analytics" },
+    { "id": "journey_orchestration", "acronym": "JO", "name": "Real-Time Journey Orchestration & NBA", "category": "routing", "path": "taxonomies/journey-orchestration.json", "summary": "Plane 3 (What IS/SHOULD happen): live state estimation, conformance-drift intervention, NBA arbitration, suppression, dynamic steering" },
+    { "id": "fraud_auth", "acronym": "FA", "name": "Fraud Detection & Caller Authentication", "category": "customer_data", "path": "taxonomies/fraud-auth.json", "summary": "ANI spoofing detection, voice biometrics, KBA threat mitigation, step-up MFA, ATO prevention" },
+    { "id": "desktop_assist", "acronym": "DA", "name": "Agent Desktop & Real-Time Co-Pilot", "category": "knowledge", "path": "taxonomies/desktop-assist.json", "summary": "Unified agent desktop, real-time call summarization, next-best-response cards, ACW automation, swivel-chair elimination" },
+    { "id": "omnichannel_context", "acronym": "OCX", "name": "Omnichannel Orchestration & Context Sharing", "category": "routing", "path": "taxonomies/omnichannel-context.json", "summary": "Cross-channel context envelopes, identity stitching, modality switching (web/app/chat/voice), SIP UUI & token hydration, warm handoff continuity" },
+    { "id": "a2a_protocol", "acronym": "A2A", "name": "Agent-to-Agent (A2A) & Multi-Agent Facets", "category": "self_service", "path": "taxonomies/a2a-protocol.json", "summary": "Agent Cards, capability discovery, AI-to-AI task delegation, supervisor/specialist topologies, shared memory provenance, confidence-gated human handoff" },
+    { "id": "journey_mapping", "acronym": "CJM", "name": "Customer Journey Mapping (Prescriptive Blueprint)", "category": "analytics", "path": "taxonomies/journey-mapping.json", "summary": "Plane 1 (What we HOPE & plan): Golden Path blueprints, persona JTBD stages, Moments of Truth, stage SLA budgets, planned fallback branches" },
+    { "id": "journey_tracking", "acronym": "CJT", "name": "Customer Journey Tracking & Process Mining", "category": "analytics", "path": "taxonomies/journey-tracking.json", "summary": "Plane 2 (What DID happen): cross-channel event reconstruction, actual path discovery, planned-vs-actual conformance drift, loop & drop-off attribution" }
+  ]
+}
