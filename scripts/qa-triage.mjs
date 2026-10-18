@@ -12,8 +12,9 @@
  * Policy (deterministic, in precedence order):
  *   1. compliance noul >= 0.70                          -> targeted_human_qa (compliance_risk)
  *   2. severity score >= 1.5 with confidence >= 0.70   -> targeted_human_qa (high_impact)
- *   3. severity confidence < 0.40 (low band)            -> needs_review (ambiguous signals)
- *   4. otherwise                                       -> auto_qa_only (full-coverage auto scoring)
+ *   3. noul < 0.20 and severity score < 1.0             -> auto_qa_only (clear_low_risk)
+ *   4. severity confidence < 0.40 (low band)            -> needs_review (ambiguous signals)
+ *   5. otherwise                                        -> auto_qa_only (no high-band signal)
  *
  * Everything not human-sampled still receives full-coverage auto QA; this script only
  * picks which contacts deserve scarce human evaluator attention first.
@@ -81,32 +82,54 @@ const isHealthy = async () => {
 };
 
 let spawnedServer = null;
+let serverCrashed = false;
+
+// Kill handlers are registered BEFORE any spawn/boot wait so Ctrl-C at any point
+// (including during a cold model load) cannot orphan the spawned server.
+const shutdown = () => {
+  if (spawnedServer && spawnedServer.exitCode === null) spawnedServer.kill("SIGTERM");
+};
+process.on("exit", shutdown);
+process.on("SIGINT", () => { shutdown(); process.exit(130); });
+process.on("SIGTERM", () => { shutdown(); process.exit(143); });
+
 if (await isHealthy()) {
   console.error(`decider server already healthy on port ${port} — reusing`);
 } else {
   spawnedServer = spawn(deciderBin, ["serve", CHECKPOINT, "--host", "127.0.0.1", "--port", String(port)], {
     cwd: workspaceRoot,
-    stdio: "ignore",
+    stdio: ["ignore", "ignore", "pipe"],
     detached: false,
   });
+  const serverErr = [];
+  spawnedServer.stderr.on("data", (chunk) => {
+    serverErr.push(String(chunk));
+    if (serverErr.length > 50) serverErr.shift(); // keep tail only
+  });
+  spawnedServer.on("exit", (code) => {
+    if (!serverCrashed) {
+      serverCrashed = true;
+      console.error(`decider server exited during boot (code ${code}). Last stderr lines:`);
+      console.error(serverErr.join("").split("\n").slice(-12).join("\n") || "(no stderr)");
+    }
+  });
+
   const bootDeadline = Date.now() + 180_000; // model load on mps can take a while cold
   while (!(await isHealthy())) {
+    if (serverCrashed) {
+      console.error(`decider server died before becoming healthy on port ${port}`);
+      process.exit(1);
+    }
     if (Date.now() > bootDeadline) {
       spawnedServer.kill("SIGTERM");
-      console.error(`decider server did not become healthy on port ${port} within 180s`);
+      console.error(`decider server did not become healthy on port ${port} within 180s. Last stderr lines:`);
+      console.error(serverErr.join("").split("\n").slice(-12).join("\n") || "(no stderr)");
       process.exit(1);
     }
     await new Promise((r) => setTimeout(r, 1000));
   }
   console.error(`decider server up on port ${port} (pid ${spawnedServer.pid})`);
 }
-
-const shutdown = () => {
-  if (spawnedServer) spawnedServer.kill("SIGTERM");
-};
-process.on("exit", shutdown);
-process.on("SIGINT", () => { shutdown(); process.exit(130); });
-process.on("SIGTERM", () => { shutdown(); process.exit(143); });
 
 /* ---------- decision asks ---------- */
 
@@ -163,8 +186,17 @@ const triagePolicy = (answers) => {
 /* ---------- run ---------- */
 
 const results = [];
+const failures = [];
 for (const contact of contacts) {
-  const answers = await askSystemOne(contact);
+  let answers;
+  try {
+    answers = await askSystemOne(contact);
+  } catch (e) {
+    // One failed ask must not abort the batch; record it and continue.
+    failures.push({ contact_id: contact.id, error: String(e instanceof Error ? e.message : e) });
+    console.error(`WARN  ask failed for ${contact.id}: ${failures.at(-1).error}`);
+    continue;
+  }
   const decision = triagePolicy(answers);
   const row = {
     contact_id: contact.id,
@@ -198,4 +230,9 @@ if (!asJson) {
 }
 
 shutdown();
+if (failures.length > 0) {
+  console.error(`\nCOMPLETE WITH ERRORS — ${failures.length}/${contacts.length} contact(s) failed:`);
+  for (const f of failures) console.error(`  ${f.contact_id}: ${f.error}`);
+  process.exit(1);
+}
 process.exit(0);

@@ -94,7 +94,15 @@ function typeofMatches(value, type) {
 }
 
 function validateSchema(value, schema, root, file, path, seen = new Set()) {
-  const s = schema?.$ref ? resolveRef(schema.$ref, root) : schema;
+  let s = schema;
+  if (schema?.$ref) {
+    s = resolveRef(schema.$ref, root);
+    if (!s || typeof s !== 'object') {
+      // Unresolved $ref must fail the run, not silently skip validation of the node.
+      fail([file, ...path], `unresolved $ref "${schema.$ref}"`);
+      return;
+    }
+  }
   if (!s || typeof s !== 'object') return;
 
   // guard against $ref cycles
