@@ -106,6 +106,180 @@
     <h2>Open tasks (0)</h2>
     <table><thead><tr><th>Spec</th><th>Id</th><th>Status</th><th>Age</th><th>Title</th></tr></thead>
     <tbody><tr><td colspan=5>(none)</td></tr></tbody></table>
+  <!-- CXOS-ONTOLOGY-DECIDER:START -->
+  <h2>CX Ontology &amp; Domain Taxonomies (2026.10.0)</h2>
+  <div class="cards">
+    <div class="card"><b>9</b><span>System Taxonomies</span></div>
+    <div class="card"><b>96</b><span>Glossary Terms</span></div>
+    <div class="card"><b>49</b><span>Metrics (9 Engine KPIs)</span></div>
+    <div class="card"><b>37</b><span>Failure Modes</span></div>
+    <div class="card"><b>63</b><span>Engine Pack Intents</span></div>
+  </div>
+  <table>
+    <thead><tr><th>System</th><th>Category</th><th>Structure</th><th>Metrics (Engine KPI Links)</th><th>Failure Modes</th><th>Role Summary</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>IVR</strong> · Interactive Voice Response</td>
+        <td><code>self_service</code></td>
+        <td>12 terms · 3 facets</td>
+        <td>6 (<code>deflection_rate</code>, <code>aht_seconds</code>, <code>avg_wait_time</code>)</td>
+        <td>5</td>
+        <td class="idea">Voice self-service: menus, DTMF/ASR, transactions, containment</td>
+      </tr>
+      <tr>
+        <td><strong>ACD</strong> · Automatic Call Distributor</td>
+        <td><code>routing</code></td>
+        <td>12 terms · 3 facets</td>
+        <td>6 (<code>sla_compliance_rate</code>, <code>avg_wait_time</code>, <code>fcr_rate</code>, <code>total_contacts</code>)</td>
+        <td>4</td>
+        <td class="idea">Queueing, skills-based routing, service level, transfers, overflow</td>
+      </tr>
+      <tr>
+        <td><strong>WFM</strong> · Workforce Management</td>
+        <td><code>workforce</code></td>
+        <td>12 terms · 4 facets</td>
+        <td>6 (<code>sla_compliance_rate</code>, <code>aht_seconds</code>)</td>
+        <td>4</td>
+        <td class="idea">Forecasting, scheduling, shrinkage, intraday adherence, occupancy</td>
+      </tr>
+      <tr>
+        <td><strong>QA</strong> · Quality Assurance</td>
+        <td><code>quality</code></td>
+        <td>12 terms · 3 facets</td>
+        <td>6 (<code>fcr_rate</code>)</td>
+        <td>4</td>
+        <td class="idea">Transaction evaluation, scorecards, calibration, auto-fail compliance items</td>
+      </tr>
+      <tr>
+        <td><strong>CRM</strong> · Customer Relationship Management</td>
+        <td><code>customer_data</code></td>
+        <td>10 terms · 3 facets</td>
+        <td>4 (<code>fcr_rate</code>, <code>aht_seconds</code>)</td>
+        <td>4</td>
+        <td class="idea">Customer context: record hierarchy, screen pops, consent states, data quality</td>
+      </tr>
+      <tr>
+        <td><strong>KM</strong> · Knowledge Management</td>
+        <td><code>knowledge</code></td>
+        <td>10 terms · 3 facets</td>
+        <td>5 (<code>csat</code>, <code>deflection_rate</code>)</td>
+        <td>4</td>
+        <td class="idea">Curated answers: article lifecycle, agent assist, customer-facing help</td>
+      </tr>
+      <tr>
+        <td><strong>SA</strong> · Speech &amp; Text Analytics</td>
+        <td><code>analytics</code></td>
+        <td>10 terms · 2 facets</td>
+        <td>5 (<code>fcr_rate</code>, <code>csat</code>)</td>
+        <td>4</td>
+        <td class="idea">Transcription, topics, sentiment, emotion, auto-disposition, compliance spotting</td>
+      </tr>
+      <tr>
+        <td><strong>OB</strong> · Outbound Dialer &amp; Campaigns</td>
+        <td><code>outreach</code></td>
+        <td>10 terms · 3 facets</td>
+        <td>5 (<code>avg_contact_value</code>, <code>sla_compliance_rate</code>, <code>high_priority_contacts</code>, <code>total_contacts</code>)</td>
+        <td>4</td>
+        <td class="idea">Dialing modes, campaign types, list management, regulatory controls</td>
+      </tr>
+      <tr>
+        <td><strong>VOC</strong> · Voice of the Customer</td>
+        <td><code>feedback</code></td>
+        <td>8 terms · 2 facets</td>
+        <td>6 (<code>csat</code>, <code>fcr_rate</code>)</td>
+        <td>4</td>
+        <td class="idea">Surveys, listening posts, NPS/CSAT/CES instruments, close-the-loop</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Strands 2B QA Triage &amp; Calibration (8 contacts)</h2>
+  <div class="meta">Strands 2B Decider (<code>StrandsAgents/strands-decider-2B-hobson-v21</code>) · Gold n=10 · Compliance Brier=<strong>0.0387</strong> · ECE=<strong>0.1594</strong> · F1@0.70=<strong>0.857</strong> · Policy agreement=<strong>90%</strong></div>
+  <div class="cards">
+    <div class="card"><b class="urg-high">2</b><span>Targeted Human QA</span></div>
+    <div class="card"><b class="urg-med">2</b><span>Needs Review</span></div>
+    <div class="card"><b class="ok">4</b><span>Auto-QA Only</span></div>
+    <div class="card"><b>0.0387</b><span>Compliance Brier</span></div>
+    <div class="card"><b>90%</b><span>Gold Policy Agreement</span></div>
+  </div>
+  <table>
+    <thead><tr><th>Contact</th><th>Channel</th><th>QA Path</th><th>Compliance Noul</th><th>Severity</th><th>Sev Conf</th><th>Band Reason</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>qa-001</strong></td>
+        <td><code>phone</code></td>
+        <td class="urg-high">targeted_human_qa</td>
+        <td><code>0.954</code></td>
+        <td><code>1.38</code></td>
+        <td><code>0.357</code></td>
+        <td>compliance_risk (noul 0.954)</td>
+      </tr>
+      <tr>
+        <td><strong>qa-008</strong></td>
+        <td><code>phone</code></td>
+        <td class="urg-high">targeted_human_qa</td>
+        <td><code>0.837</code></td>
+        <td><code>1.11</code></td>
+        <td><code>0.338</code></td>
+        <td>compliance_risk (noul 0.837)</td>
+      </tr>
+      <tr>
+        <td><strong>qa-004</strong></td>
+        <td><code>email</code></td>
+        <td class="ok">auto_qa_only</td>
+        <td><code>0.100</code></td>
+        <td><code>0.86</code></td>
+        <td><code>0.416</code></td>
+        <td>clear_low_risk (noul 0.100, score 0.86)</td>
+      </tr>
+      <tr>
+        <td><strong>qa-005</strong></td>
+        <td><code>chat</code></td>
+        <td class="ok">auto_qa_only</td>
+        <td><code>0.084</code></td>
+        <td><code>0.86</code></td>
+        <td><code>0.451</code></td>
+        <td>clear_low_risk (noul 0.084, score 0.86)</td>
+      </tr>
+      <tr>
+        <td><strong>qa-002</strong></td>
+        <td><code>chat</code></td>
+        <td class="ok">auto_qa_only</td>
+        <td><code>0.081</code></td>
+        <td><code>0.63</code></td>
+        <td><code>0.390</code></td>
+        <td>clear_low_risk (noul 0.081, score 0.63)</td>
+      </tr>
+      <tr>
+        <td><strong>qa-007</strong></td>
+        <td><code>in_app</code></td>
+        <td class="ok">auto_qa_only</td>
+        <td><code>0.071</code></td>
+        <td><code>0.72</code></td>
+        <td><code>0.365</code></td>
+        <td>clear_low_risk (noul 0.071, score 0.72)</td>
+      </tr>
+      <tr>
+        <td><strong>qa-006</strong></td>
+        <td><code>phone</code></td>
+        <td class="urg-med">needs_review</td>
+        <td><code>0.278</code></td>
+        <td><code>1.09</code></td>
+        <td><code>0.300</code></td>
+        <td>ambiguous_severity (conf 0.300) — gather_more_info</td>
+      </tr>
+      <tr>
+        <td><strong>qa-003</strong></td>
+        <td><code>phone</code></td>
+        <td class="urg-med">needs_review</td>
+        <td><code>0.143</code></td>
+        <td><code>1.34</code></td>
+        <td><code>0.335</code></td>
+        <td>ambiguous_severity (conf 0.335) — gather_more_info</td>
+      </tr>
+    </tbody>
+  </table>
+<!-- CXOS-ONTOLOGY-DECIDER:END -->
   <footer>CXOS dashboard - offline-safe HTML · no external assets · never auto-mutates prod</footer>
 </body>
 </html>

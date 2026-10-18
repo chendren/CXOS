@@ -57,13 +57,19 @@ either direction fails validation rather than silently diverging. `core.interact
 gives both layers a shared nine-stage spine (arrival → identity → self-service → queue →
 routing → handling → wrap-up → resolution → feedback) that every taxonomy relates to.
 
-## Validation
+## Validation & Engine Pack Build
 
 ```bash
 npm run validate:ontology
+npm run ontology:pack
+npm run dashboard:ontology
 ```
 
-The validator is deterministic, offline, dependency-free, and regex-free. It checks:
+- `npm run validate:ontology` runs the deterministic, offline, dependency-free, regex-free validator.
+- `npm run ontology:pack` compiles the 9 workspace taxonomies into a Coxswain-compatible `CxOntologyCatalog` extension pack at `ontology/cxos-systems-pack.json` (9 `sys_*` domains, 63 operational intents, 2 journeys, 4 NBA rules, 9 aligned KPIs) ready for `mergeOntologies(DEFAULT_ONTOLOGY, pack)`.
+- `npm run dashboard:ontology` injects the ontology summary, engine pack metrics, Strands 2B QA triage distribution, and calibration scores into `cxos-dashboard.html`.
+
+The validator checks:
 
 1. **Registry = filesystem.** Every registry entry points at a real file; every file in
    `taxonomies/` is registered. No orphans, no ghosts.

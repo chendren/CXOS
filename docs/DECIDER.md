@@ -59,6 +59,12 @@ npm run qa-triage -- --file .tmp/qa-triage/live-contacts.jsonl --watch \
 
 # Report: standalone offline HTML summary from one or more history files
 npm run qa-report -- --results .tmp/qa-triage/history.jsonl --out qa-triage-report.html
+
+# Calibration harness: Brier, ECE, and threshold sweep against gold QA fixture
+npm run qa-calibrate
+
+# Wire ontology + triage + calibration into cxos-dashboard.html
+npm run dashboard:ontology
 ```
 
 Policy (confidence bands, in precedence order): compliance noul ≥ 0.70 → targeted
