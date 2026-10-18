@@ -52,6 +52,11 @@
     "journey-decide": "node ./scripts/journey-a2a-decide.mjs",
     "continuous-scale": "node ./scripts/continuous-journey-engine.mjs",
     "recalibrate-blueprints": "node ./scripts/recalibrate-blueprints.mjs",
+    "cascade-simulate": "node ./scripts/system-cascade-simulator.mjs",
+    "project-vertical": "node ./scripts/project-vertical-pack.mjs",
+    "control-plane": "node ./scripts/cxos-control-plane.mjs",
+    "control-plane:test": "node ./scripts/cxos-control-plane.mjs --self-test",
+    "test": "node --test ./test/cxos-suite.test.mjs",
     "dashboard:ontology": "node ./scripts/update-dashboard.mjs",
     "validate": "node ./scripts/validate-ontology.mjs && python3 -m json.tool board-sync.json > /dev/null && echo 'board-sync.json valid' && cfn-lint cx-export/**/template.yaml || echo 'cfn-lint warnings'"
   },
