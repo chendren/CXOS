@@ -1,0 +1,42 @@
+[
+  {
+    "id": "qa-001",
+    "channel": "phone",
+    "summary": "Agent changed the shipping address on an order and processed a refund without verifying the caller's identity at any point in the call."
+  },
+  {
+    "id": "qa-002",
+    "channel": "chat",
+    "summary": "Customer asked where the nearest store pickup location is and what the pickup hours are. Agent answered from the help center article and the customer thanked them."
+  },
+  {
+    "id": "qa-003",
+    "channel": "phone",
+    "summary": "Third failed grocery delivery this week. Customer is in tears, says they will dispute all charges with their bank and file a complaint with the consumer regulator tomorrow."
+  },
+  {
+    "id": "qa-004",
+    "channel": "email",
+    "summary": "Customer disputes a 15 dollar late fee on this month's statement and asks for an explanation of how the charge was calculated."
+  },
+  {
+    "id": "qa-005",
+    "channel": "chat",
+    "summary": "Customer says 4000 loyalty points are missing from their June statement and lists the five purchases that should have earned them, remaining polite throughout."
+  },
+  {
+    "id": "qa-006",
+    "channel": "phone",
+    "summary": "Caller talks quickly about many unrelated topics: the weather, a neighbor's dog, then briefly a broken patio chair, then asks a question that cannot be heard clearly. Agent transferred to billing with no clear issue established."
+  },
+  {
+    "id": "qa-007",
+    "channel": "in_app",
+    "summary": "Customer confirms their store pickup order is marked ready and asks nothing further."
+  },
+  {
+    "id": "qa-008",
+    "channel": "phone",
+    "summary": "Agent quoted the refund policy from memory as 60 days, but the published policy on the website says 30 days. Customer mentions they are recording the call."
+  }
+]
